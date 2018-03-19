@@ -1,0 +1,4 @@
+name: StoryServer
+version: 1.0.0
+main: com.storycraft.StoryPlugin
+author: storycraft
