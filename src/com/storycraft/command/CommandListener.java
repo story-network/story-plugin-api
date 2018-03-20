@@ -1,14 +1,12 @@
 package com.storycraft.command;
 
-import com.storycraft.StoryPlugin;
-import com.storycraft.core.IMiniPlugin;
-import org.bukkit.command.Command;
+import com.storycraft.core.MiniPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class CommandListener implements IMiniPlugin, Listener {
+public class CommandListener extends MiniPlugin implements Listener {
     private CommandManager manager;
 
     public CommandListener(CommandManager manager){
@@ -20,13 +18,8 @@ public class CommandListener implements IMiniPlugin, Listener {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    @Override
-    public void onUnload(boolean reload) {
-
+    public void onEnable() {
+        getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
     //lowest로 설정시 제일 먼저 호출됨
@@ -40,7 +33,7 @@ public class CommandListener implements IMiniPlugin, Listener {
         String msg = e.getMessage().substring(1);
         //PREFIX 제거 후 공백으로 나눔
         int spaceIndex = msg.indexOf(" ");
-        String commandStr = msg.substring(0, spaceIndex == -1 ? spaceIndex - 1 : msg.length());
+        String commandStr = msg.substring(1, spaceIndex != -1 ? spaceIndex - 1 : msg.length());
 
         ICommand command = getManager().getCommand(commandStr);
 

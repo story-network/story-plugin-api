@@ -1,7 +1,8 @@
-package com.storycraft.config;
+package com.storycraft.config.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.storycraft.config.IConfigEntry;
 
 public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
 
@@ -17,6 +18,10 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
 
     public JsonObject getJsonObject() {
         return jsonObject;
+    }
+
+    protected void setJsonObject(JsonObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 
     @Override
@@ -67,5 +72,10 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
     @Override
     public JsonElement get(String key) {
         return getJsonObject().get(key);
+    }
+
+    @Override
+    public JsonConfigEntry getObject(String key) {
+        return new JsonConfigEntry(get(key).getAsJsonObject());
     }
 }
