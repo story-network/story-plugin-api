@@ -1,1 +1,1 @@
-#Story Minecraft Plugin
+# Story's Minecraft Plugin
