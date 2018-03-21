@@ -2,15 +2,16 @@ package com.storycraft.core.explosion;
 
 import com.storycraft.StoryPlugin;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.util.Parallel;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -39,7 +40,7 @@ public class Explosion extends MiniPlugin {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        this.explosionHandler = new ExplosionHandler(plugin);
+        this.explosionHandler = new ExplosionHandler(this);
     }
 
     @Override
@@ -52,10 +53,14 @@ class ExplosionHandler implements Listener {
 
     private final static String EXPLOSION_BLOCK_FLAG = "isExplosionBlock";
 
-    private StoryPlugin plugin;
+    private Explosion explosion;
 
-    public ExplosionHandler(StoryPlugin plugin){
-        this.plugin = plugin;
+    public ExplosionHandler(Explosion explosion){
+        this.explosion = explosion;
+    }
+
+    protected Explosion getExplosion() {
+        return explosion;
     }
 
     @EventHandler
@@ -100,27 +105,31 @@ class ExplosionHandler implements Listener {
 
         Random rnd = new Random();
 
-        for (Block b : blockList){
+        Parallel.forEach(blockList,(Block b) -> {
             if (rnd.nextDouble() <= limit){
-                FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), new MaterialData(b.getType(), b.getData()));
+                MaterialData data = new MaterialData(b.getType(), b.getData());
 
-                fb.setHurtEntities(true);
-                fb.setDropItem(false);
+                getExplosion().runSync(() -> {
+                    FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), data);
 
-                Vector vec = b.getLocation().toVector().subtract(center.toVector());
+                    fb.setHurtEntities(true);
+                    fb.setDropItem(false);
 
-                if (vec.getY() < 0)
-                    vec.setY(vec.getY() * -1);
+                    Vector vec = b.getLocation().toVector().subtract(center.toVector());
 
-                fb.setVelocity(vec.normalize());
+                    if (vec.getY() < 0)
+                        vec.setY(vec.getY() * -1);
 
-                setExplosionBlock(fb, true);
+                    fb.setVelocity(vec.normalize());
+
+                    setExplosionBlock(fb, true);
+                });
             }
-        }
+        });
     }
 
     public void setExplosionBlock(FallingBlock fallingBlock, boolean flag){
-        fallingBlock.setMetadata(EXPLOSION_BLOCK_FLAG, new FixedMetadataValue(plugin, flag));
+        fallingBlock.setMetadata(EXPLOSION_BLOCK_FLAG, new FixedMetadataValue(getExplosion().getPlugin(), flag));
     }
 
     public boolean isExplosionBlock(FallingBlock fallingBlock){

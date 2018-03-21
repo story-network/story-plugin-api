@@ -5,7 +5,7 @@ import com.storycraft.StoryPlugin;
 import java.util.*;
 
 public class CommandManager {
-    public static char COMMAND_PREFIX = '!';
+    public static String COMMAND_PREFIX = "/";
 
     public static String UNKNOWN_COMMAND = "알 수 없는 커맨드 입니다";
 

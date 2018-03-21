@@ -25,7 +25,7 @@ public class CommandListener extends MiniPlugin implements Listener {
     //lowest로 설정시 제일 먼저 호출됨
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommand(AsyncPlayerChatEvent e){
-        if (e.isCancelled() || e.getMessage().charAt(0) != CommandManager.COMMAND_PREFIX)
+        if (e.isCancelled() || CommandManager.COMMAND_PREFIX.equals(e.getMessage()))
             return;
 
         e.setCancelled(true);
@@ -33,12 +33,11 @@ public class CommandListener extends MiniPlugin implements Listener {
         String msg = e.getMessage().substring(1);
         //PREFIX 제거 후 공백으로 나눔
         int spaceIndex = msg.indexOf(" ");
-        String commandStr = msg.substring(1, spaceIndex != -1 ? spaceIndex - 1 : msg.length());
+        String commandStr = msg.substring(CommandManager.COMMAND_PREFIX.length(), spaceIndex != -1 ? spaceIndex - 1 : msg.length());
 
         ICommand command = getManager().getCommand(commandStr);
 
         if (command == null){
-            e.getPlayer().sendMessage(CommandManager.UNKNOWN_COMMAND);
             return;
         }
 

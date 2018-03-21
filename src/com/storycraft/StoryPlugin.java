@@ -7,8 +7,8 @@ import com.storycraft.core.combat.FastCombat;
 import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.explosion.Explosion;
 import com.storycraft.core.motd.ServerMotd;
+import com.storycraft.server.ServerManager;
 import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class StoryPlugin extends JavaPlugin {
@@ -16,11 +16,13 @@ public class StoryPlugin extends JavaPlugin {
     private MiniPluginLoader miniPluginLoader;
     private CommandManager commandManager;
     private LocalConfigManager localConfigManager;
+    private ServerManager serverManager;
 
     public StoryPlugin() {
         this.miniPluginLoader = new MiniPluginLoader(this);
         this.localConfigManager = new LocalConfigManager(this);
         this.commandManager = new CommandManager(this);
+        this.serverManager = new ServerManager(this);
 
         initMiniPlugin();
     }
