@@ -25,7 +25,7 @@ public class CommandListener extends MiniPlugin implements Listener {
     //lowest로 설정시 제일 먼저 호출됨
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommand(AsyncPlayerChatEvent e){
-        if (e.isCancelled() || CommandManager.COMMAND_PREFIX.equals(e.getMessage()))
+        if (e.isCancelled() || e.getMessage() == null || !e.getMessage().startsWith(CommandManager.COMMAND_PREFIX))
             return;
 
         e.setCancelled(true);

@@ -101,13 +101,24 @@ class ExplosionHandler implements Listener {
     }
 
     public void onExplosion(Location center, List<Block> blockList, float yield) {
-        double limit = (Math.log(blockList.size()) / Math.pow(blockList.size(), 0.66666666));
+        if (blockList.size() == 0)
+            return;
+
+        double limit = (Math.log(blockList.size()) / Math.pow(blockList.size(), 0.61275));
 
         Random rnd = new Random();
 
         Parallel.forEach(blockList,(Block b) -> {
+            if (b == null || b.getType() == Material.AIR || isExplosive(b.getType()))
+                return;
+
             if (rnd.nextDouble() <= limit){
                 MaterialData data = new MaterialData(b.getType(), b.getData());
+
+                Vector vec = b.getLocation().toVector().subtract(center.toVector());
+
+                if (vec.getY() < 0)
+                    vec.setY(vec.getY() * -1);
 
                 getExplosion().runSync(() -> {
                     FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), data);
@@ -115,17 +126,19 @@ class ExplosionHandler implements Listener {
                     fb.setHurtEntities(true);
                     fb.setDropItem(false);
 
-                    Vector vec = b.getLocation().toVector().subtract(center.toVector());
-
-                    if (vec.getY() < 0)
-                        vec.setY(vec.getY() * -1);
-
                     fb.setVelocity(vec.normalize());
 
                     setExplosionBlock(fb, true);
                 });
             }
         });
+    }
+
+    public boolean isExplosive(Material material) {
+        if (material == null)
+            return false;
+
+        return material == Material.TNT;
     }
 
     public void setExplosionBlock(FallingBlock fallingBlock, boolean flag){

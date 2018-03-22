@@ -8,6 +8,7 @@ import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.explosion.Explosion;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.server.ServerManager;
+import com.storycraft.test.TestFunction;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,6 +38,8 @@ public class StoryPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         getMiniPluginLoader().onEnable();
+
+        TestFunction.test(this, getServer().getWorld("world"));
     }
 
     @Override

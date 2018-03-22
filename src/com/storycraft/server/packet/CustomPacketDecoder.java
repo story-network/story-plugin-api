@@ -46,12 +46,17 @@ public class CustomPacketDecoder extends PacketDecoder {
                 throw new IOException("Bad packet id " + id);
             } else {
                 //replace part start
-                AsyncPacketInEvent e = getServerNetworkManager().onPacketInAsync(player, channel, packet, new DefaultPacketDeserializer(packet));
+                DefaultPacketDeserializer defaultDeserializer = new DefaultPacketDeserializer(packet);
+
+                defaultDeserializer.deserialize(packetDataSerializer);
+
+                AsyncPacketInEvent e = getServerNetworkManager().onPacketInAsync(player, channel, packet, defaultDeserializer);
 
                 if (e.isCancelled())
                     return;
 
-                e.getDeserializer().deserialize(packetDataSerializer);
+                if (e.getDeserializer() != defaultDeserializer)
+                    e.getDeserializer().deserialize(packetDataSerializer);
                 //replace part end
 
                 if (packetDataSerializer.readableBytes() > 0) {

@@ -91,6 +91,13 @@ public class ServerNetworkManager extends ServerExtension {
         hookServerNetwork();
     }
 
+    @Override
+    public void onEnable() {
+        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+            injectPlayer(p);
+        }
+    }
+
     protected AsyncPacketInEvent onPacketInAsync(Player p, Channel channel, Packet packet, PacketDeserializer deserializer) {
         AsyncPacketInEvent packetInEvent = new AsyncPacketInEvent(packet, channel, p, deserializer);
 
@@ -182,7 +189,7 @@ public class ServerNetworkManager extends ServerExtension {
         if (channel == null || packetHandler == null)
             return false;
 
-        injectChannelInternal(channel).player = p;
+        packetHandler.player = p;
 
         return true;
     }
