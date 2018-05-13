@@ -1,8 +1,10 @@
 package com.storycraft.config;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.util.AsyncTask;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,47 +12,43 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-public class LocalConfigManager {
+public class ConfigManager {
+
     private Map<String, IConfigFile> configFileMap;
-    private Map<IConfigFile, File> fileMap;
+
     private ConfigHandler configHandler;
     private StoryPlugin plugin;
 
-    public LocalConfigManager(StoryPlugin plugin) {
+    public ConfigManager(StoryPlugin plugin) {
         this.plugin = plugin;
+
         this.configFileMap = new HashMap<>();
         this.configHandler = new ConfigHandler(this);
 
         plugin.getMiniPluginLoader().addMiniPlugin(getConfigHandler());
     }
 
-    public File getLocalDirectory(){
-        return plugin.getDataFolder();
-    }
-
-    public Future addConfigFile(String name, IConfigFile configFile) {
-        getConfigFileMap().put(name, configFile);
-
-        return new AsyncTask<>(new AsyncTask.AsyncCallable<Void>() {
+    public AsyncTask<Void> addConfigFile(String name, IConfigFile configFile) {
+        return new AsyncTask<Void>(new AsyncTask.AsyncCallable<Void>() {
             @Override
             public Void get() {
-                File file = new File(getLocalDirectory(), name);
+                if (hasConfigFile(name))
+                    return null;
 
                 try {
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-
-                    getFileMap().put(configFile, file);
-
-                    configFile.load(new FileInputStream(file));
+                    configFile.load(new ByteArrayInputStream(getDataStorage().getSync(name)));
+                    getConfigFileMap().put(name, configFile);
                 } catch (IOException e) {
-                    plugin.getLogger().warning(name + " 불러오기가 실패 했습니다 :( " + e.getLocalizedMessage());
+                    getPlugin().getLogger().warning(name + " 을 로드 중 오류가 발생했습니다. " + e.getLocalizedMessage());
                 }
 
                 return null;
             }
-        }).run();
+        });
+    }
+
+    public PluginDataStorage getDataStorage(){
+        return getPlugin().getDataStorage();
     }
 
     public boolean hasConfigFile(String name) {
@@ -63,10 +61,6 @@ public class LocalConfigManager {
 
     protected Map<String, IConfigFile> getConfigFileMap() {
         return configFileMap;
-    }
-
-    protected Map<IConfigFile, File> getFileMap() {
-        return fileMap;
     }
 
     public StoryPlugin getPlugin() {

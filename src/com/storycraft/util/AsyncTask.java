@@ -1,5 +1,7 @@
 package com.storycraft.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
@@ -19,6 +21,10 @@ public class AsyncTask<T> {
 
     public CompletableFuture<T> run() {
         return CompletableFuture.supplyAsync(supplier);
+    }
+
+    public T getSync() {
+        return supplier.get();
     }
 
     public static abstract class AsyncCallable<T> implements Supplier<T> {

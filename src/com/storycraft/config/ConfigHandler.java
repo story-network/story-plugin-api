@@ -2,6 +2,8 @@ package com.storycraft.config;
 
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.Parallel;
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,26 +11,30 @@ import java.io.IOException;
 
 public class ConfigHandler extends MiniPlugin {
 
-    private LocalConfigManager manager;
+    private ConfigManager manager;
 
-    public ConfigHandler(LocalConfigManager manager) {
+    public ConfigHandler(ConfigManager manager) {
         this.manager = manager;
     }
 
-    public LocalConfigManager getManager() {
+    public ConfigManager getManager() {
         return manager;
     }
 
     @Override
     public void onDisable(boolean reload) {
-        Parallel.forEach(getManager().getConfigFileMap().values(), new Parallel.Operation<IConfigFile>() {
+        Parallel.forEach(getManager().getConfigFileMap().keySet(), new Parallel.Operation<String>() {
             @Override
-            public void run(IConfigFile configFile) {
-                File file = getManager().getFileMap().get(configFile);
+            public void run(String name) {
                 try {
-                    configFile.save(new FileOutputStream(file));
+                    ByteOutputStream output = new ByteOutputStream();
+
+                    IConfigFile configFile = getManager().getConfigFileMap().get(name);
+                    configFile.save(output);
+
+                    manager.getDataStorage().saveSync(output.getBytes(), name);
                 } catch (IOException e) {
-                    getManager().getPlugin().getLogger().warning(file.getName() + " 저장을 실패 했습니다");
+                    getManager().getPlugin().getLogger().warning(name + " 저장 중 오류가 발생 했습니다 " + e.getLocalizedMessage());
                 }
             }
         });

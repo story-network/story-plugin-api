@@ -1,27 +1,35 @@
 package com.storycraft;
 
 import com.storycraft.command.CommandManager;
-import com.storycraft.config.LocalConfigManager;
+import com.storycraft.config.ConfigManager;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.combat.FastCombat;
 import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.explosion.Explosion;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.server.ServerManager;
+import com.storycraft.storage.PluginDataStorage;
+import com.storycraft.storage.TempStorage;
 import com.storycraft.test.TestFunction;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class StoryPlugin extends JavaPlugin {
 
+    private PluginDataStorage pluginDataStorage;
     private MiniPluginLoader miniPluginLoader;
     private CommandManager commandManager;
-    private LocalConfigManager localConfigManager;
+    private ConfigManager localConfigManager;
     private ServerManager serverManager;
 
+    private TempStorage tempStorage;
+
     public StoryPlugin() {
+        this.tempStorage = new TempStorage();
+
+        this.pluginDataStorage = new PluginDataStorage(this);
         this.miniPluginLoader = new MiniPluginLoader(this);
-        this.localConfigManager = new LocalConfigManager(this);
+        this.localConfigManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
         this.serverManager = new ServerManager(this);
 
@@ -55,8 +63,16 @@ public class StoryPlugin extends JavaPlugin {
         return miniPluginLoader;
     }
 
-    public LocalConfigManager getLocalConfigManager() {
+    public PluginDataStorage getDataStorage() {
+        return pluginDataStorage;
+    }
+
+    public ConfigManager getConfigManager() {
         return localConfigManager;
+    }
+
+    public TempStorage getTempStorage() {
+        return tempStorage;
     }
 
     public String getServerName(){
