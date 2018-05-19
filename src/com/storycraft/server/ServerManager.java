@@ -5,6 +5,7 @@ import com.storycraft.server.forge.ForgeServerManager;
 import com.storycraft.server.packet.ServerNetworkManager;
 
 import com.storycraft.server.plugin.ServerPluginManager;
+import com.storycraft.server.tick.TickEventInvoker;
 import com.storycraft.server.world.WorldManager;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
@@ -20,6 +21,7 @@ public class ServerManager {
     private ServerNetworkManager networkManager;
     private ForgeServerManager forgeServerManager;
     private WorldManager worldManager;
+    private TickEventInvoker tickEventInvoker;
 
     private List<ServerExtension> extensionList;
 
@@ -35,6 +37,7 @@ public class ServerManager {
         addServerExtension(networkManager = new ServerNetworkManager(this));
         addServerExtension(forgeServerManager = new ForgeServerManager(this));
         addServerExtension(worldManager = new WorldManager());
+        addServerExtension(tickEventInvoker = new TickEventInvoker());
     }
 
     protected List<ServerExtension> getExtensionList() {

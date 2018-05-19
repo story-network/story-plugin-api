@@ -3,6 +3,9 @@ package com.storycraft.core;
 import com.storycraft.StoryPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 public abstract class MiniPlugin {
     private StoryPlugin plugin;
     private boolean enabled = false;
@@ -39,7 +42,7 @@ public abstract class MiniPlugin {
         return getPlugin().getServer().isPrimaryThread();
     }
 
-    public BukkitTask runSync(Runnable runnable){
-        return getPlugin().getServer().getScheduler().runTask(getPlugin(), runnable);
+    public <T>Future<T> runSync(Callable<T> callable){
+        return getPlugin().getServer().getScheduler().callSyncMethod(getPlugin(), callable);
     }
 }

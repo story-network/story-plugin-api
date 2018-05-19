@@ -25,6 +25,10 @@ public class TempStorage extends Storage<byte[]> {
         return tempPath.resolve(name).toFile();
     }
 
+    public Path getPath() {
+        return tempPath;
+    }
+
     @Override
     public boolean saveSync(byte[] data, String name) throws IOException {
         File file = getFile(name);

@@ -129,6 +129,8 @@ class ExplosionHandler implements Listener {
                     fb.setVelocity(vec.normalize());
 
                     setExplosionBlock(fb, true);
+
+                    return null;
                 });
             }
         });
