@@ -34,7 +34,7 @@ public class DamageHologram extends MiniPlugin implements Listener {
             public void run() {
                 manager.removeClientEntity(hologram);
             }
-        }, 30);
+        }, 40);
     }
 
     private Entity createDamageHologram(org.bukkit.entity.Entity e, double finalDamage) {
