@@ -1,11 +1,12 @@
 package com.storycraft.server;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.server.clientside.ClientManager;
 import com.storycraft.server.forge.ForgeServerManager;
 import com.storycraft.server.packet.ServerNetworkManager;
 
 import com.storycraft.server.plugin.ServerPluginManager;
-import com.storycraft.server.tick.TickEventInvoker;
+import com.storycraft.server.update.ServerUpdateInvoker;
 import com.storycraft.server.world.WorldManager;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
@@ -18,10 +19,11 @@ public class ServerManager {
     private StoryPlugin plugin;
 
     private ServerPluginManager serverPluginManager;
+    private ClientManager clientManager;
     private ServerNetworkManager networkManager;
     private ForgeServerManager forgeServerManager;
     private WorldManager worldManager;
-    private TickEventInvoker tickEventInvoker;
+    private ServerUpdateInvoker updateInvoker;
 
     private List<ServerExtension> extensionList;
 
@@ -34,10 +36,11 @@ public class ServerManager {
 
     private void registerHandler() {
         addServerExtension(serverPluginManager = new ServerPluginManager());
+        addServerExtension(clientManager = new ClientManager());
         addServerExtension(networkManager = new ServerNetworkManager(this));
         addServerExtension(forgeServerManager = new ForgeServerManager(this));
         addServerExtension(worldManager = new WorldManager());
-        addServerExtension(tickEventInvoker = new TickEventInvoker());
+        addServerExtension(updateInvoker = new ServerUpdateInvoker());
     }
 
     protected List<ServerExtension> getExtensionList() {
@@ -81,5 +84,9 @@ public class ServerManager {
 
     public WorldManager getWorldManager() {
         return worldManager;
+    }
+
+    public ClientManager getClientManager() {
+        return clientManager;
     }
 }

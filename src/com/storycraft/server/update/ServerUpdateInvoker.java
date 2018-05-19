@@ -1,12 +1,12 @@
-package com.storycraft.server.tick;
+package com.storycraft.server.update;
 
 import com.storycraft.server.ServerExtension;
 
-public class TickEventInvoker extends ServerExtension {
+public class ServerUpdateInvoker extends ServerExtension {
 
     private long currentTick;
 
-    public TickEventInvoker(){
+    public ServerUpdateInvoker(){
         this.currentTick = 0;
     }
 
@@ -19,7 +19,7 @@ public class TickEventInvoker extends ServerExtension {
         getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(getPlugin(), new Runnable() {
             @Override
             public void run() {
-                getPlugin().getServer().getPluginManager().callEvent(new ServerAsyncTickEvent(currentTick++));
+                getPlugin().getServer().getPluginManager().callEvent(new ServerUpdateEvent(currentTick++));
             }
         }, 0, 1);
     }

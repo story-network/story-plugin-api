@@ -3,6 +3,8 @@ package com.storycraft;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.core.MiniPluginLoader;
+import com.storycraft.core.combat.DamageHologram;
+import com.storycraft.server.clientside.ClientManager;
 import com.storycraft.core.combat.FastCombat;
 import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.explosion.Explosion;
@@ -14,14 +16,11 @@ import com.storycraft.storage.TempStorage;
 import com.storycraft.test.TestFunction;
 import com.storycraft.util.Reflect;
 import org.bukkit.ChatColor;
-import org.bukkit.plugin.InvalidDescriptionException;
-import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +65,7 @@ public class StoryPlugin extends JavaPlugin {
         getMiniPluginLoader().addMiniPlugin(new FastCombat());
         getMiniPluginLoader().addMiniPlugin(new DropCounter());
         getMiniPluginLoader().addMiniPlugin(new ServerMotd());
+        getMiniPluginLoader().addMiniPlugin(new DamageHologram());
     }
 
     @Override
@@ -127,6 +127,10 @@ public class StoryPlugin extends JavaPlugin {
 
     public ConfigManager getConfigManager() {
         return localConfigManager;
+    }
+
+    public ServerManager getServerManager() {
+        return serverManager;
     }
 
     public TempStorage getTempStorage() {
