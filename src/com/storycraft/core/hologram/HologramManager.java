@@ -24,7 +24,7 @@ public class HologramManager extends MiniPlugin {
 
     @Override
     public void onLoad(StoryPlugin plugin){
-        getPlugin().getMiniPluginLoader().addMiniPlugin(manager);
+        plugin.getMiniPluginLoader().addMiniPlugin(manager);
     }
 
     @Override

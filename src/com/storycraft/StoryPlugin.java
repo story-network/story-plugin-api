@@ -72,7 +72,6 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new FastCombat());
         loader.addMiniPlugin(new DropCounter());
         loader.addMiniPlugin(new ServerMotd());
-        loader.addMiniPlugin(new ServerPlayerList());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
     }

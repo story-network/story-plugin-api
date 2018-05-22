@@ -7,6 +7,7 @@ import com.storycraft.server.update.ServerUpdateEvent;
 import net.minecraft.server.v1_12_R1.Entity;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.Jukebox;
@@ -39,7 +40,12 @@ public class JukeboxPlay extends MiniPlugin implements Listener {
         if (b != null && e.getAction() == Action.RIGHT_CLICK_BLOCK && b.getState() instanceof Jukebox){
             Jukebox jukebox = (Jukebox) b.getState();
 
-            jukeBoxHologramMap.put(jukebox, new ShortHologram(jukebox.getLocation().add(0.5d, 1.25d, 0.5d), ChatColor.YELLOW + "Playing music ♪"));
+            if (jukeBoxHologramMap.containsKey(jukebox))
+                return;
+
+            Hologram hologram = new ShortHologram(jukebox.getLocation().add(0.5d, 1.25d, 0.5d), ChatColor.YELLOW + "Playing music ♪");
+            getPlugin().getDecorator().getHologramManager().addHologram(hologram);
+            jukeBoxHologramMap.put(jukebox, hologram);
         }
     }
 
@@ -47,10 +53,10 @@ public class JukeboxPlay extends MiniPlugin implements Listener {
     public void onUpdate(ServerUpdateEvent e){
         for (Jukebox jukebox : new ArrayList<>(jukeBoxHologramMap.keySet())){
             Hologram hologram = jukeBoxHologramMap.get(jukebox);
-            if (jukebox.isPlaying()){
+            if (jukebox.isPlaced() && jukebox.getPlaying() != null){
                 Location location = jukebox.getLocation();
 
-                location.getWorld().spawnParticle(Particle.NOTE, location.add(0.5d, 0.5d, 0.5d), 4, 0.75d, 0.75d ,0.75d, 0.25d);
+                location.getWorld().spawnParticle(Particle.NOTE, location.add(0.5d, 0.5d, 0.5d), 1, 0.55d, 0.55d ,0.55d, 0.25d);
             }
             else{
                 getPlugin().getDecorator().getHologramManager().removeHologram(hologram);

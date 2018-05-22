@@ -3,7 +3,6 @@ package com.storycraft.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +41,7 @@ public class Reflect {
 
             return (T) field.get(obj);
         } catch (NullPointerException | IllegalAccessException e) {
-            System.out.println("cannot access " + name + " in " + c.getName());
+            System.out.println("Error to get " + name + " : " + e.getMessage());
         }
 
         return null;
@@ -54,7 +53,7 @@ public class Reflect {
 
             field.set(obj, value);
         } catch (NullPointerException | IllegalAccessException e) {
-            System.out.println("cannot access " + name + " field in " + c.getName());
+            System.out.println("Error to set field " + name + " : " + e.getMessage());
         }
     }
 
@@ -111,7 +110,7 @@ public class Reflect {
             return (T) method.invoke(obj, params);
 
         } catch (NullPointerException | IllegalAccessException | InvocationTargetException e) {
-            System.out.println("cannot access " + name + " method in " + obj.getClass().getName());
+            System.out.println("Error to invoke " + name + " : " + e.getMessage());
         }
 
         return null;

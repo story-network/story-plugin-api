@@ -1,6 +1,9 @@
 package com.storycraft.core.combat;
 
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.hologram.Hologram;
+import com.storycraft.core.hologram.HologramManager;
+import com.storycraft.core.hologram.ShortHologram;
 import com.storycraft.server.clientside.ClientEntityManager;
 import net.minecraft.server.v1_12_R1.Entity;
 import net.minecraft.server.v1_12_R1.EntityAreaEffectCloud;
@@ -23,18 +26,17 @@ public class DamageHologram extends MiniPlugin implements Listener {
     public void onEntityDamage(EntityDamageEvent e){
         if (e.getEntity() == null)
             return;
-        
-        ClientEntityManager manager = getPlugin().getServerManager().getClientManager().getClientEntityManager();
 
-        Entity hologram = createDamageHologram(e.getEntity(), Math.floor(e.getFinalDamage() * 100) / 100);
+        HologramManager hologramManager = getPlugin().getDecorator().getHologramManager();
+        Hologram hologram = new ShortHologram(e.getEntity().getLocation().add(Math.random() - 0.5d, Math.random() - 0.25d, Math.random() - 0.5d));
 
-        manager.addClientEntity(hologram);
+        hologramManager.addHologram(hologram);
         getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), new Runnable() {
             @Override
             public void run() {
                 manager.removeClientEntity(hologram);
             }
-        }, 30);
+        }, 40);
     }
 
     private Entity createDamageHologram(org.bukkit.entity.Entity e, double finalDamage) {
