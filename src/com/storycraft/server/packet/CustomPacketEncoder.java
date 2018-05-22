@@ -39,50 +39,33 @@ public class CustomPacketEncoder extends PacketEncoder {
         if (var4 == null) {
             throw new RuntimeException("ConnectionProtocol unknown: " + packet.toString());
         } else {
-            Integer id = var4.a(direction, packet);
+            //replace part start
+            PacketDataSerializer packetDataSerializer = new PacketDataSerializer(buf);
+            try {
+                AsyncPacketOutEvent e = getServerNetworkManager().onPacketOutAsync(player, channel, packet, new DefaultPacketSerializer());
 
-            if (id == null) {
-                throw new IOException("Can't serialize unregistered packet");
-            } else {
-                PacketDataSerializer packetDataSerializer = new PacketDataSerializer(buf);
-                packetDataSerializer.d(id);
+                Integer id = var4.a(direction, e.getPacket());
 
-                try {
-                    //replace part start
-                    handleLoginStart(channel, packet);
-                    AsyncPacketOutEvent e = getServerNetworkManager().onPacketOutAsync(player, channel, packet, new DefaultPacketSerializer(packet));
-
-                    if (e.isCancelled())
-                        return;
-
-                    e.getSerializer().serialize(packetDataSerializer);
-                    //replace part end
-                } catch (Throwable var8) {
-                    getServerNetworkManager().getPlugin().getLogger().warning(var8.getLocalizedMessage());
+                if (id == null) {
+                    throw new IOException("Can't serialize unregistered packet");
                 }
 
+                if (e.isCancelled())
+                    return;
+
+                packetDataSerializer.d(id);
+                e.getSerializer().serialize(e.getPacket(), packetDataSerializer);
+                //replace part end
+            } catch (Throwable var8) {
+                getServerNetworkManager().getPlugin().getLogger().warning(var8.getLocalizedMessage());
             }
-        }
-    }
-
-    private void handleLoginStart(Channel channel, Object packet) {
-        if (packet instanceof PacketLoginInStart) {
-            PacketLoginInStart loginPacket = (PacketLoginInStart) packet;
-
-            GameProfile profile = loginPacket.a();
-            getServerNetworkManager().getPlayerChannelMap().put(profile.getId(), channel);
         }
     }
 }
 
 class DefaultPacketSerializer extends PacketSerializer {
-
-    public DefaultPacketSerializer(Packet packet) {
-        super(packet);
-    }
-
     @Override
-    protected void serialize(PacketDataSerializer serializer) throws IOException {
-        getPacket().b(serializer);
+    protected void serialize(Packet packet, PacketDataSerializer serializer) throws IOException {
+        packet.b(serializer);
     }
 }

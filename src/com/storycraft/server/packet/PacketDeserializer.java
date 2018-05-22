@@ -7,15 +7,9 @@ import java.io.IOException;
 
 public abstract class PacketDeserializer {
 
-    private Packet packet;
+    public PacketDeserializer() {
 
-    public PacketDeserializer(Packet packet) {
-        this.packet = packet;
     }
 
-    public Packet getPacket() {
-        return packet;
-    }
-
-    protected abstract void deserialize(PacketDataSerializer serializer) throws IOException;
+    protected abstract void deserialize(Packet packet, PacketDataSerializer serializer) throws IOException;
 }

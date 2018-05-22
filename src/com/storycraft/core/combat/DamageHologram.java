@@ -12,8 +12,10 @@ import net.minecraft.server.v1_12_R1.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DamageHologram extends MiniPlugin implements Listener {
@@ -24,18 +26,18 @@ public class DamageHologram extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e){
-        if (e.getEntity() == null)
+        if (!(e.getEntity() instanceof LivingEntity))
             return;
 
         HologramManager hologramManager = getPlugin().getDecorator().getHologramManager();
-        Hologram hologram = new ShortHologram(e.getEntity().getLocation().add(Math.random() - 0.5d, Math.random() - 0.25d, Math.random() - 0.5d), ChatColor.RED + "" + Math.floor(e.getFinalDamage() * 100) / 100, "a", "b", "c");
+        Hologram hologram = new ShortHologram(e.getEntity().getLocation().add(Math.random() - 0.5d, Math.random() - 0.25d, Math.random() - 0.5d), ChatColor.RED + "" + Math.floor(e.getFinalDamage() * 100) / 100);
 
         hologramManager.addHologram(hologram);
-        getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), new Runnable() {
+        getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getPlugin(), new Runnable() {
             @Override
             public void run() {
                 hologramManager.removeHologram(hologram);
             }
-        }, 40);
+        }, 25);
     }
 }

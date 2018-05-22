@@ -8,11 +8,16 @@ import io.netty.channel.*;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.*;
 
 
-public class ServerNetworkManager extends ServerExtension {
+public class ServerNetworkManager extends ServerExtension implements Listener {
 
     private static final String HANDLER_NAME = "story_plugin_handler";
 
@@ -24,7 +29,7 @@ public class ServerNetworkManager extends ServerExtension {
     private List<NetworkManager> networkManagerList;
 
     private List<Channel> injectChannelList;
-    private Map<UUID, Channel> playerChannelMap;
+    private Map<String, Channel> playerChannelMap;
 
     private ChannelInboundHandlerAdapter serverChannelHandler;
     private ChannelInitializer<Channel> beginInitializer;
@@ -52,7 +57,7 @@ public class ServerNetworkManager extends ServerExtension {
         return injectChannelList;
     }
 
-    protected Map<UUID, Channel> getPlayerChannelMap() {
+    protected Map<String, Channel> getPlayerChannelMap() {
         return playerChannelMap;
     }
 
@@ -95,6 +100,11 @@ public class ServerNetworkManager extends ServerExtension {
         }
     }
 
+    @Override
+    public void onEnable(){
+        getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
+    }
+
     protected AsyncPacketInEvent onPacketInAsync(Player p, Channel channel, Packet packet, PacketDeserializer deserializer) {
         AsyncPacketInEvent packetInEvent = new AsyncPacketInEvent(packet, channel, p, deserializer);
 
@@ -128,17 +138,10 @@ public class ServerNetworkManager extends ServerExtension {
     }
 
     private void injectChannelInternal(Channel channel, boolean update) {
-        injectChannelInternal(channel, null, update);
-    }
-
-    private void injectChannelInternal(Channel channel,Player p, boolean update) {
         try {
             if (update || !getInjectChannelList().contains(channel)) {
                 CustomPacketEncoder encoder = new CustomPacketEncoder(this);
                 CustomPacketDecoder decoder = new CustomPacketDecoder(this);
-
-                encoder.player = p;
-                decoder.player = p;
 
                 channel.pipeline().replace("decoder", "decoder", decoder);
                 channel.pipeline().replace("encoder", "encoder", encoder);
@@ -149,6 +152,17 @@ public class ServerNetworkManager extends ServerExtension {
         } catch (Exception e) {
             getPlugin().getLogger().warning("Failed to inject channel " + e.getLocalizedMessage());
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerLogin(PlayerLoginEvent e){
+        if (!isEnabled())
+            return;
+
+        Channel channel = getChannel(e.getPlayer());
+
+        if (getInjectChannelList().contains(channel))
+            injectPlayer(e.getPlayer());
     }
 
     private void injectChannelInternal(Channel channel) {
@@ -188,19 +202,12 @@ public class ServerNetworkManager extends ServerExtension {
         if (p == null)
             return false;
 
-        UUID id = ((CraftPlayer)p).getProfile().getId();
-
-        if (getPlayerChannelMap().containsKey(id))
-            return false;
-
         Channel channel = getChannel(p);
 
-        if (channel == null)
-            return false;
+        injectChannelInternal(channel, true);
 
-        injectChannelInternal(channel, p, true);
-
-        getPlayerChannelMap().put(id, channel);
+        ((CustomPacketEncoder) channel.pipeline().get("encoder")).player = p;
+        ((CustomPacketDecoder) channel.pipeline().get("decoder")).player = p;
 
         return true;
     }
@@ -219,14 +226,14 @@ public class ServerNetworkManager extends ServerExtension {
 
     public Channel getChannel(Player p) {
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
-        UUID uuid = ep.getProfile().getId();
+        String name = ep.getProfile().getName();
 
-        if (getPlayerChannelMap().containsKey(uuid))
-            return getPlayerChannelMap().get(p);
+        if (getPlayerChannelMap().containsKey(name))
+            return getPlayerChannelMap().get(name);
 
         try {
             Channel channel = ep.playerConnection.networkManager.channel;
-            getPlayerChannelMap().put(uuid, channel);
+            getPlayerChannelMap().put(name, channel);
 
             return channel;
         } catch (Exception e) {

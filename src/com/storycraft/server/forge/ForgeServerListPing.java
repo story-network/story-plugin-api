@@ -37,7 +37,7 @@ public class ForgeServerListPing implements Listener {
         if (e.getPacket() instanceof PacketStatusOutServerInfo) {
             ForgeServerPing forgeServerPing = new ForgeServerPing(Reflect.getField(e.getPacket(), "b"));
 
-            e.setSerializer(new ForgeListPingSerializer(e.getPacket(), forgeServerPing));
+            e.setSerializer(new ForgeListPingSerializer(forgeServerPing));
         }
     }
 
@@ -45,8 +45,7 @@ public class ForgeServerListPing implements Listener {
 
         private ForgeServerPing forgeServerPing;
 
-        public ForgeListPingSerializer(Packet packet, ForgeServerPing forgeServerPing) {
-            super(packet);
+        public ForgeListPingSerializer(ForgeServerPing forgeServerPing) {
             this.forgeServerPing = forgeServerPing;
         }
 
@@ -55,7 +54,7 @@ public class ForgeServerListPing implements Listener {
         }
 
         @Override
-        protected void serialize(PacketDataSerializer serializer) throws IOException {
+        protected void serialize(Packet packet, PacketDataSerializer serializer) throws IOException {
             serializer.a(gson.toJson(getForgeServerPing()));
         }
     }

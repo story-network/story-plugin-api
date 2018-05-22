@@ -46,17 +46,18 @@ public class CustomPacketDecoder extends PacketDecoder {
                 throw new IOException("Bad packet id " + id);
             } else {
                 //replace part start
-                DefaultPacketDeserializer defaultDeserializer = new DefaultPacketDeserializer(packet);
+                DefaultPacketDeserializer defaultDeserializer = new DefaultPacketDeserializer();
 
-                defaultDeserializer.deserialize(packetDataSerializer);
+                defaultDeserializer.deserialize(packet, packetDataSerializer);
+                handleLoginStart(channel, packet);
 
                 AsyncPacketInEvent e = getServerNetworkManager().onPacketInAsync(player, channel, packet, defaultDeserializer);
 
                 if (e.isCancelled())
                     return;
 
-                if (e.getDeserializer() != defaultDeserializer)
-                    e.getDeserializer().deserialize(packetDataSerializer);
+                if (e.getPacket() != packet || e.getDeserializer() != defaultDeserializer)
+                    e.getDeserializer().deserialize(packet, packetDataSerializer);
                 //replace part end
 
                 if (packetDataSerializer.readableBytes() > 0) {
@@ -73,19 +74,14 @@ public class CustomPacketDecoder extends PacketDecoder {
             PacketLoginInStart loginPacket = (PacketLoginInStart) packet;
 
             GameProfile profile = loginPacket.a();
-            getServerNetworkManager().getPlayerChannelMap().put(profile.getId(), channel);
+            getServerNetworkManager().getPlayerChannelMap().put(profile.getName(), channel);
         }
     }
 }
 
 class DefaultPacketDeserializer extends PacketDeserializer {
-
-    public DefaultPacketDeserializer(Packet packet) {
-        super(packet);
-    }
-
     @Override
-    protected void deserialize(PacketDataSerializer serializer) throws IOException {
-        getPacket().a(serializer);
+    protected void deserialize(Packet packet, PacketDataSerializer serializer) throws IOException {
+        packet.a(serializer);
     }
 }

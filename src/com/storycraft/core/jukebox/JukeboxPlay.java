@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class JukeboxPlay extends MiniPlugin implements Listener {
 
-    private Map<Jukebox, Hologram> jukeBoxHologramMap;
+    private Map<Block, Hologram> jukeBoxHologramMap;
 
     public JukeboxPlay(){
         this.jukeBoxHologramMap = new HashMap<>();
@@ -40,27 +40,48 @@ public class JukeboxPlay extends MiniPlugin implements Listener {
         if (b != null && e.getAction() == Action.RIGHT_CLICK_BLOCK && b.getState() instanceof Jukebox){
             Jukebox jukebox = (Jukebox) b.getState();
 
-            if (jukeBoxHologramMap.containsKey(jukebox))
+            if (contains(b) || jukebox.isPlaying())
                 return;
 
-            Hologram hologram = new ShortHologram(jukebox.getLocation().add(0.5d, 1.25d, 0.5d), ChatColor.YELLOW + "Playing music ♪");
+
+            Hologram hologram = new ShortHologram(jukebox.getLocation().add(0.5d, 0.6d, 0.5d), ChatColor.YELLOW + "Playing ♪");
             getPlugin().getDecorator().getHologramManager().addHologram(hologram);
-            jukeBoxHologramMap.put(jukebox, hologram);
+            jukeBoxHologramMap.put(b, hologram);
         }
+    }
+
+    protected boolean contains(Block b){
+        return jukeBoxHologramMap.containsKey(b);
+    }
+
+    protected void remove(Block b){
+        if (!contains(b))
+            return;
+
+        Hologram hologram = jukeBoxHologramMap.get(b);
+        getPlugin().getDecorator().getHologramManager().removeHologram(hologram);
+        jukeBoxHologramMap.remove(b);
     }
 
     @EventHandler
     public void onUpdate(ServerUpdateEvent e){
-        for (Jukebox jukebox : new ArrayList<>(jukeBoxHologramMap.keySet())){
-            Hologram hologram = jukeBoxHologramMap.get(jukebox);
-            if (jukebox.isPlaced() && jukebox.getPlaying() != null){
-                Location location = jukebox.getLocation();
+        for (Block block : new ArrayList<>(jukeBoxHologramMap.keySet())){
+            Hologram hologram = jukeBoxHologramMap.get(block);
 
-                location.getWorld().spawnParticle(Particle.NOTE, location.add(0.5d, 0.5d, 0.5d), 1, 0.55d, 0.55d ,0.55d, 0.25d);
+            if (block.getState() != null && block.getState() instanceof Jukebox){
+                Jukebox jukebox = (Jukebox) block.getState();
+
+                if (jukebox.getBlock() != null && jukebox.getBlock().getType() == Material.JUKEBOX && jukebox.isPlaying()){
+                    Location location = jukebox.getLocation();
+
+                    location.getWorld().spawnParticle(Particle.NOTE, location.add(0.5d, 0.5d, 0.5d), 1, 0.55d, 0.55d ,0.55d, 0.25d);
+                }
+                else{
+                    remove(block);
+                }
             }
             else{
-                getPlugin().getDecorator().getHologramManager().removeHologram(hologram);
-                jukeBoxHologramMap.remove(jukebox);
+                remove(block);
             }
         }
     }
