@@ -28,29 +28,14 @@ public class DamageHologram extends MiniPlugin implements Listener {
             return;
 
         HologramManager hologramManager = getPlugin().getDecorator().getHologramManager();
-        Hologram hologram = new ShortHologram(e.getEntity().getLocation().add(Math.random() - 0.5d, Math.random() - 0.25d, Math.random() - 0.5d));
+        Hologram hologram = new ShortHologram(e.getEntity().getLocation().add(Math.random() - 0.5d, Math.random() - 0.25d, Math.random() - 0.5d), ChatColor.RED + "" + Math.floor(e.getFinalDamage() * 100) / 100);
 
         hologramManager.addHologram(hologram);
         getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), new Runnable() {
             @Override
             public void run() {
-                manager.removeClientEntity(hologram);
+                hologramManager.removeHologram(hologram);
             }
         }, 40);
-    }
-
-    private Entity createDamageHologram(org.bukkit.entity.Entity e, double finalDamage) {
-        World world = ((CraftWorld)e.getWorld()).getHandle();
-
-        Location loc = e.getLocation();
-
-        EntityAreaEffectCloud stand = new EntityAreaEffectCloud(world);
-        stand.setRadius(0f);
-        stand.setInvisible(true);
-        stand.setCustomNameVisible(true);
-        stand.setPosition(loc.getX() + Math.random() - 0.5d, loc.getY() + Math.random() - 0.25d, loc.getZ() + Math.random() - 0.5d);
-        stand.setCustomName(ChatColor.RED + "" + finalDamage);
-
-        return stand;
     }
 }

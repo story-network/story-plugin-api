@@ -46,6 +46,8 @@ public class HologramManager extends MiniPlugin {
 
         hologramListMap.put(hologram, new ArrayList<>());
         hologram.onAdd();
+
+        update(hologram);
     }
 
     public void update(Hologram hologram){
@@ -78,7 +80,7 @@ public class HologramManager extends MiniPlugin {
         for (int i = 0; i < textList.length; i++){
             Entity e = textEntityList.get(i);
 
-            e.getBukkitEntity().getLocation().add(0, height - i * HOLOGRAM_OFFSET, 0);
+            e.getBukkitEntity().getLocation().add(0, height - (i + 1) * HOLOGRAM_OFFSET, 0);
             e.setCustomName(textList[i]);
 
             manager.update(e);
@@ -89,12 +91,12 @@ public class HologramManager extends MiniPlugin {
         if (!contains(hologram))
             return;
 
-        hologramListMap.remove(hologram);
-        hologram.onRemove();
-
         for (Entity e : hologramListMap.get(hologram)){
             manager.removeClientEntity(e);
         }
+
+        hologramListMap.remove(hologram);
+        hologram.onRemove();
     }
 
 }
