@@ -3,8 +3,20 @@ package com.storycraft.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Reflect {
+
+    private static Map<Class, Map<String, Field>> fieldMap;
+    private static Map<Class, Map<String, Method>> methodMap;
+
+    static {
+        fieldMap = new HashMap<>();
+        methodMap = new HashMap<>();
+    }
+
     public static <T>T getField(Object obj, String name) {
         return getField(obj.getClass(), obj, name);
     }
@@ -15,7 +27,18 @@ public class Reflect {
 
     public static <T>T getField(Class<?> c, Object obj, String name) {
         try {
-            Field field = getDeclaredField(c, name);
+            Field field;
+            if (fieldMap.containsKey(c) && fieldMap.get(c).containsKey(name)) {
+                field = fieldMap.get(c).get(name);
+            }
+            else {
+                field = getDeclaredField(c, name);
+
+                if (!fieldMap.containsKey(c))
+                    fieldMap.put(c, new HashMap<>());
+
+                fieldMap.get(c).put(name, field);
+            }
 
             return (T) field.get(obj);
         } catch (NullPointerException | IllegalAccessException e) {
@@ -72,7 +95,18 @@ public class Reflect {
                 classes[i] = params.getClass();
             }
 
-            Method method = getDeclaredMethod(c, name, classes);
+            Method method;
+            if (methodMap.containsKey(c) && methodMap.get(c).containsKey(name)) {
+                method = methodMap.get(c).get(name);
+            }
+            else {
+                method = getDeclaredMethod(c, name, classes);
+
+                if (!methodMap.containsKey(c))
+                    methodMap.put(c, new HashMap<>());
+
+                methodMap.get(c).put(name, method);
+            }
 
             return (T) method.invoke(obj, params);
 

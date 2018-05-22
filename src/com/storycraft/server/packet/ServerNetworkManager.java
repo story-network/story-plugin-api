@@ -89,11 +89,8 @@ public class ServerNetworkManager extends ServerExtension {
     @Override
     public void onLoad(StoryPlugin plugin) {
         hookServerNetwork();
-    }
 
-    @Override
-    public void onEnable() {
-        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
             injectPlayer(p);
         }
     }
@@ -130,27 +127,32 @@ public class ServerNetworkManager extends ServerExtension {
         }
     }
 
-    private CustomPacketEncoder injectChannelInternal(Channel channel, boolean update) {
+    private void injectChannelInternal(Channel channel, boolean update) {
+        injectChannelInternal(channel, null, update);
+    }
+
+    private void injectChannelInternal(Channel channel,Player p, boolean update) {
         try {
             if (update || !getInjectChannelList().contains(channel)) {
-                CustomPacketEncoder handler = new CustomPacketEncoder(this);
+                CustomPacketEncoder encoder = new CustomPacketEncoder(this);
+                CustomPacketDecoder decoder = new CustomPacketDecoder(this);
 
-                channel.pipeline().replace("decoder", "decoder", new CustomPacketDecoder(this));
-                channel.pipeline().replace("encoder", "encoder", new CustomPacketEncoder(this));
+                encoder.player = p;
+                decoder.player = p;
+
+                channel.pipeline().replace("decoder", "decoder", decoder);
+                channel.pipeline().replace("encoder", "encoder", encoder);
 
                 getInjectChannelList().add(channel);
 
-                return handler;
             }
         } catch (Exception e) {
             getPlugin().getLogger().warning("Failed to inject channel " + e.getLocalizedMessage());
         }
-
-        return null;
     }
 
-    private CustomPacketEncoder injectChannelInternal(Channel channel) {
-        return injectChannelInternal(channel, false);
+    private void injectChannelInternal(Channel channel) {
+        injectChannelInternal(channel, false);
     }
 
     public boolean isChannelInjected(Channel channel) {
@@ -158,9 +160,10 @@ public class ServerNetworkManager extends ServerExtension {
     }
 
     public boolean injectChannel(Channel channel) {
-        if (isChannelInjected(channel) || injectChannelInternal(channel, true) == null)
+        if (isChannelInjected(channel))
             return false;
 
+        injectChannelInternal(channel, true);
         return true;
     }
 
@@ -182,23 +185,33 @@ public class ServerNetworkManager extends ServerExtension {
     }
 
     public boolean injectPlayer(Player p){
-        Channel channel = getChannel(p);
-
-        CustomPacketEncoder packetHandler = injectChannelInternal(channel);
-
-        if (channel == null || packetHandler == null)
+        if (p == null)
             return false;
 
-        packetHandler.player = p;
+        UUID id = ((CraftPlayer)p).getProfile().getId();
+
+        if (getPlayerChannelMap().containsKey(id))
+            return false;
+
+        Channel channel = getChannel(p);
+
+        if (channel == null)
+            return false;
+
+        injectChannelInternal(channel, p, true);
+
+        getPlayerChannelMap().put(id, channel);
 
         return true;
     }
 
     public boolean uninjectPlayer(Player p){
-        if (!getPlayerChannelMap().containsKey(p.getUniqueId()))
+        UUID id = ((CraftPlayer)p).getProfile().getId();
+
+        if (!getPlayerChannelMap().containsKey(id))
             return false;
 
-        Channel channel = getPlayerChannelMap().get(p.getUniqueId());
+        Channel channel = getPlayerChannelMap().get(id);
 
         uninjectChannel(channel);
         return true;

@@ -3,7 +3,10 @@ package com.storycraft;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.core.MiniPluginLoader;
+import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.combat.DamageHologram;
+import com.storycraft.core.jukebox.JukeboxPlay;
+import com.storycraft.core.playerlist.ServerPlayerList;
 import com.storycraft.server.clientside.ClientManager;
 import com.storycraft.core.combat.FastCombat;
 import com.storycraft.core.entity.EntityBlood;
@@ -36,6 +39,8 @@ public class StoryPlugin extends JavaPlugin {
     private ConfigManager localConfigManager;
     private ServerManager serverManager;
 
+    private ServerDecorator decorator;
+
     private boolean initalized = false;
 
     private TempStorage tempStorage;
@@ -55,17 +60,21 @@ public class StoryPlugin extends JavaPlugin {
         this.localConfigManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
         this.serverManager = new ServerManager(this);
+        this.decorator = new ServerDecorator(this);
 
         initMiniPlugin();
     }
 
     private void initMiniPlugin() {
-        getMiniPluginLoader().addMiniPlugin(new Explosion());
-        getMiniPluginLoader().addMiniPlugin(new EntityBlood());
-        getMiniPluginLoader().addMiniPlugin(new FastCombat());
-        getMiniPluginLoader().addMiniPlugin(new DropCounter());
-        getMiniPluginLoader().addMiniPlugin(new ServerMotd());
-        getMiniPluginLoader().addMiniPlugin(new DamageHologram());
+        MiniPluginLoader loader = getMiniPluginLoader();
+        loader.addMiniPlugin(new Explosion());
+        loader.addMiniPlugin(new EntityBlood());
+        loader.addMiniPlugin(new FastCombat());
+        loader.addMiniPlugin(new DropCounter());
+        loader.addMiniPlugin(new ServerMotd());
+        loader.addMiniPlugin(new ServerPlayerList());
+        loader.addMiniPlugin(new DamageHologram());
+        loader.addMiniPlugin(new JukeboxPlay());
     }
 
     @Override
@@ -135,6 +144,10 @@ public class StoryPlugin extends JavaPlugin {
 
     public TempStorage getTempStorage() {
         return tempStorage;
+    }
+
+    public ServerDecorator getDecorator() {
+        return decorator;
     }
 
     public String getServerName(){

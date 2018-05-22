@@ -26,7 +26,7 @@ public class DamageHologram extends MiniPlugin implements Listener {
         
         ClientEntityManager manager = getPlugin().getServerManager().getClientManager().getClientEntityManager();
 
-        Entity hologram = createDamageHologram(e.getEntity(), e.getFinalDamage());
+        Entity hologram = createDamageHologram(e.getEntity(), Math.floor(e.getFinalDamage() * 100) / 100);
 
         manager.addClientEntity(hologram);
         getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), new Runnable() {
@@ -34,7 +34,7 @@ public class DamageHologram extends MiniPlugin implements Listener {
             public void run() {
                 manager.removeClientEntity(hologram);
             }
-        }, 40);
+        }, 30);
     }
 
     private Entity createDamageHologram(org.bukkit.entity.Entity e, double finalDamage) {
