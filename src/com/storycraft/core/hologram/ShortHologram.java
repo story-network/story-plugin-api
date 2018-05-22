@@ -13,7 +13,7 @@ public class ShortHologram extends Hologram {
 
     @Override
     protected Entity createHologramEntity(int line) {
-        EntityAreaEffectCloud areaEffectCloud = new EntityAreaEffectCloud(((CraftWorld)getLocation().getWorld()).getHandle(), getLocation().getX(), getLocation().getY() - line * 0.5d, getLocation().getZ());
+        EntityAreaEffectCloud areaEffectCloud = new EntityAreaEffectCloud(((CraftWorld)getLocation().getWorld()).getHandle(), getLocation().getX(), getLocation().getY() - line * 0.25d, getLocation().getZ());
 
         areaEffectCloud.setCustomNameVisible(true);
         areaEffectCloud.setRadius(0);
