@@ -21,8 +21,6 @@ import java.util.Map;
 
 public class ClientEntityManager extends ServerExtension implements Listener {
 
-    private static final int VIEW_DISTANCE = 256;
-
     private Map<World, List<Entity>> entityMap;
 
     public ClientEntityManager(){
@@ -85,13 +83,13 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     protected void sendSpawnPacket(Entity e){
         Location loc = e.getBukkitEntity().getLocation();
 
-        ConnectionUtil.sendPacketNearby(loc, VIEW_DISTANCE, EntityPacketUtil.getEntitySpawnPacket(e));
+        ConnectionUtil.sendPacketNearby(loc, EntityPacketUtil.getEntitySpawnPacket(e));
     }
 
     protected void sendUpdatePacket(Entity e){
         Location loc = e.getBukkitEntity().getLocation();
 
-        ConnectionUtil.sendPacketNearby(loc, VIEW_DISTANCE, EntityPacketUtil.getEntityMetadataPacket(e));
+        ConnectionUtil.sendPacketNearby(loc, EntityPacketUtil.getEntityMetadataPacket(e));
     }
 
     protected void sendUpdatePacket(Player p, Entity e){
@@ -101,7 +99,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     protected void sendDestroyPacket(Entity e){
         Location loc = e.getBukkitEntity().getLocation();
 
-        ConnectionUtil.sendPacketNearby(loc, VIEW_DISTANCE, EntityPacketUtil.getEntityDestroyPacket(e));
+        ConnectionUtil.sendPacketNearby(loc, EntityPacketUtil.getEntityDestroyPacket(e));
     }
 
     protected void sendDestroyPacket(Player p, Entity e){

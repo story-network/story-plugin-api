@@ -11,6 +11,9 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 
 public class ConnectionUtil {
+
+    private static final int VIEW_DISTANCE = 256;
+
     public static void sendPacket(Player p, Packet... packets){
         PlayerConnection connection = ((CraftPlayer)p).getHandle().playerConnection;
 
@@ -35,5 +38,9 @@ public class ConnectionUtil {
             if (p.getLocation().distanceSquared(location) <= distanceSq)
                 sendPacket(p, packets);
         });
+    }
+
+    public static void sendPacketNearby(Location location, final Packet... packets){
+        sendPacketNearby(location, VIEW_DISTANCE, packets);
     }
 }

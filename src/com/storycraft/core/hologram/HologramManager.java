@@ -50,6 +50,13 @@ public class HologramManager extends MiniPlugin {
         update(hologram);
     }
 
+    public List<Entity> getHologramEntityList(Hologram hologram){
+        if (!contains(hologram))
+            return new ArrayList<>();
+
+        return new ArrayList<>(hologramListMap.get(hologram));
+    }
+
     public void update(Hologram hologram){
         if (!contains(hologram))
             return;

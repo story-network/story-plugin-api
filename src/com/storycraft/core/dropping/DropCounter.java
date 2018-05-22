@@ -1,4 +1,4 @@
-package com.storycraft.core.itemdrop;
+package com.storycraft.core.dropping;
 
 import com.storycraft.core.MiniPlugin;
 import org.bukkit.ChatColor;

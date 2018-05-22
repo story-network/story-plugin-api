@@ -5,13 +5,12 @@ import com.storycraft.config.ConfigManager;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.combat.DamageHologram;
+import com.storycraft.core.dropping.SimpleXPDrop;
 import com.storycraft.core.jukebox.JukeboxPlay;
-import com.storycraft.core.playerlist.ServerPlayerList;
-import com.storycraft.server.clientside.ClientManager;
 import com.storycraft.core.combat.FastCombat;
 import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.explosion.Explosion;
-import com.storycraft.core.itemdrop.DropCounter;
+import com.storycraft.core.dropping.DropCounter;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.server.ServerManager;
 import com.storycraft.storage.PluginDataStorage;
@@ -74,6 +73,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
+        loader.addMiniPlugin(new SimpleXPDrop());
     }
 
     @Override
