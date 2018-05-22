@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class HologramManager extends MiniPlugin {
 
-    private static final double HOLOGRAM_OFFSET = 0.15;
+    private static final double HOLOGRAM_OFFSET = 0.75;
 
     private ClientEntityManager manager;
     private Map<Hologram, List<Entity>> hologramListMap;
@@ -62,7 +62,7 @@ public class HologramManager extends MiniPlugin {
 
         if (listSize < textLineCount) {
             for (int i = listSize; i < textLineCount; i++){
-                Entity e = hologram.createHologramEntity();
+                Entity e = hologram.createHologramEntity(i);
                 manager.addClientEntity(e);
                 textEntityList.add(e);
             }
@@ -77,8 +77,7 @@ public class HologramManager extends MiniPlugin {
 
         for (int i = 0; i < textList.length; i++){
             Entity e = textEntityList.get(i);
-            
-            e.getBukkitEntity().getLocation().add(0, -i * HOLOGRAM_OFFSET, 0);
+
             e.setCustomName(textList[i]);
 
             manager.update(e);

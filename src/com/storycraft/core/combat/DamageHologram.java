@@ -28,7 +28,7 @@ public class DamageHologram extends MiniPlugin implements Listener {
             return;
 
         HologramManager hologramManager = getPlugin().getDecorator().getHologramManager();
-        Hologram hologram = new ShortHologram(e.getEntity().getLocation().add(Math.random() - 0.5d, Math.random() - 0.25d, Math.random() - 0.5d), ChatColor.RED + "" + Math.floor(e.getFinalDamage() * 100) / 100);
+        Hologram hologram = new ShortHologram(e.getEntity().getLocation().add(Math.random() - 0.5d, Math.random() - 0.25d, Math.random() - 0.5d), ChatColor.RED + "" + Math.floor(e.getFinalDamage() * 100) / 100, "a", "b", "c");
 
         hologramManager.addHologram(hologram);
         getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), new Runnable() {

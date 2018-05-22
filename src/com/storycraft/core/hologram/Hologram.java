@@ -38,5 +38,5 @@ public abstract class Hologram {
 
     }
 
-    protected abstract Entity createHologramEntity();
+    protected abstract Entity createHologramEntity(int line);
 }
