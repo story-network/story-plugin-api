@@ -75,12 +75,10 @@ public class HologramManager extends MiniPlugin {
             }
         }
 
-        double height = HOLOGRAM_OFFSET * textList.length;
-
         for (int i = 0; i < textList.length; i++){
             Entity e = textEntityList.get(i);
-
-            e.getBukkitEntity().getLocation().add(0, height - (i + 1) * HOLOGRAM_OFFSET, 0);
+            
+            e.getBukkitEntity().getLocation().add(0, -i * HOLOGRAM_OFFSET, 0);
             e.setCustomName(textList[i]);
 
             manager.update(e);
