@@ -31,6 +31,8 @@ import java.util.logging.Level;
 public class StoryPlugin extends JavaPlugin {
 
     private static String TEMP_FILE_NAME = "StoryServer.jar";
+    
+    private File originalFile;
 
     private PluginDataStorage pluginDataStorage;
     private MiniPluginLoader miniPluginLoader;
@@ -49,11 +51,13 @@ public class StoryPlugin extends JavaPlugin {
         this.initalized = false;
     }
 
-    public void init(){
+    public void postInit(File originalFile){
         if (this.initalized)
             return;
         this.initalized = true;
-
+        
+        this.originalFile = originalFile;
+        
         this.pluginDataStorage = new PluginDataStorage(this);
         this.miniPluginLoader = new MiniPluginLoader(this);
         this.localConfigManager = new ConfigManager(this);
@@ -87,7 +91,7 @@ public class StoryPlugin extends JavaPlugin {
                 getServer().getPluginManager().disablePlugin(this);
 
                 Plugin plugin = getServer().getPluginManager().loadPlugin(getTempStorage().getPath().resolve(TEMP_FILE_NAME).toFile());
-                Reflect.invokeMethod(plugin, "init");
+                Reflect.invokeMethod(plugin, "postInit", pluginRef);
                 getServer().getPluginManager().enablePlugin(plugin);
 
                 Reflect.<List<Plugin>>getField(getServer().getPluginManager(), "plugins").remove(this);
@@ -143,6 +147,10 @@ public class StoryPlugin extends JavaPlugin {
 
     public TempStorage getTempStorage() {
         return tempStorage;
+    }
+    
+    public File getOriginalFile(){
+        return originalFile;
     }
 
     public ServerDecorator getDecorator() {
