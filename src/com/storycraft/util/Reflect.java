@@ -91,7 +91,7 @@ public class Reflect {
             Class<?>[] classes = new Class<?>[params.length];
 
             for (int i = 0; i < params.length; i++){
-                classes[i] = params.getClass();
+                classes[i] = params[i].getClass();
             }
 
             Method method;
@@ -111,6 +111,7 @@ public class Reflect {
 
         } catch (NullPointerException | IllegalAccessException | InvocationTargetException e) {
             System.out.println("Error to invoke " + name + " : " + e.getMessage());
+            e.printStackTrace();
         }
 
         return null;

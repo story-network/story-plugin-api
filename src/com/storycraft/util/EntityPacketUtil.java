@@ -20,4 +20,13 @@ public class EntityPacketUtil {
     public static Packet getEntityDestroyPacket(Entity e) {
         return new PacketPlayOutEntityDestroy(e.getId());
     }
+
+    public static boolean isEntitySpawnPacket(Packet packet){
+        return packet instanceof PacketPlayOutSpawnEntity || packet instanceof PacketPlayOutSpawnEntityLiving || packet instanceof PacketPlayOutSpawnEntityExperienceOrb
+                || packet instanceof PacketPlayOutSpawnEntityPainting || packet instanceof PacketPlayOutSpawnEntityWeather || packet instanceof PacketPlayOutNamedEntitySpawn;
+    }
+
+    public static boolean isPlayerSpawnPacket(Packet packet){
+        return packet instanceof PacketPlayOutNamedEntitySpawn;
+    }
 }

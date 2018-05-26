@@ -119,7 +119,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
             int locX = Reflect.getField(e.getPacket(), "a");
             int locZ = Reflect.getField(e.getPacket(), "b");
 
-            for (Entity entity : entityMap.get(w)){
+            for (Entity entity : new ArrayList<Entity>(entityMap.get(w))){
                 Chunk chunk = entity.getBukkitEntity().getLocation().getChunk();
                 if (chunk.getX() == locX && chunk.getZ() == locZ) {
                     sendSpawnPacket(p, entity);

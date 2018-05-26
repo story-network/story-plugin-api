@@ -1,11 +1,12 @@
 package com.storycraft.server;
 
 import com.storycraft.StoryPlugin;
-import com.storycraft.server.clientside.ClientManager;
+import com.storycraft.server.clientside.ClientSideManager;
 import com.storycraft.server.forge.ForgeServerManager;
 import com.storycraft.server.packet.ServerNetworkManager;
 
 import com.storycraft.server.plugin.ServerPluginManager;
+import com.storycraft.server.registry.RegistryManager;
 import com.storycraft.server.update.ServerUpdateInvoker;
 import com.storycraft.server.world.WorldManager;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
@@ -19,10 +20,11 @@ public class ServerManager {
     private StoryPlugin plugin;
 
     private ServerPluginManager serverPluginManager;
-    private ClientManager clientManager;
+    private ClientSideManager clientSideManager;
     private ServerNetworkManager networkManager;
     private ForgeServerManager forgeServerManager;
     private WorldManager worldManager;
+    private RegistryManager registryManager;
     private ServerUpdateInvoker updateInvoker;
 
     private List<ServerExtension> extensionList;
@@ -36,10 +38,11 @@ public class ServerManager {
 
     private void registerHandler() {
         addServerExtension(serverPluginManager = new ServerPluginManager());
-        addServerExtension(clientManager = new ClientManager());
+        addServerExtension(clientSideManager = new ClientSideManager());
         addServerExtension(networkManager = new ServerNetworkManager(this));
         addServerExtension(forgeServerManager = new ForgeServerManager(this));
         addServerExtension(worldManager = new WorldManager());
+        addServerExtension(registryManager = new RegistryManager());
         addServerExtension(updateInvoker = new ServerUpdateInvoker());
     }
 
@@ -82,11 +85,15 @@ public class ServerManager {
         return serverPluginManager;
     }
 
+    public RegistryManager getRegistryManager() {
+        return registryManager;
+    }
+
     public WorldManager getWorldManager() {
         return worldManager;
     }
 
-    public ClientManager getClientManager() {
-        return clientManager;
+    public ClientSideManager getClientSideManager() {
+        return clientSideManager;
     }
 }

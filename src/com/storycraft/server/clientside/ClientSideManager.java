@@ -4,11 +4,11 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.server.ServerExtension;
 
-public class ClientManager extends ServerExtension {
+public class ClientSideManager extends ServerExtension {
 
     private ClientEntityManager clientEntityManager;
 
-    public ClientManager(){
+    public ClientSideManager(){
         this.clientEntityManager = new ClientEntityManager();
     }
 

@@ -18,6 +18,7 @@ public class SimpleHologram extends Hologram {
         stand.setSmall(true);
         stand.setNoGravity(true);
         stand.setInvisible(true);
+        stand.setMarker(true);
 
         return stand;
     }

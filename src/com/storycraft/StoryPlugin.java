@@ -5,7 +5,6 @@ import com.storycraft.config.ConfigManager;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.combat.DamageHologram;
-import com.storycraft.core.dropping.SimpleXPDrop;
 import com.storycraft.core.jukebox.JukeboxPlay;
 import com.storycraft.core.combat.FastCombat;
 import com.storycraft.core.entity.EntityBlood;
@@ -77,7 +76,6 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
-        loader.addMiniPlugin(new SimpleXPDrop());
     }
 
     @Override
@@ -85,26 +83,34 @@ public class StoryPlugin extends JavaPlugin {
         if (!isInitalized()) {
             try {
                 File pluginRef = new File(URLDecoder.decode(StoryPlugin.class.getProtectionDomain().getCodeSource().getLocation().getFile(), "UTF-8"));
-                getLogger().log(Level.INFO, "임시 폴더에 복사중... " + getTempStorage().getPath());
-                getTempStorage().saveSync(Files.readAllBytes(pluginRef.toPath()), TEMP_FILE_NAME);
 
-                getServer().getPluginManager().disablePlugin(this);
+                try {
+                    getLogger().log(Level.INFO, "임시 폴더에 복사중... " + getTempStorage().getPath());
+                    getTempStorage().saveSync(Files.readAllBytes(pluginRef.toPath()), TEMP_FILE_NAME);
 
-                Plugin plugin = getServer().getPluginManager().loadPlugin(getTempStorage().getPath().resolve(TEMP_FILE_NAME).toFile());
-                Reflect.invokeMethod(plugin, "postInit", pluginRef);
-                getServer().getPluginManager().enablePlugin(plugin);
+                    getServer().getPluginManager().disablePlugin(this);
 
-                Reflect.<List<Plugin>>getField(getServer().getPluginManager(), "plugins").remove(this);
-                Reflect.<Map<String, Plugin>>getField(getServer().getPluginManager(), "lookupNames").remove(getName());
+                    Plugin plugin = getServer().getPluginManager().loadPlugin(getTempStorage().getPath().resolve(TEMP_FILE_NAME).toFile());
+                    Reflect.invokeMethod(plugin, "postInit", pluginRef);
 
-                ClassLoader cl = getClass().getClassLoader();
-                Reflect.setField(cl, "plugin", null);
-                Reflect.setField(cl, "pluginInit", null);
+                    if (Reflect.getField(plugin, "initalized").equals(false))
+                        throw new Exception("Plugin is not initalized");
 
-                System.gc();
-            } catch (Exception e) {
-                getLogger().warning("플러그인 임시 복사를 실패 했습니다. " + e.getLocalizedMessage());
-                init();
+                    getServer().getPluginManager().enablePlugin(plugin);
+
+                    Reflect.<List<Plugin>>getField(getServer().getPluginManager(), "plugins").remove(this);
+                    Reflect.<Map<String, Plugin>>getField(getServer().getPluginManager(), "lookupNames").remove(getName());
+
+                    ClassLoader cl = getClass().getClassLoader();
+                    Reflect.setField(cl, "plugin", null);
+                    Reflect.setField(cl, "pluginInit", null);
+
+                    System.gc();
+                } catch (Exception e) {
+                    getLogger().warning("플러그인 임시 복사를 실패 했습니다. " + e.getLocalizedMessage());
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
         }
         else{

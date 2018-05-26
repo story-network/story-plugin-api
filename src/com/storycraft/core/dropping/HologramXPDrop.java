@@ -17,7 +17,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.List;
 
-public class SimpleXPDrop extends MiniPlugin implements Listener {
+public class HologramXPDrop extends MiniPlugin implements Listener {
 
     private static final int SHOW_TIME = 30;
 
@@ -34,13 +34,16 @@ public class SimpleXPDrop extends MiniPlugin implements Listener {
             int xp = e.getDroppedExp();
             e.setDroppedExp(0);
 
-            Hologram xpHologram = new XPHologram(e.getEntity().getLocation(), killer, ChatColor.YELLOW + "" + xp + " XP");
-
-            HologramManager hologramManager = getPlugin().getDecorator().getHologramManager();
-
-            hologramManager.addHologram(xpHologram);
-            killer.giveExp(xp);
+            giveExp(killer, xp, e.getEntity().getLocation());
         }
+    }
+
+    public void giveExp(Player player, int amount, Location expLocation){
+        Hologram xpHologram = new XPHologram(expLocation, player, ChatColor.YELLOW + "" + amount + " XP");
+        HologramManager hologramManager = getPlugin().getDecorator().getHologramManager();
+        hologramManager.addHologram(xpHologram);
+
+        player.giveExp(amount);
     }
 
     private class XPHologram extends SimpleHologram {
