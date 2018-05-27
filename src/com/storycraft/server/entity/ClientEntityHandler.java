@@ -5,15 +5,17 @@ import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.EntityPacketUtil;
 import com.storycraft.util.Reflect;
 import net.minecraft.server.v1_12_R1.*;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldInitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ClientEntityHandler implements Listener {
 
-    Map<Integer, Class<? extends Entity>> lookupMap;
+    Map<Class<? extends Entity>, Class<? extends Entity>> lookupMap;
 
     public ClientEntityHandler(){
         lookupMap = new HashMap<>();
@@ -23,40 +25,18 @@ public class ClientEntityHandler implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    protected void addClientLookup(int id, Class<? extends Entity> clientEntityClass){
-        if (contains(id))
+    protected void addClientLookup(Class<? extends Entity> entityClass, Class<? extends Entity> clientEntityClass){
+        if (contains(entityClass))
             return;
 
-        lookupMap.put(id, clientEntityClass);
+        lookupMap.put(entityClass, clientEntityClass);
     }
 
-    public boolean contains(int id){
-        return lookupMap.containsKey(id);
+    public boolean contains(Class<? extends Entity> entityClass){
+        return lookupMap.containsKey(entityClass);
     }
 
-    public Class<? extends Entity> getClientEntityClass(int id){
-        return lookupMap.get(id);
-    }
-
-    @EventHandler
-    public void onEntityPacket(AsyncPacketOutEvent e){
-        if (!EntityPacketUtil.isEntitySpawnPacket(e.getPacket()) || EntityPacketUtil.isPlayerSpawnPacket(e.getPacket()))
-            return;
-
-        int typeId;
-        if (e.getPacket() instanceof PacketPlayOutSpawnEntity){
-            typeId = Reflect.getField(e.getPacket(), "k");
-        }
-        else if (e.getPacket() instanceof PacketPlayOutSpawnEntityLiving){
-            typeId = Reflect.getField(e.getPacket(), "c");
-        }
-        else{
-            return;
-        }
-
-        if (!contains(typeId))
-            return;
-
-        Class<? extends Entity> clientEntityClass = getClientEntityClass(typeId);
+    public Class<? extends Entity> getClientEntityClass(Class<? extends Entity> entityClass){
+        return lookupMap.get(entityClass);
     }
 }

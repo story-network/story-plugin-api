@@ -4,15 +4,17 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.server.registry.IRegistry;
 import com.storycraft.server.registry.RegistryManager;
 import com.storycraft.util.Reflect;
-import net.minecraft.server.v1_12_R1.EntityTypes;
+import net.minecraft.server.v1_12_R1.*;
+import org.bukkit.entity.EntityType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class ServerEntityRegistry implements IRegistry<Class<? extends CustomEntity>> {
+public class ServerEntityRegistry implements IRegistry<Class<? extends Entity>> {
 
-    private Map<Integer, Class<? extends CustomEntity>> entityIdMap;
-    private Map<String, Class<? extends CustomEntity>> entityNameMap;
+    private Map<Integer, Class<? extends Entity>> entityIdMap;
+    private Map<String, Class<? extends Entity>> entityNameMap;
 
     private RegistryManager manager;
     private ClientEntityHandler handler;
@@ -25,14 +27,33 @@ public class ServerEntityRegistry implements IRegistry<Class<? extends CustomEnt
         this.handler = new ClientEntityHandler();
     }
 
-    protected void addCustomEntity(int id, String keyName, Class<? extends CustomEntity> entityClass, String entityName){
+    protected void addCustomEntity(int id, String saveName, Class<? extends Entity> entityClass, Class<? extends Entity> clientEntityClass, String entityName){
         if (contains(entityClass))
             return;
 
-        Reflect.invokeMethod(EntityTypes.class, "a", id, keyName, entityClass, entityName);
+        int clientEntityId = EntityTypes.b.a(clientEntityClass);
+
+        //from nms code start
+        MinecraftKey saveKey = new MinecraftKey(saveName);
+        EntityTypes.b.a(clientEntityId, saveKey, entityClass);
+        EntityTypes.d.add(saveKey);
+
+        List<String> nameList = Reflect.getField(EntityTypes.class, "g");
+
+        while(nameList.size() <= id) {
+            nameList.add(null);
+        }
+
+        nameList.set(id, entityName);
+        //from nms code end
 
         entityIdMap.put(id, entityClass);
-        entityNameMap.put(keyName, entityClass);
+        entityNameMap.put(saveName, entityClass);
+    }
+
+    @Override
+    public void preInitialize(StoryPlugin plugin) {
+
     }
 
     @Override
@@ -41,7 +62,7 @@ public class ServerEntityRegistry implements IRegistry<Class<? extends CustomEnt
     }
 
     @Override
-    public boolean contains(Class<? extends CustomEntity> object) {
+    public boolean contains(Class<? extends Entity> object) {
         return entityIdMap.containsValue(object) || entityNameMap.containsValue(object);
     }
 
@@ -50,12 +71,12 @@ public class ServerEntityRegistry implements IRegistry<Class<? extends CustomEnt
     }
 
     @Override
-    public Class<? extends CustomEntity> getByName(String name) {
+    public Class<? extends Entity> getByName(String name) {
         return entityNameMap.get(name);
     }
 
     @Override
-    public Class<? extends CustomEntity> getById(int id) {
+    public Class<? extends Entity> getById(int id) {
         return entityIdMap.get(id);
     }
 }
