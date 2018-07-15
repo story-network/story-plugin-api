@@ -4,7 +4,7 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.EntityPacketUtil;
-import com.storycraft.util.Reflect;
+import com.storycraft.util.reflect.Reflect;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -20,10 +20,14 @@ public class MorphManager extends MiniPlugin {
     private Map<World, Map<Integer, AbstractMap.SimpleEntry<Entity, Entity>>> morphWorldMap;
     private MorphHandler handler;
 
+    private Reflect.WrappedField<Integer, PacketPlayOutEntityMetadata> packetMetadataEidField;
+
     public MorphManager(){
         this.morphWorldMap = new HashMap<>();
 
         this.handler = new MorphHandler();
+
+        this.packetMetadataEidField = Reflect.getField(PacketPlayOutEntityMetadata.class, "a");
     }
 
     @Override
@@ -96,7 +100,7 @@ public class MorphManager extends MiniPlugin {
                 return;
 
             Packet entitySpawnPacket = e.getPacket();
-            int eid = Reflect.getField(entitySpawnPacket, "a");
+            int eid = EntityPacketUtil.getEntityIdFromPacket(entitySpawnPacket);
 
             if (!containsInternal(w, eid))
                 return;
@@ -113,7 +117,7 @@ public class MorphManager extends MiniPlugin {
             }
 
             Packet morphPacket = EntityPacketUtil.getEntitySpawnPacket(entity);
-            Reflect.setField(morphPacket, "a", eid);
+            EntityPacketUtil.setEntityIdPacket(morphPacket, eid);
 
             e.setPacket(morphPacket);
         }
@@ -140,8 +144,8 @@ public class MorphManager extends MiniPlugin {
             if (!containsWorldMap(w))
                 return;
 
-            Packet metadataPacket = e.getPacket();
-            int eid = Reflect.getField(metadataPacket, "a");
+            PacketPlayOutEntityMetadata metadataPacket = (PacketPlayOutEntityMetadata) e.getPacket();
+            int eid = packetMetadataEidField.get(metadataPacket);
 
             if (!containsInternal(w, eid))
                 return;

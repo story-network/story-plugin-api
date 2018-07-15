@@ -1,14 +1,8 @@
 package com.storycraft.server.entity;
 
 import com.storycraft.StoryPlugin;
-import com.storycraft.server.packet.AsyncPacketOutEvent;
-import com.storycraft.util.EntityPacketUtil;
-import com.storycraft.util.Reflect;
 import net.minecraft.server.v1_12_R1.*;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.WorldInitEvent;
 
 import java.util.HashMap;
 import java.util.Map;

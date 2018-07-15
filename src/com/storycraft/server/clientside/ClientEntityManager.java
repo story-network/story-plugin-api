@@ -1,15 +1,12 @@
 package com.storycraft.server.clientside;
 
 import com.storycraft.server.ServerExtension;
-import com.storycraft.server.packet.AsyncPacketOutEvent;
-import com.storycraft.server.update.ServerUpdateEvent;
+import com.storycraft.server.event.client.AsyncPlayerLoadChunkEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.EntityPacketUtil;
-import com.storycraft.util.Reflect;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -107,24 +104,15 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChunkLoad(AsyncPacketOutEvent e){
-        if (e.getPacket() instanceof PacketPlayOutMapChunk){
-            Player p = e.getTarget();
+    public void onPlayerChunkLoad(AsyncPlayerLoadChunkEvent e){
+        if (!entityMap.containsKey(e.getWorld()))
+            return;
 
-            World w = ((CraftWorld)p.getWorld()).getHandle();
-
-            if (!hasWorld(w))
-                return;
-
-            int locX = Reflect.getField(e.getPacket(), "a");
-            int locZ = Reflect.getField(e.getPacket(), "b");
-
-            for (Entity entity : new ArrayList<Entity>(entityMap.get(w))){
-                Chunk chunk = entity.getBukkitEntity().getLocation().getChunk();
-                if (chunk.getX() == locX && chunk.getZ() == locZ) {
-                    sendSpawnPacket(p, entity);
-                    sendUpdatePacket(p, entity);
-                }
+        for (Entity entity : new ArrayList<>(entityMap.get(e.getWorld()))){
+            Chunk chunk = entity.getBukkitEntity().getLocation().getChunk();
+            if (e.getChunk().equals(chunk)) {
+                sendSpawnPacket(e.getPlayer(), entity);
+                sendUpdatePacket(e.getPlayer(), entity);
             }
         }
     }

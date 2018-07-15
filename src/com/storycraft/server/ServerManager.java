@@ -2,12 +2,13 @@ package com.storycraft.server;
 
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.clientside.ClientSideManager;
+import com.storycraft.server.event.client.ClientEventManager;
 import com.storycraft.server.forge.ForgeServerManager;
 import com.storycraft.server.packet.ServerNetworkManager;
 
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.server.registry.RegistryManager;
-import com.storycraft.server.update.ServerUpdateInvoker;
+import com.storycraft.server.event.server.ServerEventManager;
 import com.storycraft.server.world.WorldManager;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
@@ -25,7 +26,8 @@ public class ServerManager {
     private ForgeServerManager forgeServerManager;
     private WorldManager worldManager;
     private RegistryManager registryManager;
-    private ServerUpdateInvoker updateInvoker;
+    private ServerEventManager serverEventManager;
+    private ClientEventManager clientEventManager;
 
     private List<ServerExtension> extensionList;
 
@@ -43,7 +45,8 @@ public class ServerManager {
         addServerExtension(forgeServerManager = new ForgeServerManager(this));
         addServerExtension(worldManager = new WorldManager());
         addServerExtension(registryManager = new RegistryManager());
-        addServerExtension(updateInvoker = new ServerUpdateInvoker());
+        addServerExtension(serverEventManager = new ServerEventManager());
+        addServerExtension(clientEventManager = new ClientEventManager());
     }
 
     protected List<ServerExtension> getExtensionList() {

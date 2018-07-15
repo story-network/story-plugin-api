@@ -1,9 +1,10 @@
 package com.storycraft.server.packet;
 
+import com.google.common.graph.Network;
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.ServerManager;
-import com.storycraft.util.Reflect;
+import com.storycraft.util.reflect.Reflect;
 import io.netty.channel.*;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
@@ -11,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.*;
@@ -35,6 +35,9 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
     private ChannelInitializer<Channel> beginInitializer;
     private ChannelInitializer<Channel> endInitializer;
 
+    private Reflect.WrappedField<List<NetworkManager>, ServerConnection> networkManagerListField;
+    private Reflect.WrappedField<List<ChannelFuture>, ServerConnection> channelFutureListField;
+
     public ServerNetworkManager(ServerManager serverManager) {
         this.serverManager = serverManager;
 
@@ -47,6 +50,9 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
         this.injectChannelList = new ArrayList<>();
         this.playerChannelMap = new HashMap<>();
+
+        this.networkManagerListField = Reflect.getField(ServerConnection.class, "h");
+        this.channelFutureListField = Reflect.getField(ServerConnection.class, "g");
     }
 
     protected ServerManager getServerManager() {
@@ -71,7 +77,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
     protected List<NetworkManager> getNetworkManagerList(boolean update) {
         if (update || networkManagerList == null)
-            return networkManagerList = Reflect.getField(getServerConnection(), "h");
+            return networkManagerList = networkManagerListField.get(getServerConnection());
 
         return networkManagerList;
     }
@@ -82,7 +88,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
     protected List<ChannelFuture> getChannelFutureList(boolean update) {
         if (update || channelFutureList == null)
-            return channelFutureList = Reflect.getField(getServerConnection(), "g");
+            return channelFutureList = channelFutureListField.get(getServerConnection());
 
         return channelFutureList;
     }

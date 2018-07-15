@@ -1,11 +1,10 @@
 package com.storycraft.core.playerlist;
 
 import com.storycraft.core.MiniPlugin;
-import com.storycraft.server.update.ServerUpdateEvent;
+import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
-import com.storycraft.util.Reflect;
+import com.storycraft.util.reflect.Reflect;
 import net.minecraft.server.v1_12_R1.ChatComponentText;
-import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerListHeaderFooter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +17,9 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
 
     private boolean needUpdate;
 
+    private Reflect.WrappedField<ChatComponentText, PacketPlayOutPlayerListHeaderFooter> packetHeaderField;
+    private Reflect.WrappedField<ChatComponentText, PacketPlayOutPlayerListHeaderFooter> packetFooterField;
+
     public ServerPlayerList(){
         this.headerText = "";
         this.footerText = "";
@@ -28,6 +30,9 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
     @Override
     public void onEnable(){
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
+
+        this.packetHeaderField = Reflect.getField(PacketPlayOutPlayerListHeaderFooter.class, "a");
+        this.packetFooterField = Reflect.getField(PacketPlayOutPlayerListHeaderFooter.class, "b");
 
         setHeaderText(getPlugin().getServerName());
         setFooterText(getPlugin().getServerName());
@@ -75,8 +80,8 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
     private PacketPlayOutPlayerListHeaderFooter createHeaderFooterPacket(){
         PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
 
-        Reflect.setField(packet, "a", new ChatComponentText(getHeaderText()));
-        Reflect.setField(packet, "b", new ChatComponentText(getFooterText()));
+        packetHeaderField.set(packet, new ChatComponentText(getHeaderText()));
+        packetFooterField.set(packet, new ChatComponentText(getFooterText()));
 
         return packet;
     }

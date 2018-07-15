@@ -15,9 +15,14 @@ import com.storycraft.server.ServerManager;
 import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.storage.TempStorage;
 import com.storycraft.test.TestFunction;
-import com.storycraft.util.Reflect;
+import com.storycraft.util.reflect.Reflect;
+import net.minecraft.server.v1_12_R1.PacketPlayOutAdvancements;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -91,19 +96,19 @@ public class StoryPlugin extends JavaPlugin {
                     getServer().getPluginManager().disablePlugin(this);
 
                     Plugin plugin = getServer().getPluginManager().loadPlugin(getTempStorage().getPath().resolve(TEMP_FILE_NAME).toFile());
-                    Reflect.invokeMethod(plugin, "postInit", pluginRef);
+                    Reflect.getMethod(plugin.getClass(), "postInit", File.class).invoke(plugin, pluginRef);
 
                     if (Reflect.getField(plugin, "initalized").equals(false))
-                        throw new Exception("Plugin is not initalized");
+                        throw new Exception("플러그인이 pre init 되지 않았습니다");
 
                     getServer().getPluginManager().enablePlugin(plugin);
 
-                    Reflect.<List<Plugin>>getField(getServer().getPluginManager(), "plugins").remove(this);
-                    Reflect.<Map<String, Plugin>>getField(getServer().getPluginManager(), "lookupNames").remove(getName());
+                    ((List<Plugin>) Reflect.getField(getServer().getPluginManager(), "plugins").get(getServer().getPluginManager())).remove(this);
+                    ((Map<String, Plugin>)Reflect.getField(getServer().getPluginManager(), "lookupNames").get(getServer().getPluginManager())).remove(getName());
 
                     ClassLoader cl = getClass().getClassLoader();
-                    Reflect.setField(cl, "plugin", null);
-                    Reflect.setField(cl, "pluginInit", null);
+                    Reflect.getField(cl, "plugin").set(cl, null);
+                    Reflect.getField(cl, "pluginInit").set(cl, null);
 
                     System.gc();
                 } catch (Exception e) {

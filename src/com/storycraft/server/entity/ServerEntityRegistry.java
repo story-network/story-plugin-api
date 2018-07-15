@@ -3,9 +3,8 @@ package com.storycraft.server.entity;
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.registry.IRegistry;
 import com.storycraft.server.registry.RegistryManager;
-import com.storycraft.util.Reflect;
+import com.storycraft.util.reflect.Reflect;
 import net.minecraft.server.v1_12_R1.*;
-import org.bukkit.entity.EntityType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,12 +18,16 @@ public class ServerEntityRegistry implements IRegistry<Class<? extends Entity>> 
     private RegistryManager manager;
     private ClientEntityHandler handler;
 
+    private Reflect.WrappedField<List<String>, EntityTypes> nameListField;
+
     public ServerEntityRegistry(RegistryManager manager){
         this.entityIdMap = new HashMap<>();
         this.entityNameMap = new HashMap<>();
 
         this.manager = manager;
         this.handler = new ClientEntityHandler();
+
+        this.nameListField = Reflect.getField(EntityTypes.class, "g");
     }
 
     protected void addCustomEntity(int id, String saveName, Class<? extends Entity> entityClass, Class<? extends Entity> clientEntityClass, String entityName){
@@ -38,7 +41,7 @@ public class ServerEntityRegistry implements IRegistry<Class<? extends Entity>> 
         EntityTypes.b.a(clientEntityId, saveKey, entityClass);
         EntityTypes.d.add(saveKey);
 
-        List<String> nameList = Reflect.getField(EntityTypes.class, "g");
+        List<String> nameList = nameListField.get(null);
 
         while(nameList.size() <= id) {
             nameList.add(null);

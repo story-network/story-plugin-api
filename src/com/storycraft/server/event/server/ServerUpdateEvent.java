@@ -1,4 +1,4 @@
-package com.storycraft.server.update;
+package com.storycraft.server.event.server;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
