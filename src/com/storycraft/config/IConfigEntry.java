@@ -1,7 +1,5 @@
 package com.storycraft.config;
 
-import com.storycraft.config.json.JsonConfigEntry;
-
 public interface IConfigEntry<T extends IConfigEntry> {
     void set(String key, T value);
     void set(String key, byte value);
@@ -11,7 +9,10 @@ public interface IConfigEntry<T extends IConfigEntry> {
     void set(String key, double value);
     void set(String key, float value);
     void set(String key, boolean value);
+    void set(String key, String value);
     void set(String key, Object value);
+
+    boolean contains(String key);
 
     Object get(String key);
 

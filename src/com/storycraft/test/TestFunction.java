@@ -2,9 +2,9 @@ package com.storycraft.test;
 
 import com.mojang.authlib.GameProfile;
 import com.storycraft.StoryPlugin;
-import net.minecraft.server.v1_12_R1.*;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
+import net.minecraft.server.v1_13_R1.*;
+import org.bukkit.craftbukkit.v1_13_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R1.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -23,13 +23,4 @@ public class TestFunction implements Listener {
         plugin.getServer().getPluginManager().registerEvents(new TestFunction(plugin), plugin);
     }
 
-    @EventHandler
-    public void onEntitySpawn(CreatureSpawnEvent e){
-        World w = ((CraftWorld)e.getLocation().getWorld()).getHandle();
-        EntityPlayer entity = new EntityPlayer(w.getMinecraftServer(), (WorldServer) w, new GameProfile(UUID.randomUUID(), "storycraft"), new PlayerInteractManager(w));
-
-        entity.glowing = true;
-
-        plugin.getDecorator().getMorphManager().setMorphToEntity(((CraftEntity)e.getEntity()).getHandle(), entity);
-    }
 }

@@ -2,12 +2,17 @@ package com.storycraft.core.explosion;
 
 import com.storycraft.StoryPlugin;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.util.BlockIdUtil;
 import com.storycraft.util.Parallel;
+import net.minecraft.server.v1_13_R1.EntityTypes;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.v1_13_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_13_R1.block.data.CraftBlockData;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +27,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 public class Explosion extends MiniPlugin {
 
@@ -108,20 +114,18 @@ class ExplosionHandler implements Listener {
 
         Random rnd = new Random();
 
-        Parallel.forEach(blockList,(Block b) -> {
+        Function<Block, Void> handle = b -> {
             if (b == null || b.getType() == Material.AIR || isExplosive(b.getType()))
-                return;
+                return null;
 
             if (rnd.nextDouble() <= limit){
-                MaterialData data = new MaterialData(b.getType(), b.getData());
-
                 Vector vec = b.getLocation().toVector().subtract(center.toVector());
 
                 if (vec.getY() < 0)
                     vec.setY(vec.getY() * -1);
 
                 getExplosion().runSync(() -> {
-                    FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), data);
+                    FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getBlockData());
 
                     fb.setHurtEntities(true);
                     fb.setDropItem(false);
@@ -133,7 +137,22 @@ class ExplosionHandler implements Listener {
                     return null;
                 });
             }
-        });
+            return null;
+        };
+
+        if (blockList.size() <= 250) {
+            for (Block b : blockList) {
+                handle.apply(b);
+            }
+        }
+        else {
+            Parallel.forEach(blockList, new Parallel.Operation<Block>() {
+                @Override
+                public void run(Block param) {
+                    handle.apply(param);
+                }
+            });
+        }
     }
 
     public boolean isExplosive(Material material) {
@@ -162,7 +181,7 @@ class ExplosionHandler implements Listener {
             FallingBlock fallingBlock = (FallingBlock) e.getEntity();
 
             //Play Block Breaking Effect
-            e.getBlock().getWorld().playEffect(e.getBlock().getLocation(), Effect.STEP_SOUND, fallingBlock.getBlockId() | fallingBlock.getBlockData() << 12);
+            e.getBlock().getWorld().playEffect(e.getBlock().getLocation(), Effect.STEP_SOUND, BlockIdUtil.getCombinedId(fallingBlock.getBlockData()));
         }
     }
 

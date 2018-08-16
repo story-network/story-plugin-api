@@ -3,55 +3,44 @@ package com.storycraft.server.entity;
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.registry.IRegistry;
 import com.storycraft.server.registry.RegistryManager;
-import com.storycraft.util.reflect.Reflect;
-import net.minecraft.server.v1_12_R1.*;
+import net.minecraft.server.v1_13_R1.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-public class ServerEntityRegistry implements IRegistry<Class<? extends Entity>> {
+public class ServerEntityRegistry implements IRegistry<EntityTypes> {
 
-    private Map<Integer, Class<? extends Entity>> entityIdMap;
-    private Map<String, Class<? extends Entity>> entityNameMap;
+    private Map<EntityTypes, EntityTypes> clientEntityMap;
 
+    private CustomEntityConverter converter;
     private RegistryManager manager;
-    private ClientEntityHandler handler;
-
-    private Reflect.WrappedField<List<String>, EntityTypes> nameListField;
 
     public ServerEntityRegistry(RegistryManager manager){
-        this.entityIdMap = new HashMap<>();
-        this.entityNameMap = new HashMap<>();
+        this.clientEntityMap = new HashMap<>();
+        this.converter = new CustomEntityConverter(this);
 
         this.manager = manager;
-        this.handler = new ClientEntityHandler();
-
-        this.nameListField = Reflect.getField(EntityTypes.class, "g");
     }
 
-    protected void addCustomEntity(int id, String saveName, Class<? extends Entity> entityClass, Class<? extends Entity> clientEntityClass, String entityName){
-        if (contains(entityClass))
-            return;
+    protected <T extends Entity>void addCustomEntity(String entityName, Class<? extends T> entityClass, Function<? super World, ? extends T> entityConstructor, EntityTypes clientEntityTypes) throws Exception {
+        EntityTypes old = EntityTypes.a(entityName);
 
-        int clientEntityId = EntityTypes.b.a(clientEntityClass);
+        if (contains(old))
+            throw new Exception("Entity with " + entityName + " already exists");
 
-        //from nms code start
-        MinecraftKey saveKey = new MinecraftKey(saveName);
-        EntityTypes.b.a(clientEntityId, saveKey, entityClass);
-        EntityTypes.d.add(saveKey);
+        EntityTypes.a a = createA(entityClass, entityConstructor);
+        MinecraftKey saveKey = new MinecraftKey(entityName);
+        EntityTypes entityTypes = EntityTypes.a(entityName, a);
 
-        List<String> nameList = nameListField.get(null);
 
-        while(nameList.size() <= id) {
-            nameList.add(null);
-        }
+        EntityTypes.REGISTRY.a(saveKey, entityTypes);
 
-        nameList.set(id, entityName);
-        //from nms code end
+        clientEntityMap.put(entityTypes, clientEntityTypes);
+    }
 
-        entityIdMap.put(id, entityClass);
-        entityNameMap.put(saveName, entityClass);
+    public <T extends Entity>EntityTypes.a<T> createA(Class<? extends T> entityClass, Function<? super World, ? extends T> entityConstructor) {
+        return EntityTypes.a.a(entityClass, entityConstructor);
     }
 
     @Override
@@ -61,25 +50,25 @@ public class ServerEntityRegistry implements IRegistry<Class<? extends Entity>> 
 
     @Override
     public void initialize(StoryPlugin plugin) {
-        handler.initialize(plugin);
+        plugin.getServer().getPluginManager().registerEvents(converter, plugin);
     }
 
     @Override
-    public boolean contains(Class<? extends Entity> object) {
-        return entityIdMap.containsValue(object) || entityNameMap.containsValue(object);
-    }
-
-    public ClientEntityHandler getHandler() {
-        return handler;
+    public boolean contains(EntityTypes entityTypes) {
+        return clientEntityMap.containsKey(entityTypes);
     }
 
     @Override
-    public Class<? extends Entity> getByName(String name) {
-        return entityNameMap.get(name);
+    public EntityTypes getByName(String name) {
+        return EntityTypes.a(name);
     }
 
     @Override
-    public Class<? extends Entity> getById(int id) {
-        return entityIdMap.get(id);
+    public EntityTypes getById(int id) {
+        return EntityTypes.REGISTRY.getId(id);
+    }
+
+    public EntityTypes getClientEntityTypes(EntityTypes entityTypes) {
+        return clientEntityMap.get(entityTypes);
     }
 }

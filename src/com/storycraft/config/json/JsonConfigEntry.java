@@ -65,8 +65,18 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
     }
 
     @Override
+    public void set(String key, String value) {
+        getJsonObject().addProperty(key, value);
+    }
+
+    @Override
     public void set(String key, Object value) {
         set(key, value.toString());
+    }
+
+    @Override
+    public boolean contains(String key) {
+        return getJsonObject().has(key);
     }
 
     @Override

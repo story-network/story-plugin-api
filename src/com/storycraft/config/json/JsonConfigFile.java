@@ -1,19 +1,34 @@
 package com.storycraft.config.json;
 
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.storycraft.config.IConfigFile;
 
 import java.io.*;
 
 public class JsonConfigFile extends JsonConfigEntry implements IConfigFile {
 
+    public JsonConfigFile(){
+
+    }
+
     @Override
     public void load(InputStream is) {
-        setJsonObject(new JsonParser().parse(new InputStreamReader(is)).getAsJsonObject());
+        try {
+            setJsonObject(new JsonParser().parse(new InputStreamReader(is)).getAsJsonObject());
+        } catch (Exception e) {
+            //create new file when corrupted or file is not exists
+            setJsonObject(new JsonObject());
+        }
     }
 
     @Override
     public void save(OutputStream os) throws IOException {
-        os.write(getJsonObject().toString().getBytes());
+        try {
+            Gson gson = new Gson();
+
+            os.write(gson.toJson(getJsonObject()).getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

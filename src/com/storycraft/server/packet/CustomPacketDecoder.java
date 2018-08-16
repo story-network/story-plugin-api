@@ -3,7 +3,7 @@ package com.storycraft.server.packet;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
-import net.minecraft.server.v1_12_R1.*;
+import net.minecraft.server.v1_13_R1.*;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class CustomPacketDecoder extends PacketDecoder {
                 throw new IOException("Bad packet id " + id);
             } else {
                 //replace part start
-                DefaultPacketDeserializer defaultDeserializer = new DefaultPacketDeserializer();
+                DefaultPacketDeserializer defaultDeserializer = DefaultPacketDeserializer.getInstance();
 
                 defaultDeserializer.deserialize(packet, packetDataSerializer);
                 handleLoginStart(channel, packet);
@@ -73,13 +73,28 @@ public class CustomPacketDecoder extends PacketDecoder {
         if (packet instanceof PacketLoginInStart) {
             PacketLoginInStart loginPacket = (PacketLoginInStart) packet;
 
-            GameProfile profile = loginPacket.a();
+            GameProfile profile = loginPacket.b();
             getServerNetworkManager().getPlayerChannelMap().put(profile.getName(), channel);
         }
     }
 }
 
 class DefaultPacketDeserializer extends PacketDeserializer {
+
+    private static DefaultPacketDeserializer instance;
+
+    static {
+        instance = new DefaultPacketDeserializer();
+    }
+
+    public static DefaultPacketDeserializer getInstance(){
+        return instance;
+    }
+
+    private DefaultPacketDeserializer() {
+
+    }
+
     @Override
     protected void deserialize(Packet packet, PacketDataSerializer serializer) throws IOException {
         packet.a(serializer);

@@ -1,9 +1,8 @@
 package com.storycraft.core.hologram;
 
-import net.minecraft.server.v1_12_R1.Entity;
-import net.minecraft.server.v1_12_R1.EntityArmorStand;
+import net.minecraft.server.v1_13_R1.*;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R1.*;
 
 public class SimpleHologram extends Hologram {
     public SimpleHologram(Location location, String... texts) {

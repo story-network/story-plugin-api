@@ -42,8 +42,9 @@ public class PluginDataStorage extends Storage<byte[]> {
         BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
 
         byte[] readBuffer = new byte[2048];
-        while (input.read(readBuffer, 0, readBuffer.length) != -1) {
-            output.write(readBuffer);
+        int readed;
+        while ((readed = input.read(readBuffer, 0, readBuffer.length)) != -1) {
+            output.write(readBuffer, 0, readed);
         }
 
         input.close();

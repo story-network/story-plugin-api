@@ -36,14 +36,14 @@ public class FastCombat extends MiniPlugin implements Listener {
         double modifier = 15;
 
         if (item != null) {
-            if (item.getType() == Material.WOOD_SWORD
-                    || item.getType() == Material.GOLD_SWORD
+            if (item.getType() == Material.WOODEN_SWORD
+                    || item.getType() == Material.GOLDEN_SWORD
                     || item.getType() == Material.IRON_SWORD
                     || item.getType() == Material.DIAMOND_SWORD){
                 modifier = 10.25;
             }
-            else if (item.getType() == Material.WOOD_AXE
-                    || item.getType() == Material.GOLD_AXE
+            else if (item.getType() == Material.WOODEN_AXE
+                    || item.getType() == Material.GOLDEN_AXE
                     || item.getType() == Material.IRON_AXE
                     || item.getType() == Material.DIAMOND_AXE){
                 modifier = 4.75;

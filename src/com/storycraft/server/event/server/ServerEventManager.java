@@ -1,7 +1,7 @@
 package com.storycraft.server.event.server;
 
 import com.storycraft.server.ServerExtension;
-import net.minecraft.server.v1_12_R1.MinecraftServer;
+import net.minecraft.server.v1_13_R1.MinecraftServer;
 
 public class ServerEventManager extends ServerExtension {
 

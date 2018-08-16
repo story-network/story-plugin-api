@@ -16,13 +16,8 @@ import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.storage.TempStorage;
 import com.storycraft.test.TestFunction;
 import com.storycraft.util.reflect.Reflect;
-import net.minecraft.server.v1_12_R1.PacketPlayOutAdvancements;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;

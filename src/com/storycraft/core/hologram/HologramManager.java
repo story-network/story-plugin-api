@@ -3,7 +3,8 @@ package com.storycraft.core.hologram;
 import com.storycraft.StoryPlugin;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.server.clientside.ClientEntityManager;
-import net.minecraft.server.v1_12_R1.Entity;
+import net.minecraft.server.v1_13_R1.ChatComponentText;
+import net.minecraft.server.v1_13_R1.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class HologramManager extends MiniPlugin {
         for (int i = 0; i < textList.length; i++){
             Entity e = textEntityList.get(i);
 
-            e.setCustomName(textList[i]);
+            e.setCustomName(new ChatComponentText(textList[i]));
 
             manager.update(e);
         }
