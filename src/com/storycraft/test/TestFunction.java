@@ -1,15 +1,7 @@
 package com.storycraft.test;
 
-import com.mojang.authlib.GameProfile;
 import com.storycraft.StoryPlugin;
-import net.minecraft.server.v1_13_R1.*;
-import org.bukkit.craftbukkit.v1_13_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R1.entity.CraftEntity;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-
-import java.util.UUID;
 
 public class TestFunction implements Listener {
 

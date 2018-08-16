@@ -49,10 +49,10 @@ public class DropCounter extends MiniPlugin implements Listener {
         if (itemStack.getItemMeta().getDisplayName() != null)
             name += itemStack.getItemMeta().getDisplayName() + " ";
 
-        if (itemStack.getAmount() > 1)
+        if (itemStack.getAmount() > 1) {
             name += ChatColor.GOLD + "x" + itemStack.getAmount();
-
-        item.setCustomNameVisible(true);
-        item.setCustomName(name);
+            item.setCustomNameVisible(true);
+            item.setCustomName(name);
+        }
     }
 }

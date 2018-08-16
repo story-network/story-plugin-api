@@ -2,21 +2,16 @@ package com.storycraft.core.entity;
 
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.BlockIdUtil;
-import net.minecraft.server.v1_13_R1.BlockRedstoneWire;
-import net.minecraft.server.v1_13_R1.Blocks;
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.data.AnaloguePowerable;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_13_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_13_R1.block.CraftBlock;
-import org.bukkit.craftbukkit.v1_13_R1.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_13_R1.block.data.CraftAnaloguePowerable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.material.MaterialData;
 
 public class EntityBlood extends MiniPlugin implements Listener {
 
@@ -38,9 +33,9 @@ public class EntityBlood extends MiniPlugin implements Listener {
             double leftHealth = Math.max(entity.getHealth() - finalDamage, 0);
 
             Material bloodMaterial = Material.REDSTONE_WIRE;
-            BlockData data = bloodMaterial.createBlockData("power=" + Math.round((leftHealth / maxHealth) * 15));
+            BlockData data = getPlugin().getServer().createBlockData(bloodMaterial, "[" + "power" + "=" + ((int) Math.floor((leftHealth / maxHealth) * 15)) + "]");
 
-            entity.getWorld().playEffect(entity.getLocation(), Effect.STEP_SOUND, data);
+            entity.getWorld().playEffect(entity.getEyeLocation(), Effect.STEP_SOUND, BlockIdUtil.getCombinedId(data));
         }
     }
 
