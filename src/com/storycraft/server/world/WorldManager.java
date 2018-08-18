@@ -66,7 +66,9 @@ public class WorldManager extends ServerExtension {
         if (universe.hasCustomGenerator())
             creator.generator(universe.getChunkGenerator());
 
-        if (getPlugin().getServer().getWorld(universe.getName()) != null)
+        if (getPlugin().getServer().getWorld(universe.getName()) != null) {
+            getPlugin().getServer().unloadWorld(universe.getName(), true);
+        }
             getPlugin().getServer().createWorld(creator);
 
         universeList.putIfAbsent(universe.getName(), universe);
