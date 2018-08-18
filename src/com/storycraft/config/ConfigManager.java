@@ -3,8 +3,10 @@ package com.storycraft.config;
 import com.storycraft.StoryPlugin;
 import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.util.AsyncTask;
+import com.storycraft.util.Parallel;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +38,30 @@ public class ConfigManager {
                     configFile.load(new ByteArrayInputStream(getDataStorage().getSync(name)));
                     getConfigFileMap().put(name, configFile);
                 } catch (IOException e) {
-                    getPlugin().getLogger().warning(name + " 을 로드 중 오류가 발생했습니다. " + e.getLocalizedMessage());
+                    getPlugin().getLogger().warning(name + " 로드 중 오류가 발생했습니다. " + e.getLocalizedMessage());
                 }
 
                 return null;
             }
         });
+    }
+
+    public void saveAll() {
+        Parallel.forEach(getConfigFileMap().keySet(), this::saveConfig);
+    }
+
+    public void saveConfig(String name) {
+        if (!hasConfigFile(name))
+            return;
+
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            IConfigFile configFile = getConfigFileMap().get(name);
+            configFile.save(output);
+
+            getDataStorage().saveSync(output.toByteArray(), name);
+        } catch (IOException e) {
+            getPlugin().getLogger().warning(name + " 저장 중 오류가 발생 했습니다 " + e.getLocalizedMessage());
+        }
     }
 
     public PluginDataStorage getDataStorage(){

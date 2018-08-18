@@ -86,6 +86,8 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
 
     @Override
     public JsonConfigEntry getObject(String key) {
+        if (!get(key).isJsonObject())
+            return null;
         return new JsonConfigEntry(get(key).getAsJsonObject());
     }
 }

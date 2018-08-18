@@ -6,6 +6,7 @@ import com.storycraft.server.world.universe.TestUniverse;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
@@ -15,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class WorldManager extends ServerExtension {
+
+    private static final String WORLD_PREFIX = "story-network";
 
     private boolean isLoaded;
     Map<String, CustomUniverse> universeList;
@@ -40,6 +43,7 @@ public class WorldManager extends ServerExtension {
 
     private void loadUniverse() {
         loadWorld(new TestUniverse("test", 123791234l));
+        loadWorld(new TestUniverse("nt", 292834791));
     }
 
     public CustomUniverse getByName(String name){
@@ -58,7 +62,7 @@ public class WorldManager extends ServerExtension {
         if (universe.isLoaded() || !isLoaded)
             return;
 
-        WorldCreator creator = new WorldCreator(universe.getName())
+        WorldCreator creator = new WorldCreator(WORLD_PREFIX + "-" + universe.getName())
                 .environment(universe.getEnvironment()).type(universe.getWorldType()).generateStructures(universe.isStructureGen()).seed(universe.getSeed());
 
         if (universe.hasCustomGenerator())
@@ -83,6 +87,17 @@ public class WorldManager extends ServerExtension {
 
         universe.onUnload();
         getPlugin().getServer().unloadWorld(universe.getBukkitWorld(), universe.canSave());
+    }
+
+    public World getBukkitWorld(CustomUniverse universe) {
+        return getBukkitWorld(WORLD_PREFIX + "-" + universe.getName());
+    }
+
+    public World getBukkitWorld(String name) {
+        if (!contains(name))
+            return null;
+
+        return getPlugin().getServer().getWorld(WORLD_PREFIX + "-" + name);
     }
 
     public void unloadAll(){

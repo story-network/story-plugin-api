@@ -1,6 +1,5 @@
 package com.storycraft.server.packet;
 
-import com.google.common.graph.Network;
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.ServerManager;
@@ -53,6 +52,8 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
         this.networkManagerListField = Reflect.getField(ServerConnection.class, "g");
         this.channelFutureListField = Reflect.getField(ServerConnection.class, "f");
+
+        hookServerNetwork();
     }
 
     protected ServerManager getServerManager() {
@@ -99,8 +100,6 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        hookServerNetwork();
-
         for (Player p : plugin.getServer().getOnlinePlayers()) {
             injectPlayer(p);
         }
@@ -167,8 +166,12 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
         Channel channel = getChannel(e.getPlayer());
 
-        if (getInjectChannelList().contains(channel))
+        if (getInjectChannelList().contains(channel)) {
             injectPlayer(e.getPlayer());
+        }
+        else {
+            getPlugin().getLogger().warning(e.getPlayer().getName() + " 의 패킷 핸들러 삽입이 실패 했습니다.");
+        }
     }
 
     private void injectChannelInternal(Channel channel) {

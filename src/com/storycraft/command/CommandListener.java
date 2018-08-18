@@ -1,10 +1,15 @@
 package com.storycraft.command;
 
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.util.MessageUtil;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandListener extends MiniPlugin implements Listener {
     private CommandManager manager;
@@ -24,16 +29,13 @@ public class CommandListener extends MiniPlugin implements Listener {
 
     //lowest로 설정시 제일 먼저 호출됨
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onCommand(AsyncPlayerChatEvent e){
-        if (e.isCancelled() || e.getMessage() == null || !e.getMessage().startsWith(CommandManager.COMMAND_PREFIX))
+    public void onCommand(PlayerCommandPreprocessEvent e){
+        if (e.isCancelled() || e.getMessage() == null)
             return;
-
-        e.setCancelled(true);
 
         String msg = e.getMessage().substring(1);
         //PREFIX 제거 후 공백으로 나눔
-        int spaceIndex = msg.indexOf(" ");
-        String commandStr = msg.substring(CommandManager.COMMAND_PREFIX.length(), spaceIndex != -1 ? spaceIndex - 1 : msg.length());
+        String commandStr = msg.split(" ")[0];
 
         ICommand command = getManager().getCommand(commandStr);
 
@@ -41,8 +43,53 @@ public class CommandListener extends MiniPlugin implements Listener {
             return;
         }
 
-        String[] args = msg.substring(commandStr.length()).split(" ");
+        e.setCancelled(true);
+
+        if (getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < command.getRequiredRankLevel()) {
+            e.getPlayer().sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "CommandManager", "권한 레벨이 " + command.getRequiredRankLevel() + " 이상 필요 합니다"));
+            return;
+        }
+
+        String[] args = msg.length() != commandStr.length() ? parseArguments(msg.substring(commandStr.length() + 1)) : new String[0];
 
         command.onCommand(e.getPlayer(), args);
+    }
+
+    public String[] parseArguments(String rawArguments) {
+        List<String> argList = new ArrayList<>();
+
+        String buffer = "";
+
+        char[] charArray = rawArguments.toCharArray();
+        boolean stringMode = false;
+
+        for (int i = 0; i < charArray.length; i++) {
+            char c = charArray[i];
+
+            if (c == '\\') {
+                buffer += charArray[++i];
+                continue;
+            } else if (c == '"') {
+                stringMode = !stringMode;
+                continue;
+            }
+
+            if (stringMode) {
+                buffer += c;
+            }
+            else {
+                if (c == ' ') {
+                    argList.add(buffer);
+                    buffer = "";
+                } else {
+                    buffer += c;
+                }
+            }
+        }
+
+        if (buffer != "")
+            argList.add(buffer);
+
+        return argList.toArray(new String[argList.size()]);
     }
 }

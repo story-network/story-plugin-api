@@ -17,7 +17,7 @@ public class PluginDataStorage extends Storage<byte[]> {
     }
 
     public File getDataFolder(){
-        return getPlugin().getDataFolder();
+        return getPlugin().getOriginalDataFolder();
     }
 
     protected File getFile(String name){
@@ -26,7 +26,14 @@ public class PluginDataStorage extends Storage<byte[]> {
 
     @Override
     public boolean saveSync(byte[] data, String name) throws IOException {
-        BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(getFile(name)));
+        File file = getFile(name);
+
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+        }
+
+        BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(file));
 
         writer.write(data);
         writer.close();
@@ -39,6 +46,12 @@ public class PluginDataStorage extends Storage<byte[]> {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         File file = getFile(name);
+
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+        }
+
         BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
 
         byte[] readBuffer = new byte[2048];
