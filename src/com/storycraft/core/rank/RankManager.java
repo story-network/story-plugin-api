@@ -89,6 +89,6 @@ public class RankManager extends MiniPlugin implements ICommand {
         ServerRank rank = ServerRank.valueOf(rankName);
 
         getPlugin().getRankManager().setRank(p, rank);
-        player.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PlayerRank", p.getName() + " 의 랭크는 이제 " + rank.name() + " 입니다"));
+        player.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PlayerRank", p.getName() + " 의 랭크는 이제 " + rank.name() + " 입니다"));
     }
 }

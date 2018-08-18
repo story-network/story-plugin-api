@@ -171,6 +171,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
         }
         else {
             getPlugin().getLogger().warning(e.getPlayer().getName() + " 의 패킷 핸들러 삽입이 실패 했습니다.");
+            e.getPlayer().kickPlayer("Server Handler is not loaded yet");
         }
     }
 

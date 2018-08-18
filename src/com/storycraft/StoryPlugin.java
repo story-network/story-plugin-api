@@ -17,6 +17,7 @@ import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.plugin.IngamePluginManager;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.saving.AutoSaveManager;
+import com.storycraft.core.world.WorldTeleporter;
 import com.storycraft.server.ServerManager;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.storage.PluginDataStorage;
@@ -93,6 +94,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new HomeManager());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new ForceReducedDebug());
+        loader.addMiniPlugin(new WorldTeleporter());
         loader.addMiniPlugin(new IngamePluginManager());
     }
 

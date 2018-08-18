@@ -17,8 +17,6 @@ import java.util.Set;
 
 public class WorldManager extends ServerExtension {
 
-    private static final String WORLD_PREFIX = "story-network";
-
     private boolean isLoaded;
     Map<String, CustomUniverse> universeList;
 
@@ -42,8 +40,8 @@ public class WorldManager extends ServerExtension {
     }
 
     private void loadUniverse() {
-        loadWorld(new TestUniverse("test", 123791234l));
-        loadWorld(new TestUniverse("nt", 292834791));
+        loadWorld(new TestUniverse("test", 432423));
+        loadWorld(new TestUniverse("nt", -126743892));
     }
 
     public CustomUniverse getByName(String name){
@@ -62,13 +60,15 @@ public class WorldManager extends ServerExtension {
         if (universe.isLoaded() || !isLoaded)
             return;
 
-        WorldCreator creator = new WorldCreator(WORLD_PREFIX + "-" + universe.getName())
+        WorldCreator creator = new WorldCreator(universe.getName())
                 .environment(universe.getEnvironment()).type(universe.getWorldType()).generateStructures(universe.isStructureGen()).seed(universe.getSeed());
 
         if (universe.hasCustomGenerator())
             creator.generator(universe.getChunkGenerator());
 
-        getPlugin().getServer().createWorld(creator);
+        if (getPlugin().getServer().getWorld(universe.getName()) != null)
+            getPlugin().getServer().createWorld(creator);
+
         universeList.putIfAbsent(universe.getName(), universe);
         universe.onLoad();
     }
@@ -90,14 +90,14 @@ public class WorldManager extends ServerExtension {
     }
 
     public World getBukkitWorld(CustomUniverse universe) {
-        return getBukkitWorld(WORLD_PREFIX + "-" + universe.getName());
+        return getBukkitWorld(universe.getName());
     }
 
     public World getBukkitWorld(String name) {
         if (!contains(name))
             return null;
 
-        return getPlugin().getServer().getWorld(WORLD_PREFIX + "-" + name);
+        return getPlugin().getServer().getWorld(name);
     }
 
     public void unloadAll(){
