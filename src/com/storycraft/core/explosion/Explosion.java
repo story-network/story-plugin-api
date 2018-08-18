@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -119,8 +120,10 @@ class ExplosionHandler implements Listener {
                 if (vec.getY() < 0)
                     vec.setY(vec.getY() * -1);
 
+                BlockData data = b.getBlockData();
+
                 getExplosion().runSync(() -> {
-                    FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getBlockData());
+                    FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), data);
 
                     fb.setHurtEntities(true);
                     fb.setDropItem(false);
@@ -143,8 +146,8 @@ class ExplosionHandler implements Listener {
         else {
             Parallel.forEach(blockList, new Parallel.Operation<Block>() {
                 @Override
-                public void run(Block param) {
-                    handle.apply(param);
+                public void run(Block b) {
+                    handle.apply(b);
                 }
             });
         }
