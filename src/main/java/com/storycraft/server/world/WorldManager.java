@@ -91,17 +91,6 @@ public class WorldManager extends ServerExtension {
         getPlugin().getServer().unloadWorld(universe.getBukkitWorld(), universe.canSave());
     }
 
-    public World getBukkitWorld(CustomUniverse universe) {
-        return getBukkitWorld(universe.getName());
-    }
-
-    public World getBukkitWorld(String name) {
-        if (!contains(name))
-            return null;
-
-        return getPlugin().getServer().getWorld(name);
-    }
-
     public void unloadAll(){
         Collection<CustomUniverse> universeSet = universeList.values();
         for (CustomUniverse universe : universeSet){
