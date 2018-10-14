@@ -11,7 +11,7 @@ public class SimpleHologram extends Hologram {
 
     @Override
     protected Entity createHologramEntity(int line) {
-        EntityArmorStand stand = new EntityArmorStand(((CraftWorld)getLocation().getWorld()).getHandle(), getLocation().getX(), getLocation().getY() - 0.4875d - line * 0.25d, getLocation().getZ());
+        EntityArmorStand stand = new EntityArmorStand(((CraftWorld)getLocation().getWorld()).getHandle(), getLocation().getX(), getLocation().getY() - line * 0.25d, getLocation().getZ());
 
         stand.setCustomNameVisible(true);
         stand.setSmall(true);

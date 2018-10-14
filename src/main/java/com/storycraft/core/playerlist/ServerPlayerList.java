@@ -3,7 +3,6 @@ package com.storycraft.core.playerlist;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
-import com.storycraft.util.reflect.Reflect;
 import net.minecraft.server.v1_13_R2.ChatComponentText;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerListHeaderFooter;
 import org.bukkit.event.EventHandler;
@@ -17,9 +16,6 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
 
     private boolean needUpdate;
 
-    private Reflect.WrappedField<ChatComponentText, PacketPlayOutPlayerListHeaderFooter> packetHeaderField;
-    private Reflect.WrappedField<ChatComponentText, PacketPlayOutPlayerListHeaderFooter> packetFooterField;
-
     public ServerPlayerList(){
         this.headerText = "";
         this.footerText = "";
@@ -30,9 +26,6 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
     @Override
     public void onEnable(){
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
-
-        this.packetHeaderField = Reflect.getField(PacketPlayOutPlayerListHeaderFooter.class, "a");
-        this.packetFooterField = Reflect.getField(PacketPlayOutPlayerListHeaderFooter.class, "b");
 
         setHeaderText(getPlugin().getServerName());
         setFooterText(getPlugin().getServerName());
@@ -80,8 +73,8 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
     private PacketPlayOutPlayerListHeaderFooter createHeaderFooterPacket(){
         PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
 
-        packetHeaderField.set(packet, new ChatComponentText(getHeaderText()));
-        packetFooterField.set(packet, new ChatComponentText(getFooterText()));
+        packet.header = new ChatComponentText(getHeaderText());
+        packet.footer = new ChatComponentText(getFooterText());
 
         return packet;
     }
