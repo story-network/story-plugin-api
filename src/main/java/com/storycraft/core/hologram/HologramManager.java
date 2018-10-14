@@ -3,8 +3,8 @@ package com.storycraft.core.hologram;
 import com.storycraft.StoryPlugin;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.server.clientside.ClientEntityManager;
-import net.minecraft.server.v1_13_R1.ChatComponentText;
-import net.minecraft.server.v1_13_R1.Entity;
+import net.minecraft.server.v1_13_R2.ChatComponentText;
+import net.minecraft.server.v1_13_R2.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

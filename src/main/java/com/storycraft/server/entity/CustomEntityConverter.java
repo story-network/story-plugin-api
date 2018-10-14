@@ -2,8 +2,8 @@ package com.storycraft.server.entity;
 
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.reflect.Reflect;
-import net.minecraft.server.v1_13_R1.EntityTypes;
-import net.minecraft.server.v1_13_R1.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_13_R2.EntityTypes;
+import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -28,7 +28,7 @@ public class CustomEntityConverter implements Listener {
 
             EntityTypes type = serverEntityRegistry.getById(c.get(packet));
             if (serverEntityRegistry.contains(type)) {
-                c.set(packet, EntityTypes.REGISTRY.a(type));
+                c.set(packet, net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(type));
             }
         }
     }

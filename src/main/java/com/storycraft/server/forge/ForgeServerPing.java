@@ -1,8 +1,8 @@
 package com.storycraft.server.forge;
 
 import com.google.gson.*;
-import net.minecraft.server.v1_13_R1.IChatBaseComponent;
-import net.minecraft.server.v1_13_R1.ServerPing;
+import net.minecraft.server.v1_13_R2.IChatBaseComponent;
+import net.minecraft.server.v1_13_R2.ServerPing;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

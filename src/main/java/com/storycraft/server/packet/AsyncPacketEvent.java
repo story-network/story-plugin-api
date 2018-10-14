@@ -1,7 +1,7 @@
 package com.storycraft.server.packet;
 
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_13_R1.Packet;
+import net.minecraft.server.v1_13_R2.Packet;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

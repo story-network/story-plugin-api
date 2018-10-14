@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.data.AnaloguePowerable;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_13_R1.block.data.CraftAnaloguePowerable;
+import org.bukkit.craftbukkit.v1_13_R2.block.data.CraftAnaloguePowerable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

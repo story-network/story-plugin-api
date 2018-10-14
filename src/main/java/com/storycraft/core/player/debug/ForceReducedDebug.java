@@ -5,7 +5,7 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.reflect.Reflect;
-import net.minecraft.server.v1_13_R1.PacketPlayOutLogin;
+import net.minecraft.server.v1_13_R2.PacketPlayOutLogin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 

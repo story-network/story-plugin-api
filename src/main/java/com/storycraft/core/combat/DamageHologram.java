@@ -5,7 +5,7 @@ import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.HologramManager;
 import com.storycraft.core.hologram.ShortHologram;
 import com.storycraft.server.clientside.ClientEntityManager;
-import net.minecraft.server.v1_13_R1.*;
+import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;

@@ -1,7 +1,7 @@
 package com.storycraft.util;
 
 import com.storycraft.util.reflect.Reflect;
-import net.minecraft.server.v1_13_R1.*;
+import net.minecraft.server.v1_13_R2.*;
 
 public class EntityPacketUtil {
 

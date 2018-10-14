@@ -18,14 +18,12 @@ compileTestJava.options.encoding = "UTF-8"
 mainClassName = 'com.storycraft.StoryPlugin'
 
 repositories {
-    // Use 'jcenter' for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
 
 }
 
 dependencies {
-    // The production code uses the SLF4J logging API at compile time
-    compile files('../Server/server.jar')
+    // add Server jar
+    compileOnly files('../Server/server.jar')
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the

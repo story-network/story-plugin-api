@@ -3,7 +3,7 @@ package com.storycraft.server.entity;
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.registry.IRegistry;
 import com.storycraft.server.registry.RegistryManager;
-import net.minecraft.server.v1_13_R1.*;
+import net.minecraft.server.v1_13_R2.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class ServerEntityRegistry implements IRegistry<EntityTypes> {
         EntityTypes entityTypes = EntityTypes.a(entityName, a);
 
 
-        EntityTypes.REGISTRY.a(saveKey, entityTypes);
+        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(saveKey, entityTypes);
 
         clientEntityMap.put(entityTypes, clientEntityTypes);
     }
@@ -65,7 +65,7 @@ public class ServerEntityRegistry implements IRegistry<EntityTypes> {
 
     @Override
     public EntityTypes getById(int id) {
-        return EntityTypes.REGISTRY.getId(id);
+        return net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.fromId(id);
     }
 
     public EntityTypes getClientEntityTypes(EntityTypes entityTypes) {

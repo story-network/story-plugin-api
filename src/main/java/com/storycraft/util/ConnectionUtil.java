@@ -1,11 +1,11 @@
 package com.storycraft.util;
 
-import net.minecraft.server.v1_13_R1.Packet;
-import net.minecraft.server.v1_13_R1.PlayerConnection;
+import net.minecraft.server.v1_13_R2.Packet;
+import net.minecraft.server.v1_13_R2.PlayerConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_13_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
