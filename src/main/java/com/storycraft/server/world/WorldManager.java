@@ -8,7 +8,10 @@ import org.bukkit.Chunk;
 
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.entity.Player;
+
+import net.minecraft.server.v1_13_R2.MinecraftServer;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,7 +26,7 @@ public class WorldManager extends ServerExtension {
     public WorldManager(){
         this.universeList = new HashMap<>();
         this.isLoaded = false;
-}
+    }
 
     @Override
     public void onLoad(StoryPlugin plugin){
@@ -69,10 +72,11 @@ public class WorldManager extends ServerExtension {
         if (getPlugin().getServer().getWorld(universe.getName()) != null) {
             getPlugin().getServer().unloadWorld(universe.getName(), true);
         }
-            getPlugin().getServer().createWorld(creator);
+        
+        World w = getPlugin().getServer().createWorld(creator);
 
         universeList.putIfAbsent(universe.getName(), universe);
-        universe.onLoad();
+        universe.load(w);
     }
 
     public void unloadWorld(CustomUniverse universe){
@@ -87,7 +91,7 @@ public class WorldManager extends ServerExtension {
             chunk.unload(universe.canSave());
         }
 
-        universe.onUnload();
+        universe.unload();
         getPlugin().getServer().unloadWorld(universe.getBukkitWorld(), universe.canSave());
     }
 

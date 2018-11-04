@@ -1,12 +1,13 @@
 package com.storycraft;
 
+import com.mojang.authlib.yggdrasil.response.User;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.chat.ChatManager;
 import com.storycraft.core.combat.DamageHologram;
-import com.storycraft.core.player.debug.ForceReducedDebug;
+import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
 import com.storycraft.core.combat.FastCombat;
@@ -25,12 +26,22 @@ import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.storage.TempStorage;
 import com.storycraft.test.TestFunction;
 import com.storycraft.util.reflect.Reflect;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.minecraft.server.v1_13_R2.MinecraftServer;
+import net.minecraft.server.v1_13_R2.World;
+import net.minecraft.server.v1_13_R2.WorldServer;
+
 import java.io.*;
+import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Proxy;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.util.function.Function;
@@ -94,7 +105,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new JukeboxPlay());
         loader.addMiniPlugin(new HomeManager());
         loader.addMiniPlugin(new AutoSaveManager());
-        loader.addMiniPlugin(new ForceReducedDebug());
+        loader.addMiniPlugin(new UserDebug());
         loader.addMiniPlugin(new WorldTeleporter());
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new PlayerCustomSkin());
@@ -227,5 +238,9 @@ public class StoryPlugin extends JavaPlugin {
 
     public static void main(String[] args){
         System.out.println("이 프로그램은 단독 실행 될수 없습니다");
+    }
+
+    public static void premain(String args, Instrumentation inst) throws Exception {
+        System.out.println("Story Server Preloaded");
     }
 }

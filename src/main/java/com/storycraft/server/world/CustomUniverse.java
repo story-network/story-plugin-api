@@ -2,7 +2,10 @@ package com.storycraft.server.world;
 
 import org.bukkit.World;
 import org.bukkit.WorldType;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.generator.ChunkGenerator;
+
+import net.minecraft.server.v1_13_R2.MinecraftServer;
 
 import java.util.Random;
 
@@ -12,6 +15,8 @@ public abstract class CustomUniverse {
 
     private World world;
     private boolean isLoaded;
+
+    private PatchedWorldServer worldProxy;
 
     private long seed;
     private boolean structureGen;
@@ -36,11 +41,7 @@ public abstract class CustomUniverse {
     }
 
     public CustomUniverse(World world){
-        this.name = world.getName();
-        this.world = world;
-        this.seed = world.getSeed();
-        this.isLoaded = true;
-        this.structureGen = world.canGenerateStructures();
+        load(world);
     }
 
     public String getName() {
@@ -55,13 +56,30 @@ public abstract class CustomUniverse {
         return structureGen;
     }
 
-    public void onLoad(){
+    public void load(World world){
+        this.world = world;
+        name = world.getName();
+        seed = world.getSeed();
+        isLoaded = true;
+        structureGen = world.canGenerateStructures();
+        
+        worldProxy = createWorldProxy();
+        worldProxy.initialize(((CraftWorld)world).getHandle());
+        worldProxy.updateFromOriginal();
+        MinecraftServer.getServer().worldServer.replace(worldProxy.getOriginal().dimension, worldProxy.getOriginal(), worldProxy);
 
+        onLoad();
     }
 
-    public void onUnload(){
+    public void unload(){
+        worldProxy.updateOriginal();
+        MinecraftServer.getServer().worldServer.replace(worldProxy.getOriginal().dimension, worldProxy, worldProxy.getOriginal());
 
+        onUnload();
     }
+
+    public abstract void onLoad();
+    public abstract void onUnload();
 
     public void setStructureGen(boolean structureGen){
         if (isLoaded())
@@ -105,6 +123,14 @@ public abstract class CustomUniverse {
 
     public ChunkGenerator getChunkGenerator(){
         return null;
+    }
+
+    public PatchedWorldServer createWorldProxy() {
+        return new PatchedWorldServer();
+    }
+    
+    public PatchedWorldServer getWorldProxy() {
+        return worldProxy;
     }
 
 }

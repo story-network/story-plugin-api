@@ -9,7 +9,7 @@ import net.minecraft.server.v1_13_R2.PacketPlayOutLogin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class ForceReducedDebug extends MiniPlugin implements Listener {
+public class UserDebug extends MiniPlugin implements Listener {
 
     public static final int REQUIRED_RANK_LEVEL = ServerRank.DEVELOPER.getRankLevel();
 
@@ -21,6 +21,12 @@ public class ForceReducedDebug extends MiniPlugin implements Listener {
 
     public void onEnable(){
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
+
+        patchServerName();
+    }
+
+    public void patchServerName() {
+
     }
 
     @EventHandler
