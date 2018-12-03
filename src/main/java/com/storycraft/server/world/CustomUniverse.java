@@ -6,7 +6,7 @@ import org.bukkit.generator.ChunkGenerator;
 
 import java.util.Random;
 
-public abstract class CustomUniverse {
+public abstract class CustomUniverse implements IUniverse {
 
     private String name;
 
@@ -51,7 +51,7 @@ public abstract class CustomUniverse {
         return structureGen;
     }
 
-    public void load(World world){
+    protected void load(World world){
         this.world = world;
         name = world.getName();
         seed = world.getSeed();
@@ -61,7 +61,7 @@ public abstract class CustomUniverse {
         onLoad();
     }
 
-    public void unload(){
+    protected void unload(){
         onUnload();
     }
 

@@ -5,7 +5,7 @@ import com.storycraft.server.ServerExtension;
 import com.storycraft.server.world.universe.TestUniverse;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
@@ -22,7 +22,11 @@ import java.util.Set;
 public class WorldManager extends ServerExtension {
 
     private boolean isLoaded;
-    Map<String, CustomUniverse> universeList;
+    Map<String, IUniverse> universeList;
+
+    private DefaultUniverse defaultOverworld;
+    private DefaultUniverse defaultNether;
+    private DefaultUniverse defaultTheEnd;
 
     public WorldManager(){
         this.universeList = new HashMap<>();
@@ -34,6 +38,7 @@ public class WorldManager extends ServerExtension {
         this.isLoaded = true;
         //pre set plugin
         setPlugin(plugin);
+        loadDefault();
         loadUniverse();
     }
 
@@ -43,12 +48,35 @@ public class WorldManager extends ServerExtension {
             unloadAll();
     }
 
+    private void loadDefault() {
+        Server server = getPlugin().getServer();
+        loadDefaultWorld(defaultOverworld = new DefaultUniverse(server.getWorld("world")));
+
+        if (server.getAllowNether())
+            loadDefaultWorld(defaultNether = new DefaultUniverse(server.getWorld("world_nether")));
+
+        if (server.getAllowEnd())
+            loadDefaultWorld(defaultTheEnd = new DefaultUniverse(server.getWorld("world_the_end")));
+    }
+
     private void loadUniverse() {
         loadWorld(new TestUniverse("test", 432423));
         loadWorld(new TestUniverse("nt", -126743892));
     }
 
-    public CustomUniverse getByName(String name){
+    public DefaultUniverse getDefaultOverworld() {
+        return defaultOverworld;
+    }
+
+    public DefaultUniverse getDefaultNether() {
+        return defaultNether;
+    }
+
+    public DefaultUniverse getDefaultTheEnd() {
+        return defaultTheEnd;
+    }
+
+    public IUniverse getByName(String name){
         return universeList.get(name);
     }
 
@@ -56,8 +84,12 @@ public class WorldManager extends ServerExtension {
         return universeList.containsKey(name);
     }
 
-    public boolean contains(CustomUniverse universe){
+    public boolean contains(IUniverse universe){
         return universeList.containsValue(universe);
+    }
+
+    protected void loadDefaultWorld(DefaultUniverse universe) {
+        universeList.putIfAbsent(universe.getName(), universe);
     }
 
     public void loadWorld(CustomUniverse universe){
@@ -84,10 +116,6 @@ public class WorldManager extends ServerExtension {
         if (!universe.isLoaded() || !isLoaded || !universeList.remove(universe.getName(), universe))
             return;
 
-        for (Player p : universe.getBukkitWorld().getPlayers()){
-            p.kickPlayer(ChatColor.YELLOW + universe.getName() + ChatColor.RESET + " 이 언로드 되었습니다");
-        }
-
         for (Chunk chunk : universe.getBukkitWorld().getLoadedChunks()){
             chunk.unload(universe.canSave());
         }
@@ -97,9 +125,11 @@ public class WorldManager extends ServerExtension {
     }
 
     public void unloadAll(){
-        Collection<CustomUniverse> universeSet = new ArrayList<>(universeList.values());
-        for (CustomUniverse universe : universeSet){
-            unloadWorld(universe);
+        Collection<IUniverse> universeSet = new ArrayList<>(universeList.values());
+        for (IUniverse universe : universeSet){
+
+            if (universe instanceof CustomUniverse)
+                unloadWorld((CustomUniverse) universe);
         }
     }
 }
