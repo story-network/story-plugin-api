@@ -96,7 +96,8 @@ public class HologramManager extends MiniPlugin {
         if (!contains(hologram))
             return;
 
-        for (Entity e : hologramListMap.get(hologram)){
+        List<Entity> hologramList = hologramListMap.get(hologram);
+        for (Entity e : hologramList) {
             manager.removeClientEntity(e);
         }
 

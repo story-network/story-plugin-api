@@ -3,7 +3,6 @@ package com.storycraft.server.world.universe;
 import javax.annotation.Nullable;
 
 import com.storycraft.server.world.CustomUniverse;
-import com.storycraft.server.world.PatchedWorldServer;
 
 import org.bukkit.World;
 import org.bukkit.WorldType;
@@ -30,10 +29,6 @@ public class TestUniverse extends CustomUniverse {
         return World.Environment.NORMAL;
     }
 
-    public PatchedWorldServer createWorldProxy() {
-        return new PatchedWorldServer();
-    }
-
     @Override
     public void onLoad() {
 
@@ -42,14 +37,5 @@ public class TestUniverse extends CustomUniverse {
     @Override
     public void onUnload() {
 
-    }
-
-    public class CutomizedWorldProxy extends PatchedWorldServer {
-        @Override
-        public void save(boolean flag, @Nullable IProgressUpdate iprogressupdate) throws ExceptionWorldConflict {
-            super.save(flag, iprogressupdate);
-
-            System.out.print("saved!");
-        }
     }
 }

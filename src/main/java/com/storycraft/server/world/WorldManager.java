@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import net.minecraft.server.v1_13_R2.MinecraftServer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,7 +97,7 @@ public class WorldManager extends ServerExtension {
     }
 
     public void unloadAll(){
-        Collection<CustomUniverse> universeSet = universeList.values();
+        Collection<CustomUniverse> universeSet = new ArrayList<>(universeList.values());
         for (CustomUniverse universe : universeSet){
             unloadWorld(universe);
         }

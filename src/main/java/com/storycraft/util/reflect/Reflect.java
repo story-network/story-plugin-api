@@ -21,8 +21,9 @@ public class Reflect {
             Field field = getDeclaredField(c, name);
 
             return new WrappedField<>(field);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             System.out.println("Error to get " + name + " : " + e.getMessage());
+            e.printStackTrace();
         }
 
         return null;
@@ -34,8 +35,9 @@ public class Reflect {
             field.setAccessible(true);
 
             return field;
-        } catch (NoSuchFieldException e) {
+        } catch (Exception e) {
             System.out.println(name + " field in " + c.getName() + " not found");
+            e.printStackTrace();
         }
 
         return null;
@@ -55,7 +57,7 @@ public class Reflect {
 
             return new WrappedMethod<>(method);
 
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             System.out.println("Error to get " + name + " : " + e.getMessage());
             e.printStackTrace();
         }
@@ -69,8 +71,9 @@ public class Reflect {
             method.setAccessible(true);
 
             return method;
-        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
             System.out.println(name + " method in " + c.getName() + " not found");
+            e.printStackTrace();
         }
 
         return null;
@@ -95,8 +98,9 @@ public class Reflect {
         public T get(C object){
             try {
                 return (T) field.get(object);
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 System.out.println("Error to get " + getName() + " : " + e.getMessage());
+                e.printStackTrace();
             }
 
             return null;
@@ -105,8 +109,9 @@ public class Reflect {
         public void set(C object, T value){
             try {
                 field.set(object, value);
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 System.out.println("Error to set " + getName() + " : " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -130,8 +135,9 @@ public class Reflect {
         public T invoke(C object, Object... objects){
             try {
                 return (T) method.invoke(object, objects);
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                System.out.println("Error to invoke " + getName() + " : " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error to invoke " + getName() + " : " + e.getLocalizedMessage());
+                e.printStackTrace();
             }
 
             return null;

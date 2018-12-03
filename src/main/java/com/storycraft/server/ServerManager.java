@@ -5,7 +5,7 @@ import com.storycraft.server.clientside.ClientSideManager;
 import com.storycraft.server.event.client.ClientEventManager;
 import com.storycraft.server.forge.ForgeServerManager;
 import com.storycraft.server.packet.ServerNetworkManager;
-
+import com.storycraft.server.plugin.CorePluginUpdater;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.server.registry.RegistryManager;
 import com.storycraft.server.event.server.ServerEventManager;
@@ -29,6 +29,8 @@ public class ServerManager {
     private ServerEventManager serverEventManager;
     private ClientEventManager clientEventManager;
 
+    private CorePluginUpdater corePluginUpdater;
+
     private List<ServerExtension> extensionList;
 
     public ServerManager(StoryPlugin plugin) {
@@ -47,6 +49,7 @@ public class ServerManager {
         addServerExtension(registryManager = new RegistryManager());
         addServerExtension(serverEventManager = new ServerEventManager());
         addServerExtension(clientEventManager = new ClientEventManager());
+        addServerExtension(corePluginUpdater = new CorePluginUpdater());
     }
 
     protected List<ServerExtension> getExtensionList() {
@@ -98,5 +101,9 @@ public class ServerManager {
 
     public ClientSideManager getClientSideManager() {
         return clientSideManager;
+    }
+
+    public CorePluginUpdater getCorePluginUpdater() {
+        return corePluginUpdater;
     }
 }

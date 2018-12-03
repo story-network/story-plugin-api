@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 import java.util.*;
 
@@ -100,13 +101,15 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        for (Player p : plugin.getServer().getOnlinePlayers()) {
-            injectPlayer(p);
-        }
+        
     }
 
     @Override
     public void onEnable(){
+        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+            injectPlayer(p);
+        }
+
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
@@ -171,7 +174,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
         }
         else {
             getPlugin().getLogger().warning(e.getPlayer().getName() + " 의 패킷 핸들러 삽입이 실패 했습니다.");
-            e.getPlayer().kickPlayer("Server Handler is not loaded yet");
+            e.disallow(Result.KICK_OTHER, "Server Handler is not loaded yet");
         }
     }
 
@@ -214,6 +217,11 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
         Channel channel = getChannel(p);
 
+        if (channel == null) {
+            getPlugin().getLogger().warning("플레이어 " + p.getName() + " 채널에 핸들러를 삽입할 수 없습니다.");
+            return false;
+        }
+
         injectChannelInternal(channel, true);
 
         ((CustomPacketEncoder) channel.pipeline().get("encoder")).player = p;
@@ -247,7 +255,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
             return channel;
         } catch (Exception e) {
-            getPlugin().getLogger().warning("플레이어 " + p.getName() + " 채널을 찾을 수 없습니다. 로그인된 플레이어가 맞나요?");
+            
         }
 
         return null;

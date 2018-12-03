@@ -13,6 +13,8 @@ public class UserDebug extends MiniPlugin implements Listener {
 
     public static final int REQUIRED_RANK_LEVEL = ServerRank.DEVELOPER.getRankLevel();
 
+    private static final boolean DEFAULT = false;
+
     private Reflect.WrappedField<Boolean, PacketPlayOutLogin> reducedDebugField;
 
     public void onLoad(StoryPlugin plugin) {
@@ -38,7 +40,7 @@ public class UserDebug extends MiniPlugin implements Listener {
                 return;
             }
 
-            reducedDebugField.set(packet, true);
+            reducedDebugField.set(packet, DEFAULT);
         }
     }
 }

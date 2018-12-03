@@ -10,7 +10,6 @@ import com.storycraft.core.combat.DamageHologram;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
-import com.storycraft.core.combat.FastCombat;
 import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.explosion.Explosion;
 import com.storycraft.core.dropping.DropCounter;
@@ -98,7 +97,6 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new Explosion());
         loader.addMiniPlugin(new ChatManager());
         loader.addMiniPlugin(new EntityBlood());
-        loader.addMiniPlugin(new FastCombat());
         loader.addMiniPlugin(new DropCounter());
         loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(new DamageHologram());
@@ -127,8 +125,9 @@ public class StoryPlugin extends JavaPlugin {
                     Plugin plugin = getServer().getPluginManager().loadPlugin(originalPluginFile);
                     Reflect.getMethod(plugin.getClass(), "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
 
-                    if (Reflect.getField(plugin, "initalized").equals(false)) {
+                    if (Reflect.getField(plugin, "initalized").get(plugin).equals(false)) {
                         logger.warning("플러그인 로드가 실패 했습니다.");
+                        return null;
                     }
 
                     server.getPluginManager().enablePlugin(plugin);
@@ -153,7 +152,7 @@ public class StoryPlugin extends JavaPlugin {
                     Plugin plugin = getServer().getPluginManager().loadPlugin(getTempStorage().getPath().resolve(TEMP_FILE_NAME).toFile());
                     Reflect.getMethod(plugin.getClass(), "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
 
-                    if (Reflect.getField(plugin, "initalized").equals(false)) {
+                    if (Reflect.getField(plugin, "initalized").get(plugin).equals(false)) {
                         throw new Exception("플러그인이 pre init 되지 않았습니다");
                     }
 
@@ -233,7 +232,7 @@ public class StoryPlugin extends JavaPlugin {
     }
 
     public String getServerName(){
-        return ChatColor.GREEN + "Story Network";
+        return ChatColor.GREEN + "@";
     }
 
     public static void main(String[] args){
