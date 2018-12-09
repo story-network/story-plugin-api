@@ -2,11 +2,19 @@ package com.storycraft.command;
 
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.MessageUtil;
+
+import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.server.ServerCommandEvent;
+
+import net.minecraft.server.v1_13_R2.CommandBossBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,32 +37,41 @@ public class CommandListener extends MiniPlugin implements Listener {
 
     //lowest로 설정시 제일 먼저 호출됨
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onCommand(PlayerCommandPreprocessEvent e){
-        if (e.isCancelled() || e.getMessage() == null)
-            return;
+    public void onPlayerCommand(PlayerCommandPreprocessEvent e){
+        e.setCancelled(onCommandSent(e.getPlayer(), e.getMessage().substring(1)));
+    }
 
-        String msg = e.getMessage().substring(1);
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onServerCommand(ServerCommandEvent e){
+        e.setCancelled(onCommandSent(e.getSender(), e.getCommand()));
+    }
+
+    private boolean onCommandSent(CommandSender sender, String rawCommand) {
+        if (rawCommand == null)
+            return false;
+
         //PREFIX 제거 후 공백으로 나눔
-        String commandStr = msg.split(" ")[0];
+        String commandStr = rawCommand.split(" ")[0];
 
         ICommand command = getManager().getCommand(commandStr);
 
         if (command == null){
-            return;
+            return false;
         }
 
-        e.setCancelled(true);
-
-        if (getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < command.getRequiredRankLevel()) {
-            e.getPlayer().sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "CommandManager", "권한 레벨이 " + command.getRequiredRankLevel() + " 이상 필요 합니다"));
-            return;
+        if (sender instanceof Player && getPlugin().getRankManager().getRank((Player) sender).getRankLevel() < command.getRequiredRankLevel()) {
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "CommandManager", "권한 레벨이 " + command.getRequiredRankLevel() + " 이상 필요 합니다"));
+            return true;
         }
+        else if (sender instanceof ConsoleCommandSender && !command.availableOnConsole() || sender instanceof BlockCommandSender && !command.availableOnCommandBlock())
+            return true;
 
-        String[] args = msg.length() != commandStr.length() ? parseArguments(msg.substring(commandStr.length() + 1)) : new String[0];
+        command.onCommand(sender, parseArguments(commandStr.substring(commandStr.length())));
 
-        command.onCommand(e.getPlayer(), args);
+        return true;
     }
 
+    //Legacy
     public String[] parseArguments(String rawArguments) {
         List<String> argList = new ArrayList<>();
 

@@ -1,6 +1,10 @@
 package com.storycraft.command;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.storycraft.StoryPlugin;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -11,11 +15,14 @@ public class CommandManager {
     private StoryPlugin plugin;
     private CommandListener listener;
 
+    private CommandDispatcher<CommandSender> engine;
+
     private Map<String[], ICommand> commandMap = new HashMap<>();
 
     public CommandManager(StoryPlugin plugin){
         this.plugin = plugin;
         this.listener = new CommandListener(this);
+        this.engine = new CommandDispatcher<>();
 
         plugin.getMiniPluginLoader().addMiniPlugin(listener);
     }
@@ -37,6 +44,10 @@ public class CommandManager {
 
     public StoryPlugin getPlugin() {
         return plugin;
+    }
+
+    protected CommandDispatcher<CommandSender> getEngine() {
+        return engine;
     }
 
     protected Map<String[], ICommand> getCommandMap() {
