@@ -63,10 +63,14 @@ public class CommandListener extends MiniPlugin implements Listener {
             sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "CommandManager", "권한 레벨이 " + command.getRequiredRankLevel() + " 이상 필요 합니다"));
             return true;
         }
-        else if (sender instanceof ConsoleCommandSender && !command.availableOnConsole() || sender instanceof BlockCommandSender && !command.availableOnCommandBlock())
+        else if (sender instanceof ConsoleCommandSender && !command.availableOnConsole() || sender instanceof BlockCommandSender && !command.availableOnCommandBlock()) {
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "CommandManager", "콘솔 또는 커맨드 블록에서 사용 불가능한 커맨드 입니다"));
             return true;
+        }
 
-        command.onCommand(sender, parseArguments(commandStr.substring(commandStr.length())));
+        String[] args = msg.length() != commandStr.length() ? parseArguments(msg.substring(commandStr.length() + 1)) : new String[0];
+
+        command.onCommand(sender, args);
 
         return true;
     }
