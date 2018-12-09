@@ -68,7 +68,7 @@ public class CommandListener extends MiniPlugin implements Listener {
             return true;
         }
 
-        String[] args = msg.length() != commandStr.length() ? parseArguments(msg.substring(commandStr.length() + 1)) : new String[0];
+        String[] args = rawCommand.length() != commandStr.length() ? parseArguments(rawCommand.substring(commandStr.length() + 1)) : new String[0];
 
         command.onCommand(sender, args);
 
