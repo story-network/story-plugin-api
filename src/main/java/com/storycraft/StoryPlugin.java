@@ -1,6 +1,7 @@
 package com.storycraft;
 
 import com.mojang.authlib.yggdrasil.response.User;
+import com.storycraft.core.broadcast.BroadcastManager;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.core.MiniPluginLoader;
@@ -101,6 +102,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
+        loader.addMiniPlugin(new BroadcastManager());
         loader.addMiniPlugin(new HomeManager());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new UserDebug());

@@ -204,7 +204,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
             }
 
             default:
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "사용법 /plugin <enable/load/disable/unload>"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "사용법 /plugin <enable/load/disable/remove>"));
                 break;
         }
     }

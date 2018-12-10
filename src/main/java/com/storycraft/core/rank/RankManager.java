@@ -1,7 +1,5 @@
 package com.storycraft.core.rank;
 
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.ParseResults;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigFile;
@@ -51,6 +49,10 @@ public class RankManager extends MiniPlugin implements ICommand {
     @Override
     public int getRequiredRankLevel() {
         return ServerRank.DEVELOPER.getRankLevel();
+    }
+
+    public boolean hasPermission(Player p, ServerRank minRank) {
+        return getRank(p).getRankLevel() >= minRank.getRankLevel();
     }
 
     @Override

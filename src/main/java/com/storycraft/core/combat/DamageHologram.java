@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DamageHologram extends MiniPlugin implements Listener {
+    
     @Override
     public void onEnable(){
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());

@@ -113,6 +113,22 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
+    @Override
+    public void onDisable(boolean reload){
+        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+            uninjectPlayer(p);
+        }
+
+        List<ChannelFuture> channelFutureList = getChannelFutureList();
+
+        for (ChannelFuture channelFuture : channelFutureList) {
+            Channel channel = channelFuture.channel();
+
+            if (channel.pipeline().get(HANDLER_NAME) != null)
+                channel.pipeline().remove(HANDLER_NAME);
+        }
+    }
+
     protected AsyncPacketInEvent onPacketInAsync(Player p, Channel channel, Packet packet, PacketDeserializer deserializer) {
         AsyncPacketInEvent packetInEvent = new AsyncPacketInEvent(packet, channel, p, deserializer);
 
