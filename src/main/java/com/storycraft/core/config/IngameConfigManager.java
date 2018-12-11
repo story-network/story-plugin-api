@@ -106,8 +106,9 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                 }
 
                 JsonReader reader = new JsonReader(new StringReader(value));
-                entry.set(property[i], new JsonParser().parse(reader));
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", args[2] + " 을(를) " + value + " 로 설정 했습니다"));
+                JsonElement element = new JsonParser().parse(reader);
+                entry.set(property[i], element);
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", args[2] + " 을(를) " + element.toString() + " 로 설정 했습니다"));
 
                 break;
             }

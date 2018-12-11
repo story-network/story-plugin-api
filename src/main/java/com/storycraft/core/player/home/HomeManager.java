@@ -51,7 +51,7 @@ public class HomeManager extends MiniPlugin implements Listener {
 
             if (!e.getClickedBlock().getLocation().equals(e.getPlayer().getLocation()))
                 setPlayerHome(e.getPlayer(), e.getClickedBlock().getLocation());
-        }
+    }
 
     public void setPlayerHome(Player player, Location location) {
         setRespawnLocation(player, location);
@@ -66,7 +66,7 @@ public class HomeManager extends MiniPlugin implements Listener {
             e.setRespawnLocation(respawnLocation);
     }
 
-    public Location getRespawnLocation(Player p) {
+    public Location getRespawnLocation(OfflinePlayer p) {
         JsonConfigEntry entry;
 
         if (!homeConfigFile.contains(p.getUniqueId().toString()) || (entry = homeConfigFile.getObject(p.getUniqueId().toString())) == null)
@@ -120,7 +120,7 @@ public class HomeManager extends MiniPlugin implements Listener {
                     p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "HomeManager", "플레이어 " + targetPlayer + " 을(를) 찾을 수 없습니다"));
                 }
                 else {
-                    Location location = getRespawnLocation(p);
+                    Location location = getRespawnLocation(pl);
 
                     if (location == null) {
                         p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "HomeManager", "플레이어 " + targetPlayer + " 의 집이 설정되어있지 않습니다"));
@@ -129,7 +129,6 @@ public class HomeManager extends MiniPlugin implements Listener {
 
                     p.teleport(location);
                     p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "HomeManager", targetPlayer + " 의 집으로 이동되었습니다"));
-                    timeMap.put(p.getUniqueId(), System.currentTimeMillis());
                 }
             }
             else {
@@ -142,10 +141,11 @@ public class HomeManager extends MiniPlugin implements Listener {
 
                 if (isCoolTimeDone(p) || getPlugin().getRankManager().hasPermission(p, ServerRank.MOD)) {
                     p.teleport(location);
+                    timeMap.put(p.getUniqueId(), System.currentTimeMillis());
                     p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "HomeManager", "집으로 이동되었습니다"));
                 }
                 else {
-                    p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "HomeManager", "다음 커맨드 사용까지 " + Math.ceil((TELEPORT_COOLTIME - System.currentTimeMillis() - getLastTeleport(p)) / 1000) + " 초 더 기다려야 합니다"));
+                    p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "HomeManager", "다음 커맨드 사용까지 " + Math.ceil((TELEPORT_COOLTIME - (System.currentTimeMillis() - getLastTeleport(p))) / 1000) + " 초 더 기다려야 합니다"));
                 }
             }
         }

@@ -14,6 +14,7 @@ import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
 import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.explosion.Explosion;
+import com.storycraft.core.faq.FAQCommand;
 import com.storycraft.core.dropping.DropCounter;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.plugin.IngamePluginManager;
@@ -105,6 +106,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
         loader.addMiniPlugin(new BroadcastManager());
+        loader.addMiniPlugin(new FAQCommand());
         loader.addMiniPlugin(new HomeManager());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new UserDebug());

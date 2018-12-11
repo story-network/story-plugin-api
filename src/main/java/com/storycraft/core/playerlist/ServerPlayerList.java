@@ -53,7 +53,7 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
                 String[] header = new String[array.size()];
 
                 for (int i = 0; i < header.length; i++) {
-                    header[i] = array.get(i).toString();
+                    header[i] = array.get(i).getAsString();
                 }
 
                 setHeaderText(header);
@@ -72,7 +72,7 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
                 String[] footer = new String[array.size()];
 
                 for (int i = 0; i < footer.length; i++) {
-                    footer[i] = array.get(i).toString();
+                    footer[i] = array.get(i).getAsString();
                 }
 
                 setFooterText(footer);
@@ -102,7 +102,7 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
         this.headerText = headerText;
         Gson gson = new Gson();
 
-        configFile.set("header", gson.toJsonTree(headerText).getAsJsonArray());
+        configFile.set("header", gson.toJsonTree(headerText));
         update();
     }
 

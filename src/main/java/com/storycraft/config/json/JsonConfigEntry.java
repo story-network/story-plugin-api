@@ -72,8 +72,10 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
 
     @Override
     public void set(String key, Object value) {
-        if (value instanceof JsonArray)
-            getJsonObject().add(key, (JsonArray) value);
+        if (value instanceof JsonConfigEntry)
+            set(key, (JsonConfigEntry) value);
+        if (value instanceof JsonElement)
+            getJsonObject().add(key, (JsonElement) value);
         else 
             set(key, value.toString());
     }

@@ -90,7 +90,7 @@ public class CommandListener extends MiniPlugin implements Listener {
             if (c == '\\') {
                 buffer += charArray[++i];
                 continue;
-            } else if (c == '"') {
+            } else if (c == '\'') {
                 stringMode = !stringMode;
                 continue;
             }
