@@ -7,6 +7,7 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.util.MessageUtil;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -42,14 +43,14 @@ public class BroadcastManager extends MiniPlugin implements ICommand, Listener {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "Broadcast", "?��?���? /broadcast <메세�?>"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "Broadcast", "사용법 /broadcast <메세지>"));
             return;
         }
 
-        String message = String.join(" ", args);
+        String message = ChatColor.translateAlternateColorCodes('&', String.join(" ", args));
 
         for (Player p : getPlugin().getServer().getOnlinePlayers()) {
-            p.sendTitle(message, getPlugin().getServerName(), BROADCAST_FADE, BROADCAST_TIME, BROADCAST_FADE);
+            p.sendTitle(message, getPlugin().getServerName(), BROADCAST_FADE / 20, BROADCAST_TIME / 20, BROADCAST_FADE / 20);
         }
 
         sender.getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.TIP, "Broadcast", message));

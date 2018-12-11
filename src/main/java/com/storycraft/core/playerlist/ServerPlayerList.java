@@ -1,5 +1,9 @@
 package com.storycraft.core.playerlist;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.storycraft.StoryPlugin;
+import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
@@ -11,45 +15,88 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class ServerPlayerList extends MiniPlugin implements Listener {
 
-    private String headerText;
-    private String footerText;
+    private JsonConfigFile configFile;
 
     private boolean needUpdate;
 
-    public ServerPlayerList(){
-        this.headerText = "";
-        this.footerText = "";
+    private String[] headerText;
+    private String[] footerText;
 
+    public ServerPlayerList(){
         this.needUpdate = false;
+    }
+
+    @Override
+    public void onLoad(StoryPlugin plugin) {
+        plugin.getConfigManager().addConfigFile("tab.json", configFile = new JsonConfigFile()).run();
     }
 
     @Override
     public void onEnable(){
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
 
-        setHeaderText(getPlugin().getServerName());
-        setFooterText(getPlugin().getServerName());
+        try {
+            if (configFile.contains("header")) {
+                JsonArray array = configFile.get("header").getAsJsonArray();
+                String[] header = new String[array.size()];
+
+                for (int i = 0; i < header.length; i++) {
+                    header[i] = array.get(i).toString();
+                }
+
+                setHeaderText(header);
+            }
+            else {
+                setHeaderText(new String[] { getPlugin().getServerName() });
+            }
+        } catch (Exception e) {
+            setHeaderText(new String[] { getPlugin().getServerName() });
+        }
+
+        try {
+            if (configFile.contains("footer")) {
+                JsonArray array = configFile.get("footer").getAsJsonArray();
+                String[] footer = new String[array.size()];
+
+                for (int i = 0; i < footer.length; i++) {
+                    footer[i] = array.get(i).toString();
+                }
+
+                setFooterText(footer);
+            }
+            else {
+                setFooterText(new String[] { getPlugin().getServerName() });
+            }
+        } catch (Exception e) {
+            setFooterText(new String[] { getPlugin().getServerName() });
+        }
     }
 
     public void update(){
         this.needUpdate = true;
     }
 
-    public String getFooterText() {
+    public String[] getFooterText() {
         return footerText;
     }
 
-    public String getHeaderText() {
+    public String[] getHeaderText() {
         return headerText;
     }
 
-    public void setHeaderText(String headerText) {
+    public void setHeaderText(String[] headerText) {
         this.headerText = headerText;
+        Gson gson = new Gson();
+
+        configFile.set("header", gson.toJsonTree(headerText));
         update();
     }
 
-    public void setFooterText(String footerText) {
+    public void setFooterText(String[] footerText) {
         this.footerText = footerText;
+        Gson gson = new Gson();
+
+        configFile.set("footer", gson.toJsonTree(footerText));
         update();
     }
 
@@ -73,8 +120,8 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
     private PacketPlayOutPlayerListHeaderFooter createHeaderFooterPacket(){
         PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
 
-        packet.header = new ChatComponentText(getHeaderText());
-        packet.footer = new ChatComponentText(getFooterText());
+        packet.header = new ChatComponentText(String.join("\n", getHeaderText()));
+        packet.footer = new ChatComponentText(String.join("\n", getFooterText()));
 
         return packet;
     }
