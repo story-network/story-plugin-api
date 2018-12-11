@@ -47,8 +47,17 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     public void onEnable() {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
 
-        for (Player p : getPlugin().getServer().getOnlinePlayers())
+        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
             updatePlayerPerm(p);
+            updatePlayerName(p);
+        }
+    }
+
+    @Override
+    public void onDisable(boolean reload) {
+        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+            p.setPlayerListName(p.getName());
+        }
     }
 
     public ServerRank getRank(Player p) {
@@ -104,6 +113,7 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent e) {
         updatePlayerPerm(e.getPlayer());
+        updatePlayerName(e.getPlayer());
     }
 
     @EventHandler
@@ -116,6 +126,10 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
 
     protected void updatePlayerPerm(Player p) {
         p.getEffectivePermissions();
+    }
+
+    protected void updatePlayerName(Player p) {
+        p.setPlayerListName(getRank(p).getNameColor() + p.getName());
     }
 
     public boolean hasPermission(Player p, ServerRank minRank) {

@@ -14,7 +14,9 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class FAQCommand extends MiniPlugin implements ICommand {
 
@@ -23,6 +25,7 @@ public class FAQCommand extends MiniPlugin implements ICommand {
     @Override
     public void onLoad(StoryPlugin plugin) {
         plugin.getConfigManager().addConfigFile("faq.json", configFile = new JsonConfigFile()).run();
+        plugin.getCommandManager().addCommand(this);
     }
 
     @Override
@@ -46,6 +49,10 @@ public class FAQCommand extends MiniPlugin implements ICommand {
         }
 
         try {
+            if (sender instanceof Player) {//Let ppl know who did this command
+                ((Player) sender).chat(ChatColor.GRAY + "/faq " + String.join(" ", args));
+            }
+
             sender.getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Info", configFile.get(faq).getAsString()));
         } catch (Exception e) {
             sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "Info", "알수 없는 오류가 발생했습니다"));
