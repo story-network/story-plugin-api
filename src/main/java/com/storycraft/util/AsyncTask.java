@@ -55,7 +55,10 @@ public class AsyncTask<T> {
     public static abstract class AsyncCallable<T> implements AsyncSupplier<T> {
 
         public <A>A await(AsyncTask<A> task) throws Throwable {
-            return task.task.join();
+            if (task.task != null)
+                return task.task.join();
+            else
+                return task.getSync();
         }
     }
 

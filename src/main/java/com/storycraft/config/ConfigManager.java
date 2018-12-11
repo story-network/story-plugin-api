@@ -49,7 +49,7 @@ public class ConfigManager {
                 try {
                     IConfigFile configFile = getConfigFile(name);
                     configFile.load(new ByteArrayInputStream(getDataStorage().getSync(name)));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     getPlugin().getLogger().warning(name + " 로드 중 오류가 발생했습니다. " + e.getLocalizedMessage());
                 }
 
