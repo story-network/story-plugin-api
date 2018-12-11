@@ -15,18 +15,15 @@ import java.util.Date;
 
 public class ServerMotd extends MiniPlugin implements Listener {
 
-    private boolean loaded;
     private JsonConfigFile configFile;
-
-    public ServerMotd() {
-        this.loaded = false;
-    }
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        plugin.getConfigManager().addConfigFile("motd.json", configFile = new JsonConfigFile()).run().then((Void v, Throwable exception) -> {
-            this.loaded = true;
-        });
+        try {
+            plugin.getConfigManager().addConfigFile("motd.json", configFile = new JsonConfigFile()).getSync();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -52,10 +49,11 @@ public class ServerMotd extends MiniPlugin implements Listener {
     }
 
     public String getMotd() {
-        if (configFile.contains("motd") && loaded) {
+        if (configFile.contains("motd")) {
             try {
                 return configFile.get("motd").getAsString();
             } catch (Exception e) {
+                e.printStackTrace();
                 String defaultMotd = getPlugin().getServerName();
                 setMotd(defaultMotd);
 

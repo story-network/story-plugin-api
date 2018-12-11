@@ -1,10 +1,12 @@
 package com.storycraft.core.config;
 
+import java.io.StringReader;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.IConfigEntry;
@@ -103,7 +105,8 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                     }
                 }
 
-                entry.set(property[i], new JsonParser().parse(value));
+                JsonReader reader = new JsonReader(new StringReader(value));
+                entry.set(property[i], new JsonParser().parse(reader));
                 sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", args[2] + " 을(를) " + value + " 로 설정 했습니다"));
 
                 break;
@@ -132,7 +135,8 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                 IConfigEntry file = (IConfigEntry) getPlugin().getConfigManager().getConfigFile(name);
 
                 try {
-                    mergeObject(file, new JsonParser().parse(value).getAsJsonObject());
+                    JsonReader reader = new JsonReader(new StringReader(value));
+                    mergeObject(file, new JsonParser().parse(reader).getAsJsonObject());
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", "콘픽 " + name + " 을(를) 주어진 값과 합쳤습니다"));
                 } catch (Exception e) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "잘못된 Json 데이터입니다"));

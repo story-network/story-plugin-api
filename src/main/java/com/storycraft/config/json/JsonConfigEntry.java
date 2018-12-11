@@ -1,5 +1,6 @@
 package com.storycraft.config.json;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.storycraft.config.IConfigEntry;
@@ -71,7 +72,10 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
 
     @Override
     public void set(String key, Object value) {
-        set(key, value.toString());
+        if (value instanceof JsonArray)
+            getJsonObject().add(key, (JsonArray) value);
+        else 
+            set(key, value.toString());
     }
 
     @Override
