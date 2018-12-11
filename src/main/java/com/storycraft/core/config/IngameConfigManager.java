@@ -38,10 +38,10 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config <get/set/merge/save/reload/reload-disk>"));
+            return;
         }
 
         switch (args[0]) {
-
             case "get": {
                 if (args.length < 2) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config get <config 이름>"));
@@ -78,7 +78,7 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
 
                 String[] raw = new String[args.length - 3];
                 for (int i = 3; i < args.length; i++) {
-                    raw[i] = args[i];
+                    raw[i - 3] = args[i];
                 }
 
                 String value = String.join(" ", raw);
@@ -90,13 +90,13 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
 
                 IConfigFile file = getPlugin().getConfigManager().getConfigFile(name);
 
-                String[] property = args[2].split(".");
+                String[] property = args[2].split("\\.");
                 int length = property.length - 1;
                 int i;
                 IConfigEntry<?> entry = (IConfigEntry<?>) file;
                 for (i = 0; i < length; i++) {
                     if (entry.getObject(property[i]) == null) {
-                        entry.set(property[i], entry.createEntry());
+                        entry.set(property[i], entry = entry.createEntry());
                     }
                     else {
                         entry = entry.getObject(property[i]);
@@ -104,7 +104,7 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                 }
 
                 entry.set(property[i], new JsonParser().parse(value));
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", args[2] + " 를 " + value + " 로 설정 했습니다"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", args[2] + " 을(를) " + value + " 로 설정 했습니다"));
 
                 break;
             }
@@ -119,7 +119,7 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                 
                 String[] raw = new String[args.length - 2];
                 for (int i = 2; i < args.length; i++) {
-                    raw[i] = args[i];
+                    raw[i - 2] = args[i];
                 }
 
                 String value = String.join(" ", raw);
@@ -141,7 +141,7 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
             }
 
             case "save": {
-                if (args.length < 3) {
+                if (args.length < 2) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config save <config 이름>"));
                     return;
                 }
@@ -159,7 +159,7 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
             }
 
             case "reload": {
-                if (args.length < 3) {
+                if (args.length < 2) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config reload <config 이름>"));
                     return;
                 }
@@ -177,8 +177,8 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
             }
 
             case "reload-disk": {
-                if (args.length < 3) {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config reload <config 이름>"));
+                if (args.length < 2) {
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config reload-disk <config 이름>"));
                     return;
                 }
 
@@ -189,7 +189,7 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                     return;
                 }
 
-                getPlugin().getConfigManager().reloadConfig(name).then((Void result, Throwable throwable) -> {
+                getPlugin().getConfigManager().reloadConfig(name).run().then((Void result, Throwable throwable) -> {
                     getPlugin().getServer().getPluginManager().callEvent(new ConfigUpdateEvent(name, getPlugin().getConfigManager().getConfigFile(name)));
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", "콘픽 " + name + " 을(를) 저장소에서 리로드 했습니다"));
                 });
