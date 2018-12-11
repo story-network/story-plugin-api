@@ -8,6 +8,7 @@ import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.chat.ChatManager;
 import com.storycraft.core.combat.DamageHologram;
+import com.storycraft.core.config.IngameConfigManager;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
@@ -96,6 +97,7 @@ public class StoryPlugin extends JavaPlugin {
         MiniPluginLoader loader = getMiniPluginLoader();
         loader.addMiniPlugin(rankManager = new RankManager());
         loader.addMiniPlugin(new Explosion());
+        loader.addMiniPlugin(new IngameConfigManager());
         loader.addMiniPlugin(new ChatManager());
         loader.addMiniPlugin(new EntityBlood());
         loader.addMiniPlugin(new DropCounter());

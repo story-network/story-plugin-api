@@ -30,7 +30,7 @@ public class HologramXPDrop extends MiniPlugin implements Listener {
     public void onEntityDeath(EntityDeathEvent e){
         Player killer = e.getEntity().getKiller();
 
-        if (killer != null){
+        if (killer != null && e.getDroppedExp() > 0){
             int xp = e.getDroppedExp();
             e.setDroppedExp(0);
 

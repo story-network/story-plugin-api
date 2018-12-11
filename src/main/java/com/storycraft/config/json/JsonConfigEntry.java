@@ -90,4 +90,9 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
             return null;
         return new JsonConfigEntry(get(key).getAsJsonObject());
     }
+
+    @Override
+    public JsonConfigEntry createEntry() {
+        return new JsonConfigEntry();
+    }
 }

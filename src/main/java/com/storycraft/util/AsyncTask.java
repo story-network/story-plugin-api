@@ -18,8 +18,10 @@ public class AsyncTask<T> {
         this.supplier = supplier;
     }
 
-    public void run() {
+    public AsyncTask<T> run() {
         this.task = CompletableFuture.supplyAsync(this::runTask, executor);
+
+        return this;
     }
 
     private T runTask() {

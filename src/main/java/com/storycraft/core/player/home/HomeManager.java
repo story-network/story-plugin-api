@@ -29,7 +29,11 @@ public class HomeManager extends MiniPlugin implements Listener {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        plugin.getConfigManager().addConfigFile("home.json", homeConfigFile = new JsonConfigFile()).run();
+        try {
+            plugin.getConfigManager().addConfigFile("home.json", homeConfigFile = new JsonConfigFile()).getSync();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
         
         plugin.getCommandManager().addCommand(new HomeCommand());
         plugin.getCommandManager().addCommand(new SetHomeCommand());

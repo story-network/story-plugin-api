@@ -30,13 +30,25 @@ public class ConfigManager {
     public AsyncTask<Void> addConfigFile(String name, IConfigFile configFile) {
         return new AsyncTask<Void>(new AsyncTask.AsyncCallable<Void>() {
             @Override
-            public Void get() {
+            public Void get() throws Throwable {
                 if (hasConfigFile(name))
                     return null;
 
+                getConfigFileMap().put(name, configFile);
+                await(reloadConfig(name));
+
+                return null;
+            }
+        });
+    }
+
+    public AsyncTask<Void> reloadConfig(String name) {
+        return new AsyncTask<Void>(new AsyncTask.AsyncCallable<Void>() {
+            @Override
+            public Void get() {
                 try {
+                    IConfigFile configFile = getConfigFile(name);
                     configFile.load(new ByteArrayInputStream(getDataStorage().getSync(name)));
-                    getConfigFileMap().put(name, configFile);
                 } catch (IOException e) {
                     getPlugin().getLogger().warning(name + " 로드 중 오류가 발생했습니다. " + e.getLocalizedMessage());
                 }

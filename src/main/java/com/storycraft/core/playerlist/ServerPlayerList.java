@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
 import net.minecraft.server.v1_13_R2.ChatComponentText;
@@ -35,6 +36,17 @@ public class ServerPlayerList extends MiniPlugin implements Listener {
     public void onEnable(){
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
 
+        readFromConfig();
+    }
+
+    @EventHandler
+    public void onConfigUpdate(ConfigUpdateEvent e) {
+        if (configFile.equals(e.getConfig())) {
+            readFromConfig();
+        }
+    }
+
+    protected void readFromConfig() {
         try {
             if (configFile.contains("header")) {
                 JsonArray array = configFile.get("header").getAsJsonArray();

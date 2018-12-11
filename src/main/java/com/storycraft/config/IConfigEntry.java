@@ -16,5 +16,6 @@ public interface IConfigEntry<T extends IConfigEntry> {
 
     Object get(String key);
 
+    T createEntry();
     T getObject(String key);
 }

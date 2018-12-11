@@ -1,28 +1,54 @@
 package com.storycraft.core.rank;
 
+import com.google.gson.JsonArray;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.util.MessageUtil;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.StringJoiner;
 
-public class RankManager extends MiniPlugin implements ICommand {
+public class RankManager extends MiniPlugin implements ICommand, Listener {
 
     public static final ServerRank DEFAULT_RANK = ServerRank.USER;
 
     private JsonConfigFile configFile;
+    private JsonConfigFile permConfigFile;
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        plugin.getConfigManager().addConfigFile("rank.json", configFile = new JsonConfigFile()).run();
+        try {
+            plugin.getConfigManager().addConfigFile("rank.json", configFile = new JsonConfigFile()).getSync();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        try {
+            plugin.getConfigManager().addConfigFile("perm.json", permConfigFile = new JsonConfigFile()).getSync();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
         plugin.getCommandManager().addCommand(this);
+    }
+
+    @Override
+    public void onEnable() {
+        getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
+
+        for (Player p : getPlugin().getServer().getOnlinePlayers())
+            updatePlayerPerm(p);
     }
 
     public ServerRank getRank(Player p) {
@@ -51,6 +77,45 @@ public class RankManager extends MiniPlugin implements ICommand {
     @Override
     public int getRequiredRankLevel() {
         return ServerRank.DEVELOPER.getRankLevel();
+    }
+
+    public String[] getBukkitPerms(ServerRank rank) {
+        if (permConfigFile.contains(rank.name()) && permConfigFile.get(rank.name()).isJsonArray()) {
+            JsonArray array = permConfigFile.get(rank.name()).getAsJsonArray();
+
+            String[] list = new String[array.size()];
+            for (int i = 0; i < array.size(); i++) {
+                list[i] = array.get(i).getAsString();
+            }
+
+            return list;
+        }
+        else {
+            JsonArray array = new JsonArray();
+            for (String perm : rank.getDefaultPermission()) {
+                array.add(perm);
+            }
+            permConfigFile.set(rank.name(), array);
+
+            return rank.getDefaultPermission();
+        }
+    }
+
+    @EventHandler
+    public void onPlayerLogin(PlayerJoinEvent e) {
+        updatePlayerPerm(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onConfigUpdate(ConfigUpdateEvent e) {
+        if (permConfigFile.equals(e.getConfig())) {
+            for (Player p : getPlugin().getServer().getOnlinePlayers())
+                updatePlayerPerm(p);
+        }
+    }
+
+    protected void updatePlayerPerm(Player p) {
+        p.getEffectivePermissions();
     }
 
     public boolean hasPermission(Player p, ServerRank minRank) {
@@ -82,7 +147,7 @@ public class RankManager extends MiniPlugin implements ICommand {
     
             boolean found = false;
             for (ServerRank r : ServerRank.values()) {
-                if (r.name().equalsIgnoreCase(rankName)) {
+                if (r.name().equals(rankName)) {
                     found = true;
                     break;
                 }
