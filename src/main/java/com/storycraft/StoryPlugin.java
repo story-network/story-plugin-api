@@ -88,15 +88,22 @@ public class StoryPlugin extends JavaPlugin {
         this.miniPluginLoader = new MiniPluginLoader(this);
         this.localConfigManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
+
+        preInitMiniPlugin();
+
         this.serverManager = new ServerManager(this);
         this.decorator = new ServerDecorator(this);
 
         initMiniPlugin();
     }
 
-    private void initMiniPlugin() {
+    private void preInitMiniPlugin() {
         MiniPluginLoader loader = getMiniPluginLoader();
         loader.addMiniPlugin(rankManager = new RankManager());
+    }
+
+    private void initMiniPlugin() {
+        MiniPluginLoader loader = getMiniPluginLoader();
         loader.addMiniPlugin(new Explosion());
         loader.addMiniPlugin(new IngameConfigManager());
         loader.addMiniPlugin(new ChatManager());

@@ -41,8 +41,7 @@ public class PermissionManager extends ServerExtension implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin) {
         try {
-            plugin.getConfigManager().addConfigFile("permission.json", this.configFile = new JsonConfigFile())
-                    .getSync();
+            plugin.getConfigManager().addConfigFile("permission.json", this.configFile = new JsonConfigFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -68,7 +67,7 @@ public class PermissionManager extends ServerExtension implements Listener {
         List<String> list;
 
         JsonConfigEntry entry = configFile.getObject(rank.name());
-        if (entry == null)
+        if (configFile.getObject(rank.name()) == null)
             configFile.set(rank.name(), entry = configFile.createEntry());
 
         try {
@@ -91,7 +90,7 @@ public class PermissionManager extends ServerExtension implements Listener {
         List<String> list;
 
         JsonConfigEntry entry = configFile.getObject(rank.name());
-        if (entry == null)
+        if (configFile.getObject(rank.name()) == null)
             configFile.set(rank.name(), entry = configFile.createEntry());
 
         try {
@@ -142,8 +141,10 @@ public class PermissionManager extends ServerExtension implements Listener {
     public PermissibleManaged createManaged(Player p) {
         PermissibleManaged managed = new PermissibleManaged(this, permField.get((CraftHumanEntity) p));
 
-        managed.setAllowPermList(getAllowedList(getRankManager().getRank(p)));
-        managed.setAllowPermList(getBlockedList(getRankManager().getRank(p)));
+        ServerRank rank = getRankManager().getRank(p);
+
+        managed.setAllowPermList(getAllowedList(rank));
+        managed.setAllowPermList(getBlockedList(rank));
 
         return managed;
     }
