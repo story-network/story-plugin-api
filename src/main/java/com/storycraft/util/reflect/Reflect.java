@@ -3,6 +3,7 @@ package com.storycraft.util.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,10 +82,24 @@ public class Reflect {
 
     public static class WrappedField<T, C> {
 
+        private static Field modifiersField;
+        
+        static {
+            try {
+                modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
+            } catch (NoSuchFieldException | SecurityException e) {
+                e.printStackTrace();
+            }
+            
+        }
+
         private Field field;
+        private boolean finalLocked;
 
         public WrappedField(Field field){
             this.field = field;
+            this.finalLocked = false;
         }
 
         public Field getField() {
@@ -114,6 +129,24 @@ public class Reflect {
                 e.printStackTrace();
             }
         }
+
+        public boolean isFinalLocked() {
+            return finalLocked;
+        }
+
+        public void unlockFinal() {
+            if (!isFinalLocked())
+                return;
+
+            try {
+                modifiersField.setInt(getField(), getField().getModifiers() & ~Modifier.FINAL);
+                finalLocked = true;
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                System.out.println("Error to unlock final " + getName() + " : " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public static class WrappedMethod<T, C> {

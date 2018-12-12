@@ -1,8 +1,13 @@
 package com.storycraft.config.json;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.storycraft.config.IConfigEntry;
 
 public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
@@ -98,7 +103,15 @@ public class JsonConfigEntry implements IConfigEntry<JsonConfigEntry> {
     }
 
     @Override
+    public <T>void set(String key, List<T> value) {
+        set(key, new Gson().toJsonTree(value,
+        new TypeToken<List<T>>() {
+        }.getType()));
+	}
+
+    @Override
     public JsonConfigEntry createEntry() {
         return new JsonConfigEntry();
     }
+
 }
