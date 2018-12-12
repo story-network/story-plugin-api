@@ -32,6 +32,7 @@ import com.storycraft.util.reflect.Reflect;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
@@ -202,6 +203,10 @@ public class StoryPlugin extends JavaPlugin {
 
     public boolean isInitalized() {
         return initalized;
+    }
+
+    public ConsoleCommandSender getConsoleSender() {
+        return getServer().getConsoleSender();
     }
 
     public RankManager getRankManager() {
