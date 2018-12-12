@@ -146,7 +146,7 @@ public class PermissionManager extends ServerExtension implements Listener {
         ServerRank rank = getRankManager().getRank(p);
 
         managed.setAllowPermList(getAllowedList(rank));
-        managed.setBlocked(getBlockedList(rank));
+        managed.setBlockPermList(getBlockedList(rank));
 
         return managed;
     }
