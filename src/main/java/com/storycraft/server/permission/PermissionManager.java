@@ -41,7 +41,7 @@ public class PermissionManager extends ServerExtension implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin) {
         try {
-            plugin.getConfigManager().addConfigFile("permission.json", this.configFile = new JsonConfigFile()).getSync();
+            plugin.getConfigManager().addConfigFile("permission.json", configFile = new JsonConfigFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -67,7 +67,7 @@ public class PermissionManager extends ServerExtension implements Listener {
         List<String> list;
 
         JsonConfigEntry entry = configFile.getObject(rank.name());
-        if (configFile.getObject(rank.name()) == null)
+        if (entry == null)
             configFile.set(rank.name(), entry = configFile.createEntry());
 
         try {
@@ -79,7 +79,7 @@ public class PermissionManager extends ServerExtension implements Listener {
                 list.add(element.getAsString());
             }
         } catch (Exception e) {
-            System.out.println(rank.name() + " 이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다");
+            System.out.println("랭크 " + rank.name() + " 의 버킷 api 펄미션이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다");
             entry.set(rank.name(), list = Lists.newArrayList(rank.getDefaultPermission()));
         }
 
@@ -90,7 +90,7 @@ public class PermissionManager extends ServerExtension implements Listener {
         List<String> list;
 
         JsonConfigEntry entry = configFile.getObject(rank.name());
-        if (configFile.getObject(rank.name()) == null)
+        if (entry == null)
             configFile.set(rank.name(), entry = configFile.createEntry());
 
         try {
@@ -102,7 +102,7 @@ public class PermissionManager extends ServerExtension implements Listener {
                 list.add(element.getAsString());
             }
         } catch (Exception e) {
-            System.out.println(rank.name() + " 이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다");
+            System.out.println("랭크 " + rank.name() + " 의 버킷 api 펄미션이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다");
             entry.set(rank.name(), list = Lists.newArrayList(rank.getDefaultPermission()));
         }
 
