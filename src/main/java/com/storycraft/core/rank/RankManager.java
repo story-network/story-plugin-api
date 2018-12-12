@@ -88,28 +88,6 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
         return ServerRank.DEVELOPER.getRankLevel();
     }
 
-    public String[] getBukkitPerms(ServerRank rank) {
-        if (permConfigFile.contains(rank.name()) && permConfigFile.get(rank.name()).isJsonArray()) {
-            JsonArray array = permConfigFile.get(rank.name()).getAsJsonArray();
-
-            String[] list = new String[array.size()];
-            for (int i = 0; i < array.size(); i++) {
-                list[i] = array.get(i).getAsString();
-            }
-
-            return list;
-        }
-        else {
-            JsonArray array = new JsonArray();
-            for (String perm : rank.getDefaultPermission()) {
-                array.add(perm);
-            }
-            permConfigFile.set(rank.name(), array);
-
-            return rank.getDefaultPermission();
-        }
-    }
-
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent e) {
         updatePlayerPerm(e.getPlayer());

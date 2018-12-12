@@ -82,7 +82,7 @@ public class PermissionManager extends ServerExtension implements Listener {
             }
         } catch (Exception e) {
             getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PermissionManager", "랭크 " + rank.name() + " 의 버킷 api 펄미션 허용 목록이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다"));
-            entry.set("allowed", list = Lists.newArrayList(rank.getDefaultPermission()));
+            entry.set("allowed", list = Lists.newArrayList(rank.getDefaultAllowedPermList()));
         }
 
         return list;
@@ -105,7 +105,7 @@ public class PermissionManager extends ServerExtension implements Listener {
             }
         } catch (Exception e) {
             getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PermissionManager", "랭크 " + rank.name() + " 의 버킷 api 펄미션 차단 목록이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다"));
-            entry.set("blocked", list = Lists.newArrayList(rank.getDefaultPermission()));
+            entry.set("blocked", list = Lists.newArrayList(rank.getDefaultBlockedPermList()));
         }
 
         return list;
