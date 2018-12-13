@@ -87,7 +87,7 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
                 connection.connect();
 
                 wr = new DataOutputStream(connection.getOutputStream());
-                wr.write(createWebHookObject(e.getPlayer().getName(), e.getMessage()));
+                wr.write(createWebHookObject(e.getPlayer().getName(), e.getMessage()).getBytes("UTF-8"));
                 wr.flush();
                 wr.close();
 
