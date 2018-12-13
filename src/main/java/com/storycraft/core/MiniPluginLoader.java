@@ -1,7 +1,9 @@
 package com.storycraft.core;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.util.MessageUtil;
 import com.storycraft.util.Parallel;
+import com.storycraft.util.MessageUtil.MessageType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,14 +50,21 @@ public class MiniPluginLoader {
     }
 
     public void addMiniPlugin(MiniPlugin miniPlugin) {
-        getMiniPluginList().add(miniPlugin);
+        try {
+            getMiniPluginList().add(miniPlugin);
 
-        miniPlugin.onLoad(getPlugin());
-        miniPlugin.setPlugin(getPlugin());
+            miniPlugin.onLoad(getPlugin());
+            miniPlugin.setPlugin(getPlugin());
 
-        if (isEnabled()){
-            miniPlugin.onEnable();
-            miniPlugin.setEnabled(true);
+            if (isEnabled()){
+                miniPlugin.onEnable();
+                miniPlugin.setEnabled(true);
+            }
+
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "MiniPluginLoader", "모듈 " + miniPlugin.getClass().getName() + " 가 로드되었습니다"));
+        } catch (Exception e) {
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "MiniPluginLoader", "모듈 " + miniPlugin.getClass().getName() + " 로드가 실패 했습니다"));
+            e.printStackTrace();
         }
     }
 

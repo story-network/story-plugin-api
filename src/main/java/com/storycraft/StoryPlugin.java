@@ -4,6 +4,7 @@ import com.mojang.authlib.yggdrasil.response.User;
 import com.storycraft.core.broadcast.BroadcastManager;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
+import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.chat.ChatManager;
@@ -61,6 +62,8 @@ public class StoryPlugin extends JavaPlugin {
     private File originalFile;
     private File originalDataFolder;
 
+    private JsonConfigFile serverConfig;
+
     private PluginDataStorage pluginDataStorage;
     private MiniPluginLoader miniPluginLoader;
     private CommandManager commandManager;
@@ -92,6 +95,12 @@ public class StoryPlugin extends JavaPlugin {
         this.miniPluginLoader = new MiniPluginLoader(this);
         this.localConfigManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
+
+        try {
+            getConfigManager().addConfigFile("server.json", serverConfig = new JsonConfigFile()).getSync();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
         preInitMiniPlugin();
 
@@ -255,8 +264,20 @@ public class StoryPlugin extends JavaPlugin {
         return decorator;
     }
 
+    public JsonConfigFile getServerConfig() {
+        return serverConfig;
+    }
+
     public String getServerName(){
-        return ChatColor.GREEN + "@";
+        try {
+            return serverConfig.get("server-name").getAsString();
+        } catch (Exception e) {
+            String defaultName = ChatColor.GREEN + "@";
+
+            serverConfig.set("server-name", defaultName);
+
+            return defaultName;
+        }
     }
 
     public static void main(String[] args){
