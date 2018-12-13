@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.server.ServerExtension;
@@ -24,7 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.permissions.PermissibleBase;
 
 public class PermissionManager extends ServerExtension implements Listener {
@@ -131,13 +132,24 @@ public class PermissionManager extends ServerExtension implements Listener {
 
     public void unInjectPlayer(Player p) {
         if (isInjected(p)) {
-            permField.set((CraftHumanEntity) p, playerTrackMap.get(p));
+            PermissibleBase base = playerTrackMap.get(p);
+            permField.set((CraftHumanEntity) p, base);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(PlayerJoinEvent e) {
+    public void onPlayerJoin(PlayerLoginEvent e) {
         injectToPlayer(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onConfigReload(ConfigUpdateEvent e) {
+        if (configFile.equals(e.getConfig())) {
+            for (Player p : playerTrackMap.keySet()) {
+                unInjectPlayer(p);
+                injectToPlayer(p);
+            }
+        }
     }
 
     public PermissibleManaged createManaged(Player p) {

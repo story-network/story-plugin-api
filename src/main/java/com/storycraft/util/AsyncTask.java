@@ -44,8 +44,10 @@ public class AsyncTask<T> {
         return result;
     }
 
-    public void then(AsyncNext<T> onComplete) {
+    public AsyncTask<T> then(AsyncNext<T> onComplete) {
         this.onComplete = onComplete;
+
+        return this;
     }
 
     public T getSync() throws Throwable {
