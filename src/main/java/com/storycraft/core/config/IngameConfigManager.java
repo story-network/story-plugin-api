@@ -194,10 +194,10 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                     return;
                 }
 
-                getPlugin().getConfigManager().reloadConfig(name).run().then((Void result, Throwable throwable) -> {
+                getPlugin().getConfigManager().reloadConfig(name).then((Void result, Throwable throwable) -> {
                     getPlugin().getServer().getPluginManager().callEvent(new ConfigUpdateEvent(name, getPlugin().getConfigManager().getConfigFile(name)));
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", "콘픽 " + name + " 을(를) 저장소에서 리로드 했습니다"));
-                });
+                }).run();
                 break;
             }
 
