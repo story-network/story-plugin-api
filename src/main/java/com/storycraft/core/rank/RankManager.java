@@ -93,6 +93,11 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
         return getRank(p).getRankLevel() >= minRank.getRankLevel();
     }
 
+    @EventHandler
+    public void onRankUpdate(RankUpdateEvent e) {
+        updatePlayerName(e.getPlayer());
+    }
+
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {

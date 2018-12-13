@@ -9,6 +9,7 @@ import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.chat.ChatManager;
 import com.storycraft.core.combat.DamageHologram;
 import com.storycraft.core.config.IngameConfigManager;
+import com.storycraft.core.discord.DiscordChatHook;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
@@ -115,6 +116,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new DropCounter());
         loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(new RandomTP());
+        loader.addMiniPlugin(new DiscordChatHook());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
         loader.addMiniPlugin(new BroadcastManager());
