@@ -61,9 +61,9 @@ public class MiniPluginLoader {
                 miniPlugin.setEnabled(true);
             }
 
-            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "MiniPluginLoader", "모듈 " + miniPlugin.getClass().getName() + " 가 로드되었습니다"));
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "MiniPluginLoader", "모듈 " + miniPlugin.getClass().getSimpleName() + " 이(가) 로드되었습니다"));
         } catch (Exception e) {
-            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "MiniPluginLoader", "모듈 " + miniPlugin.getClass().getName() + " 로드가 실패 했습니다"));
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "MiniPluginLoader", "모듈 " + miniPlugin.getClass().getName() + " 로드를 실패 했습니다"));
             e.printStackTrace();
         }
     }
