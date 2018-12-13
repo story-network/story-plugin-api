@@ -18,9 +18,11 @@ import com.storycraft.core.faq.FAQCommand;
 import com.storycraft.core.dropping.DropCounter;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.plugin.IngamePluginManager;
+import com.storycraft.core.randomtp.RandomTP;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.saving.AutoSaveManager;
 import com.storycraft.core.skin.PlayerCustomSkin;
+import com.storycraft.core.spawn.ServerSpawnManager;
 import com.storycraft.core.world.WorldTeleporter;
 import com.storycraft.server.ServerManager;
 import com.storycraft.server.plugin.ServerPluginManager;
@@ -106,11 +108,13 @@ public class StoryPlugin extends JavaPlugin {
     private void initMiniPlugin() {
         MiniPluginLoader loader = getMiniPluginLoader();
         loader.addMiniPlugin(new Explosion());
+        loader.addMiniPlugin(new ServerSpawnManager());
         loader.addMiniPlugin(new IngameConfigManager());
         loader.addMiniPlugin(new ChatManager());
         loader.addMiniPlugin(new EntityBlood());
         loader.addMiniPlugin(new DropCounter());
         loader.addMiniPlugin(new ServerMotd());
+        loader.addMiniPlugin(new RandomTP());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
         loader.addMiniPlugin(new BroadcastManager());
