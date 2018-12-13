@@ -16,23 +16,20 @@ public enum ServerRank {
     private String[] defaultAllowedPermList;
     private String[] defaultBlockedPermList;
 
-    ServerRank(ChatColor nameColor, int rankLevel) {
-        this.nameColor = nameColor;
-        this.rankLevel = rankLevel;
-
-        this.defaultAllowedPermList = new String[0];
-    }
-
-    ServerRank(ChatColor nameColor, int rankLevel, String[] defaultAllowedPermList) {
-        this(nameColor, rankLevel, defaultAllowedPermList, new String[0]);
-    }
-
     ServerRank(ChatColor nameColor, int rankLevel, String[] defaultAllowedPermList, String[] defaultBlockedPermList) {
         this.nameColor = nameColor;
         this.rankLevel = rankLevel;
 
         this.defaultAllowedPermList = defaultAllowedPermList;
         this.defaultBlockedPermList = defaultBlockedPermList;
+    }
+
+    ServerRank(ChatColor nameColor, int rankLevel, String[] defaultAllowedPermList) {
+        this(nameColor, rankLevel, defaultAllowedPermList, new String[0]);
+    }
+
+    ServerRank(ChatColor nameColor, int rankLevel) {
+        this(nameColor, rankLevel, new String[0], new String[0]);
     }
 
     public ChatColor getNameColor() {
