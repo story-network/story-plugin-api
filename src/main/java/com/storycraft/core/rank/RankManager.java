@@ -24,18 +24,11 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     public static final ServerRank DEFAULT_RANK = ServerRank.USER;
 
     private JsonConfigFile configFile;
-    private JsonConfigFile permConfigFile;
 
     @Override
     public void onLoad(StoryPlugin plugin) {
         try {
             plugin.getConfigManager().addConfigFile("rank.json", configFile = new JsonConfigFile()).getSync();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-        try {
-            plugin.getConfigManager().addConfigFile("perm.json", permConfigFile = new JsonConfigFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -48,7 +41,6 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
 
         for (Player p : getPlugin().getServer().getOnlinePlayers()) {
-            updatePlayerPerm(p);
             updatePlayerName(p);
         }
     }
@@ -90,20 +82,7 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
 
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent e) {
-        updatePlayerPerm(e.getPlayer());
         updatePlayerName(e.getPlayer());
-    }
-
-    @EventHandler
-    public void onConfigUpdate(ConfigUpdateEvent e) {
-        if (permConfigFile.equals(e.getConfig())) {
-            for (Player p : getPlugin().getServer().getOnlinePlayers())
-                updatePlayerPerm(p);
-        }
-    }
-
-    protected void updatePlayerPerm(Player p) {
-        p.getEffectivePermissions();
     }
 
     protected void updatePlayerName(Player p) {
@@ -150,10 +129,12 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
                 return;
             }
     
+            ServerRank from = getPlugin().getRankManager().getRank(p);
             ServerRank rank = ServerRank.valueOf(rankName);
     
             getPlugin().getRankManager().setRank(p, rank);
             sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "RankManager", p.getName() + " 의 랭크는 이제 " + rank.name() + " 입니다"));
+            getPlugin().getServer().getPluginManager().callEvent(new RankUpdateEvent(p, from, rank));
         }
         else if ("get".equals(args[0])) {
             if (args.length < 2) {

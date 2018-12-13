@@ -13,6 +13,7 @@ import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.core.rank.RankManager;
+import com.storycraft.core.rank.RankUpdateEvent;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.util.MessageUtil;
@@ -140,6 +141,19 @@ public class PermissionManager extends ServerExtension implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerLoginEvent e) {
         injectToPlayer(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onRankUpdate(RankUpdateEvent e) {
+        if (isInjected(e.getPlayer())) {
+            PermissibleManaged managed = (PermissibleManaged) permField.get((CraftHumanEntity) e.getPlayer());
+
+            managed.setAllowPermList(getAllowedList(e.getTo()));
+            managed.setBlockPermList(getBlockedList(e.getTo()));
+            managed.recalculatePermissions();
+        }
+        else
+            injectToPlayer(e.getPlayer());
     }
 
     @EventHandler
