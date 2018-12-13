@@ -1,7 +1,9 @@
 package com.storycraft.core.discord;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -50,7 +52,7 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
 
         if (loaded) {
             if (getWebHookURL().isEmpty())
-            return;
+                return;
 
             URL url;
             try {
@@ -76,17 +78,25 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
             }
         
             connection.setRequestProperty("Content-Type", "application/json");
+            connection.addRequestProperty("User-Agent", "server-chat-webhook");
             connection.setUseCaches(false);
             connection.setDoOutput(true);
 
             DataOutputStream wr;
             try {
+                connection.connect();
+
                 wr = new DataOutputStream(connection.getOutputStream());
+                wr.write(createWebHookObject(e.getPlayer().getName(), e.getMessage()));
                 wr.flush();
                 wr.close();
+
+                connection.getInputStream().close();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+
+            connection.disconnect();
         }
 
     }
