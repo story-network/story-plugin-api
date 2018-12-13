@@ -160,7 +160,7 @@ public class PermissionManager extends ServerExtension implements Listener {
     public void onConfigReload(ConfigUpdateEvent e) {
         if (configFile.equals(e.getConfig())) {
             for (Player p : playerTrackMap.keySet()) {
-                PermissibleManaged managed = (PermissibleManaged) permField.get((CraftHumanEntity) e.getPlayer());
+                PermissibleManaged managed = (PermissibleManaged) permField.get((CraftHumanEntity) p);
 
                 ServerRank rank = getRankManager().getRank(p);
 
