@@ -27,6 +27,12 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
 
     private JsonConfigFile configFile;
 
+    private boolean loaded;
+
+    public DiscordChatHook() {
+        this.loaded = false;
+    }
+
     @Override
     public void onLoad(StoryPlugin plugin) {
         plugin.getConfigManager().addConfigFile("webhook.json", configFile = new JsonConfigFile()).then(this::onConfigLoaded).run();
@@ -42,43 +48,46 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
         if (e.isCancelled())
             return;
 
-        if (getWebHookURL().isEmpty())
+        if (loaded) {
+            if (getWebHookURL().isEmpty())
             return;
 
-        URL url;
-        try {
-            url = new URL(getWebHookURL());
-        } catch (MalformedURLException e2) {
-            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "DiscordChatHook", "알맞지 않은 url 입니다"));
-            return;
-        }
+            URL url;
+            try {
+                url = new URL(getWebHookURL());
+            } catch (MalformedURLException e2) {
+                getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "DiscordChatHook", "알맞지 않은 url 입니다"));
+                return;
+            }
         
-        HttpsURLConnection connection;
-        try {
-            connection = (HttpsURLConnection) url.openConnection();
-        } catch (IOException e2) {
-            e2.printStackTrace();
+            HttpsURLConnection connection;
+            try {
+                connection = (HttpsURLConnection) url.openConnection();
+            } catch (IOException e2) {
+                e2.printStackTrace();
 
-            return;
-        }
+                return;
+            }
 
-        try {
-            connection.setRequestMethod("POST");
-        } catch (ProtocolException e1) {
-            e1.printStackTrace();
-        }
+            try {
+                connection.setRequestMethod("POST");
+            } catch (ProtocolException e1) {
+                e1.printStackTrace();
+            }
         
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setUseCaches(false);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
 
-        DataOutputStream wr;
-        try {
-            wr = new DataOutputStream(connection.getOutputStream());
-            wr.flush();
-            wr.close();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-		}
+            DataOutputStream wr;
+            try {
+                wr = new DataOutputStream(connection.getOutputStream());
+                wr.flush();
+                wr.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
 
     }
 
@@ -92,7 +101,7 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
     }
 
     protected void onConfigLoaded(Void v, Throwable throwable) {
-
+        loaded = true;
     }
 
     public String getWebHookURL() {
