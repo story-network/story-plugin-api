@@ -122,7 +122,17 @@ public class PermissibleManaged extends PermissibleBase implements Permissible {
     }
 
     public boolean isAllowed(String arg0) {
-        return allowPermList.contains(arg0) || allowPermList.contains("*");
+        if (allowPermList.contains("*"))
+            return true;
+        
+        for (String perm : allowPermList) {
+            int lastWildcardIndex = perm.lastIndexOf("*");
+
+            if (perm.equals(arg0) || lastWildcardIndex != -1 && arg0.startsWith(perm.substring(0, perm.length() - 1)))
+                return true;
+        }
+
+        return false;
     }
 
     public boolean isAllowed(Permission arg0) {
@@ -130,7 +140,17 @@ public class PermissibleManaged extends PermissibleBase implements Permissible {
     }
 
     public boolean isBlocked(String arg0) {
-        return blockPermList.contains(arg0) || blockPermList.contains("*");
+        if (blockPermList.contains("*"))
+            return true;
+        
+        for (String perm : blockPermList) {
+            int lastWildcardIndex = perm.lastIndexOf("*");
+
+            if (perm.equals(arg0) || lastWildcardIndex != -1 && arg0.startsWith(perm.substring(0, perm.length() - 1)))
+                return true;
+        }
+
+        return false;
     }
 
     public boolean isBlocked(Permission arg0) {
