@@ -17,7 +17,9 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
+import com.storycraft.util.AsyncTask.AsyncCallable;
 import com.storycraft.util.MessageUtil.MessageType;
 
 import org.bukkit.event.EventHandler;
@@ -54,51 +56,56 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
             if (getWebHookURL().isEmpty())
                 return;
 
-            URL url;
-            try {
-                url = new URL(getWebHookURL());
-            } catch (MalformedURLException e2) {
-                getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "DiscordChatHook", "알맞지 않은 url 입니다"));
-                return;
-            }
+            new AsyncTask<Void>(new AsyncCallable<Void>() {
+                @Override
+                public Void get() {
+                    URL url;
+                    try {
+                        url = new URL(getWebHookURL());
+                    } catch (MalformedURLException e2) {
+                        getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "DiscordChatHook", "알맞지 않은 url 입니다"));
+                        return null;
+                    }
+                
+                    HttpsURLConnection connection;
+                    try {
+                        connection = (HttpsURLConnection) url.openConnection();
+                    } catch (IOException e2) {
+                        e2.printStackTrace();
         
-            HttpsURLConnection connection;
-            try {
-                connection = (HttpsURLConnection) url.openConnection();
-            } catch (IOException e2) {
-                e2.printStackTrace();
-
-                return;
-            }
-
-            try {
-                connection.setRequestMethod("POST");
-            } catch (ProtocolException e1) {
-                e1.printStackTrace();
-            }
+                        return null;
+                    }
         
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.addRequestProperty("User-Agent", "server-chat-webhook");
-            connection.setUseCaches(false);
-            connection.setDoOutput(true);
-
-            DataOutputStream wr;
-            try {
-                connection.connect();
-
-                wr = new DataOutputStream(connection.getOutputStream());
-                wr.write(createWebHookObject(e.getPlayer().getName(), e.getMessage()).getBytes("UTF-8"));
-                wr.flush();
-                wr.close();
-
-                connection.getInputStream().close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
-            connection.disconnect();
+                    try {
+                        connection.setRequestMethod("POST");
+                    } catch (ProtocolException e1) {
+                        e1.printStackTrace();
+                    }
+                
+                    connection.setRequestProperty("Content-Type", "application/json");
+                    connection.addRequestProperty("User-Agent", "server-chat-webhook");
+                    connection.setUseCaches(false);
+                    connection.setDoOutput(true);
+        
+                    DataOutputStream wr;
+                    try {
+                        connection.connect();
+        
+                        wr = new DataOutputStream(connection.getOutputStream());
+                        wr.write(createWebHookObject(e.getPlayer().getName(), e.getMessage()).getBytes("UTF-8"));
+                        wr.flush();
+                        wr.close();
+        
+                        connection.getInputStream().close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+        
+                    connection.disconnect();
+                    return null;
+                }
+            }).run();
         }
-
     }
 
     public String createWebHookObject(String name, String chat) {
