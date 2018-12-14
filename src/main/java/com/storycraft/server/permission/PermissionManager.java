@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -36,7 +37,7 @@ public class PermissionManager extends ServerExtension implements Listener {
     private JsonConfigFile rankConfigFile;
     private JsonConfigFile playerConfigFile;
 
-    private Map<Player, PermissibleBase> playerTrackMap;
+    private Map<UUID, PermissibleBase> playerTrackMap;
 
     public PermissionManager() {
         permField = Reflect.getField(CraftHumanEntity.class, "perm");
@@ -64,7 +65,12 @@ public class PermissionManager extends ServerExtension implements Listener {
 
     @Override
     public void onDisable(boolean reload) {
-        for (Player p : playerTrackMap.keySet()) {
+        for (UUID id : playerTrackMap.keySet()) {
+            Player p = getPlugin().getServer().getPlayer(id);
+
+            if (id == null)
+                continue;
+            
             unInjectPlayer(p);
         }
     }
@@ -198,7 +204,7 @@ public class PermissionManager extends ServerExtension implements Listener {
     }
 
     public boolean isInjected(Player p) {
-        return playerTrackMap.containsKey(p);
+        return playerTrackMap.containsKey(p.getUniqueId());
     }
 
     public void injectToPlayer(Player p) {
@@ -208,7 +214,7 @@ public class PermissionManager extends ServerExtension implements Listener {
 
         permField.set((CraftHumanEntity) p, createManaged(p));
 
-        playerTrackMap.put(p, permField.get((CraftHumanEntity) p));
+        playerTrackMap.put(p.getUniqueId(), permField.get((CraftHumanEntity) p));
     }
 
     public void unInjectPlayer(Player p) {
@@ -239,7 +245,12 @@ public class PermissionManager extends ServerExtension implements Listener {
     @EventHandler
     public void onConfigReload(ConfigUpdateEvent e) {
         if (e.getConfig().equals(rankConfigFile) || e.getConfig().equals(playerConfigFile)) {
-            for (Player p : playerTrackMap.keySet()) {
+            for (UUID id : playerTrackMap.keySet()) {
+                Player p = getPlugin().getServer().getPlayer(id);
+
+                if (id == null)
+                    continue;
+
                 PermissibleManaged managed = (PermissibleManaged) permField.get((CraftHumanEntity) p);
 
                 ServerRank rank = getRankManager().getRank(p);

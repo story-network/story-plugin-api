@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
@@ -65,6 +66,12 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onBlockDamaged(BlockDamageEvent e) {
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPlaced(BlockPlaceEvent e) {
         if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
             e.setCancelled(true);
     }

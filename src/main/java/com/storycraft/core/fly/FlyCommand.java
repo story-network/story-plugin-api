@@ -66,7 +66,7 @@ public class FlyCommand extends MiniPlugin implements ICommand {
             p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "Fly", "플라이 모드가 비활성화 되었습니다"));
         }
 
-        if (p.equals(sender)) {
+        if (!p.equals(sender)) {
             if (flightMode) {
                 sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "Fly", "플레이어 " + p.getName() + " 의 플라이 모드를 활성화 시켰습니다"));
             }
