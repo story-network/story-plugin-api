@@ -68,7 +68,7 @@ public class PermissionManager extends ServerExtension implements Listener {
         for (UUID id : playerTrackMap.keySet()) {
             Player p = getPlugin().getServer().getPlayer(id);
 
-            if (id == null)
+            if (p == null)
                 continue;
             
             unInjectPlayer(p);
@@ -219,7 +219,7 @@ public class PermissionManager extends ServerExtension implements Listener {
 
     public void unInjectPlayer(Player p) {
         if (isInjected(p)) {
-            PermissibleBase base = playerTrackMap.get(p);
+            PermissibleBase base = playerTrackMap.get(p.getUniqueId());
             permField.set((CraftHumanEntity) p, base);
         }
     }
@@ -248,7 +248,7 @@ public class PermissionManager extends ServerExtension implements Listener {
             for (UUID id : playerTrackMap.keySet()) {
                 Player p = getPlugin().getServer().getPlayer(id);
 
-                if (id == null)
+                if (p == null)
                     continue;
 
                 PermissibleManaged managed = (PermissibleManaged) permField.get((CraftHumanEntity) p);
