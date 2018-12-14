@@ -12,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -65,7 +66,7 @@ class ExplosionHandler implements Listener {
         return explosion;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockExplode(BlockExplodeEvent e) {
         if (e.isCancelled())
             return;
@@ -73,7 +74,7 @@ class ExplosionHandler implements Listener {
         onExplosion(e.getBlock().getLocation(), e.blockList(), e.getYield());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityExplode(EntityExplodeEvent e) {
         if (e.isCancelled())
             return;
@@ -92,7 +93,7 @@ class ExplosionHandler implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onExplosionPrime(ExplosionPrimeEvent e){
         if (!e.isCancelled() && e.getEntity() instanceof Fireball){
             Fireball fireball = (Fireball) e.getEntity();
