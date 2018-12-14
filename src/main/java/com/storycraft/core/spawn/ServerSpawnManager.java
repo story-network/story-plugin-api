@@ -18,8 +18,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
@@ -47,7 +49,7 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
         if (e.getEntity() == null)
             return;
 
-        if (isInSpawn(e.getEntity().getLocation())) {
+        if (isInSpawn(e.getEntity().getLocation()) && !getCanBlockInteract()) {
             if (e.getEntity() instanceof Player) {
                 if (getCanPlayerIgnoreDamage())
                     e.setCancelled(true);
@@ -61,25 +63,31 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onBlockDestroyed(BlockBreakEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && e.getPlayer().hasPermission("server.spawn.admin.block"))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockDamaged(BlockDamageEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && e.getPlayer().hasPermission("server.spawn.admin.block"))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockPlaced(BlockPlaceEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && e.getPlayer().hasPermission("server.spawn.admin.block"))
             e.setCancelled(true);
     }
 
     @EventHandler
-    public void onExplosion(ExplosionPrimeEvent e) {
-        if (isInSpawn(e.getEntity().getLocation()) && !getCanBlockInteract())
+    public void onExplosion(EntityExplodeEvent e) {
+        if (isInSpawn(e.getLocation()) && !getCanBlockInteract())
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onExplosion(BlockExplodeEvent e) {
+        if (isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract())
             e.setCancelled(true);
     }
 
