@@ -34,9 +34,11 @@ public class WorldTeleporter extends MiniPlugin implements ICommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        if (args.length < 1 && sender instanceof Player) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "WorldTeleporter", "사용법 /wtp <월드 이름> [플레이어 이름] [다른 플레이어 이름]..."));
-            return;
+        if (sender instanceof Player) {
+            if (args.length < 1) {
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "WorldTeleporter", "사용법 /wtp <월드 이름> [플레이어 이름] [다른 플레이어 이름]..."));
+                return;
+            }
         }
         else if (args.length < 2) {
             sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "WorldTeleporter", "사용법 /wtp <월드 이름> <플레이어 이름> [다른 플레이어 이름]..."));
