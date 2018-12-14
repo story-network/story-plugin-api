@@ -102,8 +102,12 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
     public boolean isInSpawn(Location location) {
         if (!isSpawnEnabled() || location == null || !location.getWorld().equals(getSpawnWorld()))
             return false;
+        
+        Location loc = getSpawnLocation();
 
-        return location.distanceSquared(getSpawnLocation()) <= Math.pow(getSpawnRadius(), 2);
+        loc.setY(location.getY());
+
+        return location.distanceSquared(loc) <= Math.pow(getSpawnRadius(), 2);
     }
 
     protected JsonConfigEntry getLocationEntry() {
