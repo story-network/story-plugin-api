@@ -21,7 +21,7 @@ public class TestUniverse extends CustomUniverse {
 
     @Override
     public WorldType getWorldType() {
-        return WorldType.FLAT;
+        return WorldType.NORMAL;
     }
 
     @Override

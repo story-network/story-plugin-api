@@ -47,7 +47,7 @@ public class ServerManager {
         addServerExtension(clientSideManager = new ClientSideManager());
         addServerExtension(networkManager = new ServerNetworkManager(this));
         addServerExtension(forgeServerManager = new ForgeServerManager(this));
-        //addServerExtension(worldManager = new WorldManager());
+        addServerExtension(worldManager = new WorldManager());
         addServerExtension(registryManager = new RegistryManager());
         addServerExtension(serverEventManager = new ServerEventManager());
         addServerExtension(clientEventManager = new ClientEventManager());
