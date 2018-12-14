@@ -61,7 +61,6 @@ public class WorldManager extends ServerExtension {
 
     private void loadUniverse() {
         loadWorld(new TestUniverse("test", 432423));
-        loadWorld(new TestUniverse("nt", -126743892));
     }
 
     public DefaultUniverse getDefaultOverworld() {
