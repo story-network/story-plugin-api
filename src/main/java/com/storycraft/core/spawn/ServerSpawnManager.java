@@ -1,5 +1,7 @@
 package com.storycraft.core.spawn;
 
+import java.util.ArrayList;
+
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigEntry;
@@ -11,6 +13,7 @@ import com.storycraft.util.MessageUtil.MessageType;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -81,8 +84,13 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onExplosion(EntityExplodeEvent e) {
-        if (isInSpawn(e.getLocation()) && !getCanBlockInteract())
-            e.setCancelled(true);
+        if (getCanBlockInteract())
+            return;
+
+        for (Block b : new ArrayList<>(e.blockList())) {
+            if (b != null && isInSpawn(b.getLocation()))
+                e.blockList().remove(b);
+        }
     }
 
     @EventHandler
