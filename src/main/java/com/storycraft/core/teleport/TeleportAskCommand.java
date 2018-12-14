@@ -76,13 +76,14 @@ public class TeleportAskCommand extends MiniPlugin implements ICommand {
                 return;
             }
 
-            Player target = getPlugin().getServer().getPlayer(info.getTargetUUID());
+            Player target = getPlugin().getServer().getPlayer(info.getRequester());
 
             if (target != null) {
                 target.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "텔레포트 요청이 거절되었습니다"));
             }
             
             p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "TeleportManager", "텔레포트 요청을 거절했습니다"));
+            teleportRequest.remove(info.getRequester());
         }
         else {
             Player target = getPlugin().getServer().getPlayer(arg);
