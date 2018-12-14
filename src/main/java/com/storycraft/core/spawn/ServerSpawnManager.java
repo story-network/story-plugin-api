@@ -79,7 +79,7 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onExplosion(ExplosionPrimeEvent e) {
-        if (isInSpawn(e.getEntity().getLocation()) && getCanBlockInteract())
+        if (isInSpawn(e.getEntity().getLocation()) && !getCanBlockInteract())
             e.setCancelled(true);
     }
 
@@ -115,7 +115,7 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
             Location loc = new Location(getSpawnWorld(), 0, 0, 0);
             setSpawnLocation(loc);
             setSpawnRadius(16);
-            setCanBlockInteract(true);
+            setCanBlockInteract(false);
 
             return loc;
         }
@@ -281,7 +281,7 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
             setSpawnEnabled(true);
             setSpawnLocation(location);
             setSpawnRadius(16);
-            setCanBlockInteract(true);
+            setCanBlockInteract(false);
             setCanPlayerIgnoreDamage(false);
             setCanEntityIgnoreDamage(false);
 
