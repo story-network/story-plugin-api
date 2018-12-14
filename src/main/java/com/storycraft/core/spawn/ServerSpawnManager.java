@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
@@ -60,19 +61,25 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onBlockDestroyed(BlockBreakEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockDamaged(BlockDamageEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockPlaced(BlockPlaceEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && getPlugin().getRankManager().getRank(e.getPlayer()).getRankLevel() < ServerRank.MOD.getRankLevel())
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onExplosion(ExplosionPrimeEvent e) {
+        if (isInSpawn(e.getEntity().getLocation()) && getCanBlockInteract())
             e.setCancelled(true);
     }
 
@@ -166,9 +173,9 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
         try {
             return configFile.get("can_interact_block").getAsBoolean();
         } catch (Exception e) {
-            setCanBlockInteract(true);
+            setCanBlockInteract(false);
 
-            return true;
+            return false;
         }
     }
 
