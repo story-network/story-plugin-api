@@ -26,9 +26,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.inventory.meta.SpawnEggMeta;
-import org.bukkit.inventory.meta.SpawnEggMeta;
-
 
 public class ServerSpawnManager extends MiniPlugin implements Listener {
 
@@ -80,6 +80,15 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
     public void onBlockPlaced(BlockPlaceEvent e) {
         if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && !e.getPlayer().hasPermission("server.spawn.admin.block"))
             e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onFirstJoin(PlayerLoginEvent e) {
+        Player p = e.getPlayer();
+
+        if (!p.hasPlayedBefore() && isSpawnEnabled()) {
+            p.teleport(getSpawnLocation());
+        }
     }
 
     @EventHandler

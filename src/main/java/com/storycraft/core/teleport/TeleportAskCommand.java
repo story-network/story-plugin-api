@@ -52,7 +52,7 @@ public class TeleportAskCommand extends MiniPlugin implements ICommand {
                 return;
             }
 
-            Player target = getPlugin().getServer().getPlayer(info.getTargetUUID());
+            Player target = getPlugin().getServer().getPlayer(info.getRequester());
 
             if (System.currentTimeMillis() - info.getTimeRequested() > ALLOWED_TIME) {
                 p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "텔레포트 가능 시간을 넘었습니다 (120초)"));
