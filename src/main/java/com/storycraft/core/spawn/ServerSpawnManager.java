@@ -63,19 +63,19 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onBlockDestroyed(BlockBreakEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && e.getPlayer().hasPermission("server.spawn.admin.block"))
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && !e.getPlayer().hasPermission("server.spawn.admin.block"))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockDamaged(BlockDamageEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && e.getPlayer().hasPermission("server.spawn.admin.block"))
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && !e.getPlayer().hasPermission("server.spawn.admin.block"))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockPlaced(BlockPlaceEvent e) {
-        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && e.getPlayer().hasPermission("server.spawn.admin.block"))
+        if (e.getBlock() != null && e.getPlayer() != null && isInSpawn(e.getBlock().getLocation()) && !getCanBlockInteract() && !e.getPlayer().hasPermission("server.spawn.admin.block"))
             e.setCancelled(true);
     }
 
