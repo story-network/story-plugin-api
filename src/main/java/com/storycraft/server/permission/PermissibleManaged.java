@@ -112,11 +112,11 @@ public class PermissibleManaged extends PermissibleBase implements Permissible {
 
     @Override
     public boolean hasPermission(String arg0) {
-        if (isAllowed(arg0))
-            return true;
-
         if (isBlocked(arg0))
             return false;
+        
+        if (isAllowed(arg0))
+            return true;
 
         return parent.hasPermission(arg0);
     }

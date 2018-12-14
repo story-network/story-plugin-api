@@ -181,6 +181,16 @@ public class RandomTP extends MiniPlugin implements ICommand {
     @Override
     public boolean availableOnCommandBlock() {
 		return false;
-	}
+    }
+    
+    @Override
+    public boolean isPermissionRequired() {
+	    return true;
+    }
+
+    @Override
+    public String getPermissionRequired() {
+        return "server.command.randomtp";
+    }
 
 }

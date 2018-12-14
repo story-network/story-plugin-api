@@ -11,8 +11,6 @@ import org.bukkit.event.Listener;
 
 public class UserDebug extends MiniPlugin implements Listener {
 
-    public static final int REQUIRED_RANK_LEVEL = ServerRank.DEVELOPER.getRankLevel();
-
     private static final boolean DEFAULT = false;
 
     private Reflect.WrappedField<Boolean, PacketPlayOutLogin> reducedDebugField;
@@ -36,8 +34,8 @@ public class UserDebug extends MiniPlugin implements Listener {
         if (e.getPacket() instanceof PacketPlayOutLogin) {
             PacketPlayOutLogin packet = (PacketPlayOutLogin) e.getPacket();
 
-            if (e.getTarget() != null && getPlugin().getRankManager().getRank(e.getTarget()).getRankLevel() >= REQUIRED_RANK_LEVEL) {
-                return;
+            if (e.getTarget() != null && !e.getTarget().hasPermission("server.play.debug")) {
+                reducedDebugField.set(packet, !DEFAULT);
             }
 
             reducedDebugField.set(packet, DEFAULT);

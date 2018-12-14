@@ -6,9 +6,9 @@ public enum ServerRank {
 
     ADMIN(ChatColor.AQUA, 4, new String[] {"*"}),
     DEVELOPER(ChatColor.LIGHT_PURPLE, 4, new String[] {"*"}),
-    MOD(ChatColor.RED, 3),
-    USER(ChatColor.YELLOW, 0),
-    BLOCKED(ChatColor.GRAY, -1);
+    MOD(ChatColor.RED, 3, new String[] { "server.command.*", "server.play.debug" }, new String[] { "server.command.ingameconfig", "server.command.ingameplugin" }),
+    USER(ChatColor.YELLOW, 0, new String[] { "server.play.debug", "server.command.spawn", "server.command.home", "server.command.sethome", "server.command.randomtp", "server.command.tpa", "server.command.faq", "server.command" }),
+    BLOCKED(ChatColor.GRAY, -1, new String[] {}, new String[] { "*" });
 
     private int rankLevel;
     private ChatColor nameColor;

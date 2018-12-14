@@ -59,8 +59,8 @@ public class CommandListener extends MiniPlugin implements Listener {
             return false;
         }
 
-        if (sender instanceof Player && getPlugin().getRankManager().getRank((Player) sender).getRankLevel() < command.getRequiredRankLevel()) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "CommandManager", "권한 레벨이 " + command.getRequiredRankLevel() + " 이상 필요 합니다"));
+        if (sender instanceof Player && command.isPermissionRequired() && !((Player) sender).hasPermission(command.getPermissionRequired())) {
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "CommandManager", command.getPermissionRequired() + " 권한이 필요 합니다"));
             return true;
         }
         else if (sender instanceof ConsoleCommandSender && !command.availableOnConsole() || sender instanceof BlockCommandSender && !command.availableOnCommandBlock()) {

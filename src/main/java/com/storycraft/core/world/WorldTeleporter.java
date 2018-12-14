@@ -23,8 +23,13 @@ public class WorldTeleporter extends MiniPlugin implements ICommand {
     }
 
     @Override
-    public int getRequiredRankLevel() {
-        return ServerRank.MOD.getRankLevel();
+    public boolean isPermissionRequired() {
+	    return true;
+    }
+
+    @Override
+    public String getPermissionRequired() {
+        return "server.command.worldtp";
     }
 
     @Override

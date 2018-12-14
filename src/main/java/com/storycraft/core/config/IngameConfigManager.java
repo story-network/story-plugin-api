@@ -32,8 +32,13 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
     }
 
     @Override
-    public int getRequiredRankLevel() {
-        return ServerRank.DEVELOPER.getRankLevel();
+    public boolean isPermissionRequired() {
+	    return true;
+    }
+
+    @Override
+    public String getPermissionRequired() {
+        return "server.command.ingameconfig";
     }
 
     @Override

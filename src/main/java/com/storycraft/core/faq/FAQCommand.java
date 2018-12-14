@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import com.google.gson.JsonElement;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
-import com.storycraft.config.IConfigFile;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.MessageUtil;
@@ -26,6 +25,16 @@ public class FAQCommand extends MiniPlugin implements ICommand {
     public void onLoad(StoryPlugin plugin) {
         plugin.getConfigManager().addConfigFile("faq.json", configFile = new JsonConfigFile()).run();
         plugin.getCommandManager().addCommand(this);
+    }
+
+    @Override
+    public boolean isPermissionRequired() {
+	    return true;
+    }
+
+    @Override
+    public String getPermissionRequired() {
+        return "server.command.faq";
     }
 
     @Override

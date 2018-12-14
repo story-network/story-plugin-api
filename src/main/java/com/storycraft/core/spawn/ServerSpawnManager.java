@@ -238,7 +238,17 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
         @Override
         public boolean availableOnCommandBlock() {
             return false;
-		}
+        }
+        
+        @Override
+        public boolean isPermissionRequired() {
+	        return true;
+        }
+
+        @Override
+        public String getPermissionRequired() {
+            return "server.command.spawn";
+        }
     }
 
     public class SetSpawnCommand implements ICommand {
@@ -265,8 +275,13 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
         }
 
         @Override
-        public int getRequiredRankLevel() {
-            return ServerRank.DEVELOPER.getRankLevel();
+        public boolean isPermissionRequired() {
+	        return true;
+        }
+
+        @Override
+        public String getPermissionRequired() {
+            return "server.command.setspawn";
         }
 
         @Override

@@ -36,7 +36,7 @@ public class TeleportAskCommand extends MiniPlugin implements ICommand {
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "사용법 /tpa <대상 플레이어 / accept>"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "사용법 /tpa <대상 플레이어 / accept / deny>"));
             return;
         }
 
@@ -68,11 +68,32 @@ public class TeleportAskCommand extends MiniPlugin implements ICommand {
 
             teleportRequest.remove(info.getRequester());
         }
+        else if ("deny".equals(arg)) {
+            TeleportRequestInfo info = getLastRequest(p);
+            
+            if (info == null) {
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "텔레포트 요청이 없습니다"));
+                return;
+            }
+
+            Player target = getPlugin().getServer().getPlayer(info.getTargetUUID());
+
+            if (target != null) {
+                target.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "텔레포트 요청이 거절되었습니다"));
+            }
+            
+            p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "TeleportManager", "텔레포트 요청을 거절했습니다"));
+        }
         else {
             Player target = getPlugin().getServer().getPlayer(arg);
 
             if (target == null) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "플레이어 " + arg + " 를 찾을 수 없습니다"));
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "플레이어 " + arg + " 를 찾을 수 없습니다"));
+                return;
+            }
+
+            if (p.equals(target)) {
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "TeleportManager", "자기 자신한테 요청을 보낼 수 없습니다"));
                 return;
             }
 
@@ -85,8 +106,8 @@ public class TeleportAskCommand extends MiniPlugin implements ICommand {
                 teleportRequest.put(p.getUniqueId(), info);
             }
 
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "TeleportManager", arg + " 에게 텔레포트 요청을 보냅니다"));
-            p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "TeleportManager", p.getName() + " 이 텔레포트 요청을 보냈습니다. /tpa accept 로 수락할 수 있습니다"));
+            p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "TeleportManager", arg + " 에게 텔레포트 요청을 보냅니다"));
+            target.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "TeleportManager", p.getName() + " 이 텔레포트 요청을 보냈습니다. /tpa accept 로 수락할 수 있습니다"));
         }
     }
     
@@ -110,6 +131,16 @@ public class TeleportAskCommand extends MiniPlugin implements ICommand {
 	@Override
 	public boolean availableOnCommandBlock() {
 		return false;
+    }
+
+    @Override
+    public boolean isPermissionRequired() {
+	    return true;
+    }
+
+    @Override
+    public String getPermissionRequired() {
+        return "server.command.tpa";
     }
     
     public class TeleportRequestInfo {

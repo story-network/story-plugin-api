@@ -44,15 +44,6 @@ public class HomeManager extends MiniPlugin implements Listener {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInteract(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK || e.isCancelled() || !(e.getClickedBlock().getBlockData() instanceof Bed))
-            return;
-
-            if (!e.getClickedBlock().getLocation().equals(e.getPlayer().getLocation()))
-                setPlayerHome(e.getPlayer(), e.getClickedBlock().getLocation());
-    }
-
     public void setPlayerHome(Player player, Location location) {
         setRespawnLocation(player, location);
         player.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "HomeManager", "집 위치가 " + location.getWorld().getName() + " " + (Math.floor(location.getX() * 10) / 10) + " " + (Math.floor(location.getY() * 10) / 10) + " " + (Math.floor(location.getZ() * 10) / 10) + " 로 지정되었습니다."));
@@ -176,7 +167,17 @@ public class HomeManager extends MiniPlugin implements Listener {
         @Override
         public boolean availableOnCommandBlock() {
             return false;
-		}
+        }
+        
+        @Override
+        public boolean isPermissionRequired() {
+	        return true;
+        }
+
+        @Override
+        public String getPermissionRequired() {
+            return "server.command.home";
+        }
 
     }
 
@@ -203,7 +204,17 @@ public class HomeManager extends MiniPlugin implements Listener {
         @Override
         public boolean availableOnCommandBlock() {
             return false;
-		}
+        }
+        
+        @Override
+        public boolean isPermissionRequired() {
+	        return true;
+        }
+
+        @Override
+        public String getPermissionRequired() {
+            return "server.command.sethome";
+        }
 
     }
 

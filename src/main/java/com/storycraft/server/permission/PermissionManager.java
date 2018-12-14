@@ -33,7 +33,8 @@ public class PermissionManager extends ServerExtension implements Listener {
 
     private WrappedField<PermissibleBase, CraftHumanEntity> permField;
     
-    private JsonConfigFile configFile;
+    private JsonConfigFile rankConfigFile;
+    private JsonConfigFile playerConfigFile;
 
     private Map<Player, PermissibleBase> playerTrackMap;
 
@@ -45,7 +46,8 @@ public class PermissionManager extends ServerExtension implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin) {
         try {
-            plugin.getConfigManager().addConfigFile("permission.json", configFile = new JsonConfigFile()).getSync();
+            plugin.getConfigManager().addConfigFile("permission_rank.json", rankConfigFile = new JsonConfigFile()).getSync();
+            plugin.getConfigManager().addConfigFile("permission_player.json", playerConfigFile = new JsonConfigFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -67,12 +69,68 @@ public class PermissionManager extends ServerExtension implements Listener {
         }
     }
 
-    public List<String> getAllowedList(ServerRank rank) {
+    protected JsonConfigEntry getPlayerPermissionEntry(Player p) {
+        JsonConfigEntry entry = playerConfigFile.getObject(p.getUniqueId().toString());
+        if (entry == null)
+            playerConfigFile.set(p.getUniqueId().toString(), entry = playerConfigFile.createEntry());
+
+        return entry;
+    }
+
+    public List<String> getPlayerAllowedList(Player p) {
         List<String> list;
 
-        JsonConfigEntry entry = configFile.getObject(rank.name());
+        JsonConfigEntry entry = getPlayerPermissionEntry(p);
+
+        try {
+            JsonArray array = entry.get("allowed").getAsJsonArray();
+
+            list = new ArrayList<>(array.size());
+
+            for (JsonElement element : array) {
+                list.add(element.getAsString());
+            }
+        } catch (Exception e) {
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PermissionManager", "플레이어 " + p.getName() + " 의 버킷 api 펄미션 허용 목록이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다"));
+            entry.set("allowed", list = new ArrayList<>());
+        }
+
+        return list;
+    }
+
+    public List<String> getPlayerBlockedList(Player p) {
+        List<String> list;
+
+        JsonConfigEntry entry = getPlayerPermissionEntry(p);
+
+        try {
+            JsonArray array = entry.get("blocked").getAsJsonArray();
+
+            list = new ArrayList<>(array.size());
+
+            for (JsonElement element : array) {
+                list.add(element.getAsString());
+            }
+        } catch (Exception e) {
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PermissionManager", "플레이어 " + p.getName() + " 의 버킷 api 펄미션 차단 목록이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다"));
+            entry.set("blocked", list = new ArrayList<>());
+        }
+
+        return list;
+    }
+
+    protected JsonConfigEntry getRankPermissionEntry(ServerRank rank) {
+        JsonConfigEntry entry = rankConfigFile.getObject(rank.name());
         if (entry == null)
-            configFile.set(rank.name(), entry = configFile.createEntry());
+            rankConfigFile.set(rank.name(), entry = rankConfigFile.createEntry());
+
+        return entry;
+    }
+
+    public List<String> getRankAllowedList(ServerRank rank) {
+        List<String> list;
+
+        JsonConfigEntry entry = getRankPermissionEntry(rank);
 
         try {
             JsonArray array = entry.get("allowed").getAsJsonArray();
@@ -90,12 +148,10 @@ public class PermissionManager extends ServerExtension implements Listener {
         return list;
     }
 
-    public List<String> getBlockedList(ServerRank rank) {
+    public List<String> getRankBlockedList(ServerRank rank) {
         List<String> list;
 
-        JsonConfigEntry entry = configFile.getObject(rank.name());
-        if (entry == null)
-            configFile.set(rank.name(), entry = configFile.createEntry());
+        JsonConfigEntry entry = getRankPermissionEntry(rank);
 
         try {
             JsonArray array = entry.get("blocked").getAsJsonArray();
@@ -108,6 +164,30 @@ public class PermissionManager extends ServerExtension implements Listener {
         } catch (Exception e) {
             getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PermissionManager", "랭크 " + rank.name() + " 의 버킷 api 펄미션 차단 목록이 비었거나 오류가 있습니다. 기본 설정으로 되돌립니다"));
             entry.set("blocked", list = Lists.newArrayList(rank.getDefaultBlockedPermList()));
+        }
+
+        return list;
+    }
+
+    public List<String> getAllowedList(ServerRank rank, Player p) {
+        List<String> list = getRankAllowedList(rank);
+        List<String> playerAllowedList = getPlayerAllowedList(p);
+
+        for (String s : playerAllowedList) {
+            if (!list.contains(s))
+                list.add(s);
+        }
+
+        return list;
+    }
+
+    public List<String> getBlockedList(ServerRank rank, Player p) {
+        List<String> list = getRankBlockedList(rank);
+        List<String> playerAllowedList = getPlayerBlockedList(p);
+
+        for (String s : playerAllowedList) {
+            if (!list.contains(s))
+                list.add(s);
         }
 
         return list;
@@ -148,8 +228,8 @@ public class PermissionManager extends ServerExtension implements Listener {
         if (isInjected(e.getPlayer())) {
             PermissibleManaged managed = (PermissibleManaged) permField.get((CraftHumanEntity) e.getPlayer());
 
-            managed.setAllowPermList(getAllowedList(e.getTo()));
-            managed.setBlockPermList(getBlockedList(e.getTo()));
+            managed.setAllowPermList(getAllowedList(e.getTo(), e.getPlayer()));
+            managed.setBlockPermList(getBlockedList(e.getTo(), e.getPlayer()));
             managed.recalculatePermissions();
         }
         else
@@ -158,14 +238,14 @@ public class PermissionManager extends ServerExtension implements Listener {
 
     @EventHandler
     public void onConfigReload(ConfigUpdateEvent e) {
-        if (configFile.equals(e.getConfig())) {
+        if (e.getConfig().equals(rankConfigFile) || e.getConfig().equals(playerConfigFile)) {
             for (Player p : playerTrackMap.keySet()) {
                 PermissibleManaged managed = (PermissibleManaged) permField.get((CraftHumanEntity) p);
 
                 ServerRank rank = getRankManager().getRank(p);
 
-                managed.setAllowPermList(getAllowedList(rank));
-                managed.setBlockPermList(getBlockedList(rank));
+                managed.setAllowPermList(getAllowedList(rank, p));
+                managed.setBlockPermList(getBlockedList(rank, p));
                 managed.recalculatePermissions();
             }
         }
@@ -176,8 +256,8 @@ public class PermissionManager extends ServerExtension implements Listener {
 
         ServerRank rank = getRankManager().getRank(p);
 
-        managed.setAllowPermList(getAllowedList(rank));
-        managed.setBlockPermList(getBlockedList(rank));
+        managed.setAllowPermList(getAllowedList(rank, p));
+        managed.setBlockPermList(getBlockedList(rank, p));
         managed.recalculatePermissions();
 
         return managed;

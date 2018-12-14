@@ -36,11 +36,6 @@ public class BroadcastManager extends MiniPlugin implements ICommand, Listener {
     }
 
     @Override
-    public int getRequiredRankLevel() {
-        return ServerRank.DEVELOPER.getRankLevel();
-    }
-
-    @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "Broadcast", "사용법 /broadcast <메세지>"));
@@ -63,7 +58,17 @@ public class BroadcastManager extends MiniPlugin implements ICommand, Listener {
 
     @Override
     public boolean availableOnCommandBlock() {
-		return false;
-	}
+        return false;
+    }
+
+    @Override
+    public boolean isPermissionRequired() {
+	    return true;
+    }
+
+    @Override
+    public String getPermissionRequired() {
+        return "server.command.broadcast";
+    }
     
 }

@@ -76,8 +76,13 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     }
 
     @Override
-    public int getRequiredRankLevel() {
-        return ServerRank.DEVELOPER.getRankLevel();
+    public boolean isPermissionRequired() {
+	    return true;
+    }
+
+    @Override
+    public String getPermissionRequired() {
+        return "server.command.rank";
     }
 
     @EventHandler
