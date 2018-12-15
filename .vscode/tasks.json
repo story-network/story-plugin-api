@@ -4,13 +4,19 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build production",
+            "label": "build class",
             "type": "shell",
-            "command": "./gradlew jar",
+            "command": ".\\jdk1.8.0_161\\bin\\javac Sans.java",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
+            "problemMatcher": []
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": ".\\jdk1.8.0_161\\bin\\java Sans",
             "problemMatcher": []
         }
     ]

@@ -53,7 +53,8 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         
         this.infodataList = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
         this.infoAction = Reflect.getField(PacketPlayOutPlayerInfo.class, "a");
-        this.gameProfileField = Reflect.getField(PacketPlayOutPlayerInfo.class + "$PlayerInfoData", "d");
+        this.gameProfileField = Reflect.getField(PacketPlayOutPlayerInfo.class.getDeclaredClasses()[0], "d");
+
         gameProfileField.unlockFinal();
     }
 
@@ -102,20 +103,15 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         setPlayerHaveCustomSkin(getPlayerProfileId(p), flag);
     }
 
-    public String getPlayerSkinTexture(UUID profileId) {
+    public String getPlayerSkinTexture(UUID profileId) throws IOException {
         if (!isPlayerHaveCustomSkin(profileId))
-            return null;
+            return "";
         
         try {
-            return skinConfig.get("skin-textures").getAsString();
+            return getPlayerEntry(profileId).get("skin-textures").getAsString();
         } catch (Exception e) {
-            JsonObject property;
+            JsonObject property = getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
             String textures;
-            try {
-                property = getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
-            } catch (IOException e1) {
-                return null;
-            }
 
             setPlayerSkinTexture(profileId, textures = property.get("value").getAsString(), property.get("signature").getAsString());
 
@@ -123,32 +119,27 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         }
     }
 
-    public String getPlayerSkinTexture(Player p) {
+    public String getPlayerSkinTexture(Player p) throws IOException {
         return getPlayerSkinTexture(getPlayerProfileId(p));
     }
 
     public void setPlayerSkinTexture(UUID profileId, String textures, String signature) {
         JsonConfigEntry entry = getPlayerEntry(profileId);
         entry.set("skin-textures", textures);
-        entry.set("skin-signature", textures);
+        entry.set("skin-signature", signature);
 
         setPlayerHaveCustomSkin(profileId, true);
     }
 
-    public String getPlayerSkinSignature(UUID profileId) {
+    public String getPlayerSkinSignature(UUID profileId) throws IOException {
         if (!isPlayerHaveCustomSkin(profileId))
-            return null;
+            return "";
         
         try {
-            return skinConfig.get("skin-signature").getAsString();
+            return getPlayerEntry(profileId).get("skin-signature").getAsString();
         } catch (Exception e) {
-            JsonObject property;
+            JsonObject property = getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
             String signature;
-            try {
-                property = getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
-            } catch (IOException e1) {
-                return null;
-            }
 
             setPlayerSkinTexture(profileId, property.get("value").getAsString(), signature = property.get("signature").getAsString());
 
@@ -156,7 +147,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         }
     }
 
-    public String getPlayerSkinSignature(Player p) {
+    public String getPlayerSkinSignature(Player p) throws IOException {
         return getPlayerSkinSignature(getPlayerProfileId(p));
     }
 
@@ -231,14 +222,18 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
                 if (!isPlayerHaveCustomSkin(profile.getId()))
                     continue;
 
-                String textures = getPlayerSkinTexture(profile.getId());
-                String signature = getPlayerSkinSignature(profile.getId());
+                try {
+                    String textures = getPlayerSkinTexture(profile.getId());
+                    String signature = getPlayerSkinSignature(profile.getId());
 
-                GameProfile newProfile = new GameProfile(profile.getId(), profile.getName());
+                    GameProfile newProfile = new GameProfile(profile.getId(), profile.getName());
 
-                newProfile.getProperties().put("textures", new Property("textures", textures, signature));
+                    newProfile.getProperties().put("textures", new Property("textures", textures, signature));
                 
-                gameProfileField.set(data, newProfile);
+                    gameProfileField.set(data, newProfile);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         }
     }
@@ -274,17 +269,17 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
                     public Void get() throws IOException {
 
                         setPlayerSkin(p, skinPlayer);
+                        updatePlayerInfo(p);
 
                         return null;
                     }
 
                 }).then((Void v, Throwable t) -> {
                     if (t != null) {
-                        p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "플레이어 " + skinPlayer + " 스킨 적용이 실패 했습니다"));
+                        p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "플레이어 " + skinPlayer + " 스킨 적용이 실패 했습니다. 약 1분후 재시도 해주세요"));
                         return;
                     }
 
-                    updatePlayerInfo(p);
                     p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "CustomSkin", "플레이어 " + skinPlayer + " 스킨이 적용되었습니다"));
                 }).run();
 
