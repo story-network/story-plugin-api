@@ -44,9 +44,13 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
     private WrappedField<EnumPlayerInfoAction, PacketPlayOutPlayerInfo> infoAction;
     private WrappedField<List<?>, PacketPlayOutPlayerInfo> infodataList;
     private WrappedField<GameProfile, Object> gameProfileField;
+
+    private boolean enabled;
     
     @Override
     public void onLoad(StoryPlugin plugin) {
+        this.enabled = true;
+
         plugin.getConfigManager().addConfigFile("player_skin.json", skinConfig = new JsonConfigFile()).then(this::onConfigLoad).run();
         plugin.getCommandManager().addCommand(new CustomSkinCommand());
         setPlugin(plugin);//preload
@@ -63,7 +67,16 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
     }
 
     public void onDisable(boolean reload) {
+        this.enabled = false;
 
+        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+            UUID profileId = getPlayerProfileId(p);
+
+            if (!p.isOnline() || !isPlayerHaveCustomSkin(profileId))
+                continue;
+
+            updatePlayerInfo(p);
+        }
     }
 
     protected JsonConfigEntry getPlayerEntry(UUID profileId) {
@@ -207,7 +220,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onPlayerListPacketSent(AsyncPacketOutEvent e) {
-        if (e.getPacket() instanceof PacketPlayOutPlayerInfo) {
+        if (e.getPacket() instanceof PacketPlayOutPlayerInfo && enabled) {
             PacketPlayOutPlayerInfo infoPacket = (PacketPlayOutPlayerInfo) e.getPacket();
 
             if (infoAction.get(infoPacket) == EnumPlayerInfoAction.REMOVE_PLAYER) {
