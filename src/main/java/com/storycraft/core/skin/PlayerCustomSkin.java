@@ -35,17 +35,15 @@ import org.bukkit.event.Listener;
 import net.minecraft.server.v1_13_R2.EntityPlayer;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_13_R2.PacketPlayOutRespawn;
-import net.minecraft.server.v1_13_R2.WorldType;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.PlayerInfoData;
 
 public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
     private JsonConfigFile skinConfig;
 
     private WrappedField<EnumPlayerInfoAction, PacketPlayOutPlayerInfo> infoAction;
-    private WrappedField<List<PlayerInfoData>, PacketPlayOutPlayerInfo> infodataList;
-    private WrappedField<GameProfile, PlayerInfoData> gameProfileField;
+    private WrappedField<List<?>, PacketPlayOutPlayerInfo> infodataList;
+    private WrappedField<GameProfile, Object> gameProfileField;
     
     @Override
     public void onLoad(StoryPlugin plugin) {
@@ -55,7 +53,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         
         this.infodataList = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
         this.infoAction = Reflect.getField(PacketPlayOutPlayerInfo.class, "a");
-        this.gameProfileField = Reflect.getField(PlayerInfoData.class, "d");
+        this.gameProfileField = Reflect.getField(PacketPlayOutPlayerInfo.class + "$PlayerInfoData", "d");
         gameProfileField.unlockFinal();
     }
 
@@ -225,10 +223,10 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
                 return;
             }
 
-            List<PlayerInfoData> list = infodataList.get(infoPacket);
+            List<?> list = infodataList.get(infoPacket);
 
-            for (PlayerInfoData data : list) {
-                GameProfile profile = data.a();
+            for (Object data : list) {
+                GameProfile profile = gameProfileField.get(data);
 
                 if (!isPlayerHaveCustomSkin(profile.getId()))
                     continue;
