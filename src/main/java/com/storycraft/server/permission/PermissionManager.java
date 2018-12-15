@@ -240,6 +240,8 @@ public class PermissionManager extends ServerExtension implements Listener {
         }
         else
             injectToPlayer(e.getPlayer());
+
+        e.getPlayer().updateCommands();
     }
 
     @EventHandler

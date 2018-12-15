@@ -27,11 +27,13 @@ import com.storycraft.util.reflect.Reflect;
 import com.storycraft.util.reflect.Reflect.WrappedField;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import net.minecraft.server.v1_13_R2.DimensionManager;
 import net.minecraft.server.v1_13_R2.EntityPlayer;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_13_R2.PacketPlayOutRespawn;
@@ -213,9 +215,12 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
         PacketPlayOutPlayerInfo removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, ep);
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
-        PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.bK().getGamemode());
+        PacketPlayOutRespawn respawnPacketOther = new PacketPlayOutRespawn(ep.dimension.getDimensionID() >= 0 ? DimensionManager.NETHER : DimensionManager.OVERWORLD, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
+        PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
         ConnectionUtil.sendPacket(removePacket, infoPacket);
-        ConnectionUtil.sendPacket(p, respawnPacket);
+        ConnectionUtil.sendPacket(p, respawnPacketOther, respawnPacket);
+        p.updateInventory();
+        p.teleport(p);
     }
 
     @EventHandler
