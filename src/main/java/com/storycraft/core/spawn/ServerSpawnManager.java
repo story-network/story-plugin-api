@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
@@ -28,6 +29,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
 public class ServerSpawnManager extends MiniPlugin implements Listener {
@@ -88,6 +90,15 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
         if (!p.hasPlayedBefore() && isSpawnEnabled()) {
             p.teleport(getSpawnLocation());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onRespawn(PlayerRespawnEvent e) {
+        Player p = e.getPlayer();
+
+        if (isSpawnEnabled()) {
+            e.setRespawnLocation(getSpawnLocation());
         }
     }
 

@@ -29,11 +29,15 @@ public class EntityBlood extends MiniPlugin implements Listener {
             LivingEntity entity = (LivingEntity) e.getEntity();
 
             double finalDamage = e.getFinalDamage();
+
+            if (finalDamage < 0)
+                return;
+
             double maxHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
             double leftHealth = Math.max(entity.getHealth() - finalDamage, 0);
 
             Material bloodMaterial = Material.REDSTONE_WIRE;
-            BlockData data = getPlugin().getServer().createBlockData(bloodMaterial, "[" + "power" + "=" + ((int) Math.floor((leftHealth / maxHealth) * 15)) + "]");
+            BlockData data = getPlugin().getServer().createBlockData(bloodMaterial, "[" + "power" + "=" + ((int) Math.floor(Math.max((leftHealth / maxHealth), 1) * 15)) + "]");
 
             entity.getWorld().playEffect(entity.getEyeLocation(), Effect.STEP_SOUND, BlockIdUtil.getCombinedId(data));
         }

@@ -60,7 +60,7 @@ public class WorldManager extends ServerExtension {
     }
 
     private void loadUniverse() {
-        loadWorld(new TestUniverse("lobby", 0));
+        //loadWorld(new TestUniverse("lobby", 0));
     }
 
     public DefaultUniverse getDefaultOverworld() {
