@@ -1,3 +1,4 @@
 out
 bin
 build
+.vscode/sftp.json

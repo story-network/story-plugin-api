@@ -14,8 +14,8 @@ public class AsyncTask<T> {
     private CompletableFuture<T> task;
     private AsyncNext<T> onComplete;
 
-    public AsyncTask(AsyncCallable<T> supplier) {
-        this.supplier = supplier;
+    public AsyncTask(AsyncCallable<T> asyncCallable) {
+        this.supplier = asyncCallable;
     }
 
     public AsyncTask<T> run() {

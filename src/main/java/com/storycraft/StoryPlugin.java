@@ -133,6 +133,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new BroadcastManager());
         loader.addMiniPlugin(new FlyCommand());
         loader.addMiniPlugin(new FAQCommand());
+        loader.addMiniPlugin(new PlayerCustomSkin());
         loader.addMiniPlugin(new HomeManager());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new UserDebug());
