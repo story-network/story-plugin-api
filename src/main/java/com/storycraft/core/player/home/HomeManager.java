@@ -64,7 +64,7 @@ public class HomeManager extends MiniPlugin implements Listener {
             return null;
 
         try {
-            return new Location(getPlugin().getServer().getWorld(entry.get("world").getAsString()), entry.get("x").getAsDouble(), entry.get("y").getAsDouble(), entry.get("z").getAsDouble(), entry.get("pitch").getAsFloat(), entry.get("yaw").getAsFloat());
+            return new Location(getPlugin().getServer().getWorld(entry.get("world").getAsString()), entry.get("x").getAsDouble(), entry.get("y").getAsDouble(), entry.get("z").getAsDouble(), entry.get("yaw").getAsFloat(), entry.get("pitch").getAsFloat());
         } catch (Exception e) {
             return null;
         }
