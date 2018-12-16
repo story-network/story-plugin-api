@@ -249,7 +249,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         @Override
         public void onCommand(CommandSender sender, String[] args) {
             if (args.length < 1) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "사용법 /skin <set / disable>"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "사용법 /skin <set / disable / enable>"));
                 return;
             }
 
@@ -289,11 +289,21 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
                     p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "이미 비활성화 상태입니다"));
                 }
                 else {
+                    setPlayerHaveCustomSkin(p, false);
                     updatePlayerInfo(p);
                     p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "CustomSkin", "스킨이 비활성화 되었습니다"));
                 }
+            }  else if ("enable".equals(option)) {
+                if (isPlayerHaveCustomSkin(p)) {
+                    p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "이미 활성화 상태입니다"));
+                }
+                else {
+                    setPlayerHaveCustomSkin(p, true);
+                    updatePlayerInfo(p);
+                    p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "CustomSkin", "커스텀 스킨이 재활성화 되었습니다"));
+                }
             } else {
-                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "사용법 /skin <get / set / disable>"));
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "사용법 /skin <set / disable / enable>"));
                 return;
             }
         }
