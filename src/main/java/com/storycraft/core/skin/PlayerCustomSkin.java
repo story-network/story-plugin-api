@@ -184,7 +184,16 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
     }
 
     public void setPlayerSkin(Player p, String name) throws IOException {
-        JsonObject object = MineSkinAPI.getSessionPlayerProperty(MojangAPI.getSessionPlayerUUID(name));
+        String id = MojangAPI.getSessionPlayerUUID(name);
+
+        JsonObject object;
+        try {
+            object = MineSkinAPI.getSessionPlayerProperty(id);
+        } catch (Exception e) {
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "CustomSkin", "MineSkin API로 스킨을 가져올 수 없습니다. Mojang API를 사용합니다. " + e.getLocalizedMessage()));
+
+            object = MojangAPI.getSessionPlayerProperty(id);
+        }
         setPlayerSkinTexture(p, object.get("value").getAsString(), object.get("signature").getAsString());
     }
 
