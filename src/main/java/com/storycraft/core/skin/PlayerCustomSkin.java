@@ -334,8 +334,13 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
         @Override
         public boolean isPermissionRequired() {
-            return false;
-		}
+            return true;
+        }
+        
+        @Override
+        public String getPermissionRequired() {
+            return "server.command.skin";
+        }
 
     }
 
