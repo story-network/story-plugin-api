@@ -10,7 +10,7 @@ import com.google.gson.JsonParser;
 public class MineSkinAPI {
 
     public static JsonObject getSessionPlayerProperty(String rawId) throws IOException {
-        URL url = new URL("https://api.mineskin.org/generate/user/" + rawId);
+        URL url = new URL("http://api.mineskin.org/generate/user/" + rawId);
         InputStreamReader reader = new InputStreamReader(url.openStream());
 
         JsonObject rawProperty = new JsonParser().parse(reader).getAsJsonObject().get("data").getAsJsonObject().getAsJsonObject("texture");
