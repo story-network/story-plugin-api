@@ -2,6 +2,7 @@ package com.storycraft.core.uuid;
 
 import java.io.IOException;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.MessageUtil;
@@ -14,6 +15,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class UUIDRevealCommand extends MiniPlugin implements ICommand {
+
+    @Override
+    public void onLoad(StoryPlugin plugin) {
+        plugin.getCommandManager().addCommand(this);
+    }
 
     @Override
     public String[] getAliases() {
