@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +38,7 @@ import org.bukkit.event.Listener;
 import net.minecraft.server.v1_13_R2.DimensionManager;
 import net.minecraft.server.v1_13_R2.EntityPlayer;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_13_R2.PacketPlayOutPosition;
 import net.minecraft.server.v1_13_R2.PacketPlayOutRespawn;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
@@ -197,10 +199,10 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
         PacketPlayOutRespawn respawnPacketOther = new PacketPlayOutRespawn(ep.dimension.getDimensionID() >= 0 ? DimensionManager.NETHER : DimensionManager.OVERWORLD, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
         PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
+        PacketPlayOutPosition positionCorrectionPacket = new PacketPlayOutPosition(ep.locX, ep.locY, ep.locZ, ep.yaw, ep.pitch, new HashSet<>(), (int) (Math.random() * 9999999));
         ConnectionUtil.sendPacket(removePacket, infoPacket);
-        ConnectionUtil.sendPacket(p, respawnPacketOther, respawnPacket);
+        ConnectionUtil.sendPacket(p, respawnPacketOther, respawnPacket, positionCorrectionPacket);
         p.updateInventory();
-        p.teleport(p);
     }
 
     @EventHandler

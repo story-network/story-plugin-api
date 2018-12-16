@@ -193,6 +193,11 @@ public class HomeManager extends MiniPlugin implements Listener {
             Player p = (Player) sender;
             Location location = p.getLocation();
 
+            if (args.length > 0) {
+                p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "HomeManager", "집은 한개만 설정가능합니다"));
+                return;
+            }
+
             setPlayerHome(p, location);
         }
 
