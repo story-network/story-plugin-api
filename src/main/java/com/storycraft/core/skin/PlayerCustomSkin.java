@@ -29,6 +29,7 @@ import com.storycraft.util.MessageUtil.MessageType;
 import com.storycraft.util.reflect.Reflect;
 import com.storycraft.util.reflect.Reflect.WrappedField;
 
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
@@ -198,12 +199,25 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
         PacketPlayOutPlayerInfo removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, ep);
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
-        PacketPlayOutRespawn respawnPacketOther = new PacketPlayOutRespawn(ep.dimension.getDimensionID() >= 0 ? DimensionManager.NETHER : DimensionManager.OVERWORLD, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
         PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
-        PacketPlayOutPosition positionCorrectionPacket = new PacketPlayOutPosition(ep.locX, ep.locY, ep.locZ, ep.yaw, ep.pitch, new HashSet<>(), (int) (Math.random() * 9999999));
-        ConnectionUtil.sendPacket(removePacket, infoPacket);
-        ConnectionUtil.sendPacket(p, respawnPacketOther, respawnPacket, positionCorrectionPacket);
-        p.updateInventory();
+
+        boolean flying = p.isFlying();
+		Location location = p.getLocation();
+		int level = p.getLevel();
+		float xp = p.getExp();
+		double health = p.getHealth();
+
+        ConnectionUtil.sendPacket(removePacket);
+        ConnectionUtil.sendPacket(p, respawnPacket);
+
+        p.setFlying(flying);
+	    p.teleport(location);
+	    p.updateInventory();
+		p.setLevel(level);
+		p.setExp(xp);
+		p.setHealth(health);
+
+        ConnectionUtil.sendPacket(infoPacket);
     }
 
     @EventHandler
