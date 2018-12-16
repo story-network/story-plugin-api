@@ -49,6 +49,23 @@ public class HomeManager extends MiniPlugin implements Listener {
         player.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "HomeManager", "집 위치가 " + location.getWorld().getName() + " " + (Math.floor(location.getX() * 10) / 10) + " " + (Math.floor(location.getY() * 10) / 10) + " " + (Math.floor(location.getZ() * 10) / 10) + " 로 지정되었습니다."));
     }
 
+    public int getTeleportCoolTime() {
+        JsonConfigEntry entry = getOptionEntry();
+
+        try {
+            return entry.get("cooltime").getAsInt();
+        } catch (Exception e) {
+            setTeleportCoolTime(60000);
+
+            return 60000;
+        }
+    }
+
+    public void setTeleportCoolTime(int coolTime) {
+        JsonConfigEntry entry = getOptionEntry();
+        entry.set("cooltime", coolTime);
+    }
+
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Location respawnLocation = getRespawnLocation(e.getPlayer());
@@ -85,9 +102,17 @@ public class HomeManager extends MiniPlugin implements Listener {
         homeConfigFile.set(p.getUniqueId().toString(), entry);
     }
 
-    public class HomeCommand implements ICommand {
+    public JsonConfigEntry getOptionEntry() {
+        JsonConfigEntry entry = homeConfigFile.getObject("options");
 
-        public static final int TELEPORT_COOLTIME = 60000;
+        if (entry == null) {
+            homeConfigFile.set("options", entry = homeConfigFile.createEntry());
+        }
+
+        return entry;
+    }
+
+    public class HomeCommand implements ICommand {
 
         private Map<UUID, Long> timeMap; 
 
@@ -136,7 +161,7 @@ public class HomeManager extends MiniPlugin implements Listener {
                     p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "HomeManager", "집으로 이동되었습니다"));
                 }
                 else {
-                    p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "HomeManager", "다음 커맨드 사용까지 " + Math.ceil((TELEPORT_COOLTIME - (System.currentTimeMillis() - getLastTeleport(p))) / 1000) + " 초 더 기다려야 합니다"));
+                    p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "HomeManager", "다음 커맨드 사용까지 " + Math.ceil((getTeleportCoolTime() - (System.currentTimeMillis() - getLastTeleport(p))) / 1000) + " 초 더 기다려야 합니다"));
                 }
             }
         }
@@ -156,7 +181,7 @@ public class HomeManager extends MiniPlugin implements Listener {
         }
 
         protected boolean isCoolTimeDone(Player p) {
-            return System.currentTimeMillis() - getLastTeleport(p) >= TELEPORT_COOLTIME;
+            return System.currentTimeMillis() - getLastTeleport(p) >= getTeleportCoolTime();
         }
 
         @Override

@@ -42,14 +42,14 @@ import net.minecraft.server.v1_13_R2.EntityPlayer;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPosition;
 import net.minecraft.server.v1_13_R2.PacketPlayOutRespawn;
-import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.*;
 
 public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
     private JsonConfigFile skinConfig;
 
     private WrappedField<EnumPlayerInfoAction, PacketPlayOutPlayerInfo> infoAction;
-    private WrappedField<List<?>, PacketPlayOutPlayerInfo> infodataList;
+    private WrappedField<List<Object>, PacketPlayOutPlayerInfo> infodataList;
     private WrappedField<GameProfile, Object> gameProfileField;
 
     private boolean enabled;
@@ -64,7 +64,11 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         
         this.infodataList = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
         this.infoAction = Reflect.getField(PacketPlayOutPlayerInfo.class, "a");
-        this.gameProfileField = Reflect.getField(PacketPlayOutPlayerInfo.class.getDeclaredClasses()[0], "d");
+        try {
+            this.gameProfileField = Reflect.getField(Class.forName("net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo$PlayerInfoData"), "d");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         gameProfileField.unlockFinal();
     }
@@ -225,7 +229,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
                 return;
             }
 
-            List<?> list = infodataList.get(infoPacket);
+            List<Object> list = infodataList.get(infoPacket);
 
             for (Object data : list) {
                 GameProfile profile = gameProfileField.get(data);

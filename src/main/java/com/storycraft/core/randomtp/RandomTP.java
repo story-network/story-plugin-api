@@ -21,8 +21,6 @@ import org.bukkit.entity.Player;
 
 public class RandomTP extends MiniPlugin implements ICommand {
 
-    private static final int TELEPORT_COOLTIME = 10000;
-
     private JsonConfigFile configFile;
 
     private Map<UUID, Long> teleportTracker;
@@ -47,7 +45,7 @@ public class RandomTP extends MiniPlugin implements ICommand {
         Player p = (Player) sender;
 
         long time = System.currentTimeMillis() - getPlayerLastTeleport(p);
-        if (time <= TELEPORT_COOLTIME) {
+        if (time <= getTeleportCoolTime(p.getWorld())) {
             p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "RandomTP", "다음 사용까지 " + Math.ceil(time / 10) + " 초 기다려야 합니다"));
             return;
         }
@@ -143,6 +141,23 @@ public class RandomTP extends MiniPlugin implements ICommand {
 
             return defaultLocation;
         }
+    }
+
+    public int getTeleportCoolTime(World w) {
+        JsonConfigEntry entry = getEntry(w);
+
+        try {
+            return entry.get("cooltime").getAsInt();
+        } catch (Exception e) {
+            setTeleportCoolTime(w, 10000);
+
+            return 10000;
+        }
+    }
+
+    public void setTeleportCoolTime(World w, int coolTime) {
+        JsonConfigEntry entry = getEntry(w);
+        entry.set("cooltime", coolTime);
     }
 
     public void setRandomTPCenter(World w, Location location) {
