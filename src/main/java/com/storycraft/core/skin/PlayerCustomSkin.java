@@ -21,6 +21,7 @@ import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.MessageUtil;
+import com.storycraft.util.MojangAPI;
 import com.storycraft.util.AsyncTask.AsyncCallable;
 import com.storycraft.util.MessageUtil.MessageType;
 import com.storycraft.util.reflect.Reflect;
@@ -125,7 +126,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         try {
             return getPlayerEntry(profileId).get("skin-textures").getAsString();
         } catch (Exception e) {
-            JsonObject property = getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
+            JsonObject property = MojangAPI.getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
             String textures;
 
             setPlayerSkinTexture(profileId, textures = property.get("value").getAsString(), property.get("signature").getAsString());
@@ -153,7 +154,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         try {
             return getPlayerEntry(profileId).get("skin-signature").getAsString();
         } catch (Exception e) {
-            JsonObject property = getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
+            JsonObject property = MojangAPI.getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
             String signature;
 
             setPlayerSkinTexture(profileId, property.get("value").getAsString(), signature = property.get("signature").getAsString());
@@ -174,29 +175,8 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         return ((CraftPlayer) p).getHandle().getProfile().getId();
     }
 
-    public String getSessionPlayerUUID(String nickname) throws IOException {
-        URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + nickname);
-        InputStreamReader reader = new InputStreamReader(url.openStream());
-
-        String uuid = new JsonParser().parse(reader).getAsJsonObject().get("id").getAsString();
-
-        return uuid;
-    }
-
-    public JsonObject getSessionPlayerProperty(String rawId) throws IOException {
-        URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + rawId + "?unsigned=false");
-        InputStreamReader reader = new InputStreamReader(url.openStream());
-
-        JsonObject textureProperty = new JsonParser().parse(reader).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
-
-        //String texture = textureProperty.get("value").getAsString();
-        //String signature = textureProperty.get("signature").getAsString();
-
-        return textureProperty;
-    }
-
     public void setPlayerSkin(Player p, String name) throws IOException {
-        JsonObject object = getSessionPlayerProperty(getSessionPlayerUUID(name));
+        JsonObject object = MojangAPI.getSessionPlayerProperty(MojangAPI.getSessionPlayerUUID(name));
         setPlayerSkinTexture(p, object.get("value").getAsString(), object.get("signature").getAsString());
     }
 

@@ -27,6 +27,7 @@ import com.storycraft.core.saving.AutoSaveManager;
 import com.storycraft.core.skin.PlayerCustomSkin;
 import com.storycraft.core.spawn.ServerSpawnManager;
 import com.storycraft.core.teleport.TeleportAskCommand;
+import com.storycraft.core.uuid.UUIDRevealCommand;
 import com.storycraft.core.world.WorldTeleporter;
 import com.storycraft.server.ServerManager;
 import com.storycraft.server.plugin.ServerPluginManager;
@@ -135,6 +136,7 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new FAQCommand());
         loader.addMiniPlugin(new PlayerCustomSkin());
         loader.addMiniPlugin(new HomeManager());
+        loader.addMiniPlugin(new UUIDRevealCommand());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new UserDebug());
         loader.addMiniPlugin(new WorldTeleporter());
