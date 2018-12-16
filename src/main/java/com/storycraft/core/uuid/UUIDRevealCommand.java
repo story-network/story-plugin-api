@@ -45,7 +45,7 @@ public class UUIDRevealCommand extends MiniPlugin implements ICommand {
         try {
 			sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "UUID", "플레이어  " + args[0] + " 의 계정 UUID: " + ChatColor.YELLOW + MojangAPI.getSessionPlayerUUID(p.getName())));
 		} catch (IOException e) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "UUID", "플레이어  " + args[0] + " 의 계정 UUID를 불러 올 수 없습니다")));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "UUID", "플레이어  " + args[0] + " 의 계정 UUID를 불러 올 수 없습니다"));
 		}
     }
 
