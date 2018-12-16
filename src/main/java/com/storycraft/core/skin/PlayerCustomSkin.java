@@ -22,6 +22,7 @@ import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.MessageUtil;
+import com.storycraft.util.MineSkinAPI;
 import com.storycraft.util.MojangAPI;
 import com.storycraft.util.AsyncTask.AsyncCallable;
 import com.storycraft.util.MessageUtil.MessageType;
@@ -128,7 +129,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         try {
             return getPlayerEntry(profileId).get("skin-textures").getAsString();
         } catch (Exception e) {
-            JsonObject property = MojangAPI.getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
+            JsonObject property = MineSkinAPI.getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
             String textures;
 
             setPlayerSkinTexture(profileId, textures = property.get("value").getAsString(), property.get("signature").getAsString());
@@ -156,7 +157,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         try {
             return getPlayerEntry(profileId).get("skin-signature").getAsString();
         } catch (Exception e) {
-            JsonObject property = MojangAPI.getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
+            JsonObject property = MineSkinAPI.getSessionPlayerProperty(profileId.toString().replaceAll("-", ""));
             String signature;
 
             setPlayerSkinTexture(profileId, property.get("value").getAsString(), signature = property.get("signature").getAsString());
@@ -178,7 +179,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
     }
 
     public void setPlayerSkin(Player p, String name) throws IOException {
-        JsonObject object = MojangAPI.getSessionPlayerProperty(MojangAPI.getSessionPlayerUUID(name));
+        JsonObject object = MineSkinAPI.getSessionPlayerProperty(MojangAPI.getSessionPlayerUUID(name));
         setPlayerSkinTexture(p, object.get("value").getAsString(), object.get("signature").getAsString());
     }
 
