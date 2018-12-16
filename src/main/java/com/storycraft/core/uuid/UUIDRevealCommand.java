@@ -40,7 +40,7 @@ public class UUIDRevealCommand extends MiniPlugin implements ICommand {
             public Void get() {
                 OfflinePlayer p = null;
 
-                if (args.length > 0) {
+                if (args.length > 0 && !args[0].isEmpty()) {
                     p = getPlugin().getServer().getOfflinePlayer(args[0]);
         
                     if (p == null) {

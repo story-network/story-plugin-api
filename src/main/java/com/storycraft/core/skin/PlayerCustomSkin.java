@@ -199,7 +199,6 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
         PacketPlayOutPlayerInfo removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, ep);
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
-        PacketPlayOutRespawn respawnOtherPacket = new PacketPlayOutRespawn(ep.dimension.getDimensionID() >= 0 ? DimensionManager.NETHER : DimensionManager.OVERWORLD, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
         PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
 
         boolean flying = p.isFlying();
@@ -209,7 +208,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
 		double health = p.getHealth();
 
         ConnectionUtil.sendPacket(removePacket);
-        ConnectionUtil.sendPacket(p, respawnOtherPacket, respawnPacket);
+        ConnectionUtil.sendPacket(p, respawnPacket);
 
 	    p.teleport(location);
 	    p.updateInventory();
