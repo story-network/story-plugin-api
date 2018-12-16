@@ -114,7 +114,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
             return false;
         }
     }
-
+    
     public boolean isPlayerHaveCustomSkin(Player p) {
         return isPlayerHaveCustomSkin(getPlayerProfileId(p));
     }
@@ -205,11 +205,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
         PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.dimension, ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
 
-        boolean flying = p.isFlying();
 		Location location = p.getLocation();
-		int level = p.getLevel();
-		float xp = p.getExp();
-		double health = p.getHealth();
 
         ConnectionUtil.sendPacket(removePacket);
         ConnectionUtil.sendPacket(p, respawnPacket);
