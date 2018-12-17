@@ -9,37 +9,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ServerEntityRegistry implements IRegistry<EntityTypes> {
+public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
 
-    private Map<EntityTypes, EntityTypes> clientEntityMap;
+    private Map<String, CustomEntityInfo> customEntityMap;
+    private Map<Integer, CustomEntityInfo> customEntityIdMap;
 
     private CustomEntityConverter converter;
     private RegistryManager manager;
 
     public ServerEntityRegistry(RegistryManager manager){
-        this.clientEntityMap = new HashMap<>();
+        this.customEntityMap = new HashMap<>();
+        this.customEntityIdMap = new HashMap<>();
+
         this.converter = new CustomEntityConverter(this);
 
         this.manager = manager;
     }
 
-    protected <T extends Entity>void addCustomEntity(String entityName, Class<? extends T> entityClass, Function<? super World, ? extends T> entityConstructor, EntityTypes clientEntityTypes) throws Exception {
-        EntityTypes old = EntityTypes.a(entityName);
-
-        if (contains(old))
-            throw new Exception("Entity with " + entityName + " already exists");
-
-        EntityTypes.a a = createA(entityClass, entityConstructor);
-        MinecraftKey saveKey = new MinecraftKey(entityName);
-        EntityTypes entityTypes = EntityTypes.a(entityName, a);
-
-
-        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(saveKey, entityTypes);
-
-        clientEntityMap.put(entityTypes, clientEntityTypes);
-    }
-
-    public <T extends Entity>EntityTypes.a<T> createA(Class<? extends T> entityClass, Function<? super World, ? extends T> entityConstructor) {
+    protected <T extends Entity>EntityTypes.a<T> createA(Class<? extends T> entityClass, Function<? super World, ? extends T> entityConstructor) {
         return EntityTypes.a.a(entityClass, entityConstructor);
     }
 
@@ -54,21 +41,75 @@ public class ServerEntityRegistry implements IRegistry<EntityTypes> {
     }
 
     @Override
-    public boolean contains(EntityTypes entityTypes) {
-        return clientEntityMap.containsKey(entityTypes);
+    public void add(String name, CustomEntityInfo item) throws Exception {
+        if (contains(name))
+            throw new Exception("Entity with " + name + " already exists");
+
+        EntityTypes.a a = createA(item.getEntityClass(), item.getEntityConstructor());
+        EntityTypes entityTypes = EntityTypes.a(name, a);
+
+        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(item.getSaveName(), entityTypes);
+
+        customEntityMap.put(name, item);
+        customEntityIdMap.put(net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(entityTypes), item);
+    }
+
+    public void addDefaultOverride(EntityTypes defaultType, CustomEntityInfo item) throws Exception {
+        MinecraftKey key = EntityTypes.getName(defaultType);
+        if (key != null) {
+            String name = key.getKey();
+            customEntityMap.put(name, item);
+            customEntityIdMap.put(net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(defaultType), item);
+        }
     }
 
     @Override
-    public EntityTypes getByName(String name) {
-        return EntityTypes.a(name);
+    public boolean contains(String name) {
+        return customEntityMap.containsKey(name);
+    }
+
+    public boolean containsItem(CustomEntityInfo item) {
+        return customEntityMap.containsValue(item);
     }
 
     @Override
-    public EntityTypes getById(int id) {
-        return net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.fromId(id);
+    public int getId(CustomEntityInfo item) {
+        if (!containsItem(item))
+            return -1;
+
+        for (int id : customEntityIdMap.keySet()) {
+            CustomEntityInfo info = customEntityMap.get(id);
+            if (info.equals(item))
+                return id;
+        }
+        
+        return -1;
     }
 
-    public EntityTypes getClientEntityTypes(EntityTypes entityTypes) {
-        return clientEntityMap.get(entityTypes);
+    @Override
+    public String getName(CustomEntityInfo item) {
+        if (!containsItem(item))
+            return null;
+
+        for (String name : customEntityMap.keySet()) {
+            CustomEntityInfo info = customEntityMap.get(name);
+            if (info.equals(item))
+                return name;
+        }
+
+        return null;
+    }
+
+    @Override
+    public CustomEntityInfo getByName(String name) {
+        if (!customEntityMap.containsKey(name))
+            return null;
+
+        return customEntityMap.get(name);
+    }
+
+    @Override
+    public CustomEntityInfo getById(int id) {
+        return customEntityIdMap.get(id);
     }
 }
