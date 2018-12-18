@@ -94,7 +94,7 @@ public class TestFunction implements Listener {
 
         @Override
         public GameProfile getProfile(Entity entity) {
-            GameProfile profile = new GameProfile(UUID.fromString("100e61a9-c568-4d48-87c3-30a7845154a9"), entity.getCustomName().getText());
+            GameProfile profile = new GameProfile(UUID.fromString("100e61a9-c568-4d48-87c3-50a7845154a9"), entity.getCustomName().getText());
 
             profile.getProperties().put("textures", new Property("textures", texture, signature));
 
