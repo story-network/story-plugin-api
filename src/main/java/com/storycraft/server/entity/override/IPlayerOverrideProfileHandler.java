@@ -4,8 +4,8 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.server.v1_13_R2.Entity;
 
-public interface IPlayerOverrideProfileHandler<T extends Entity> {
+public interface IPlayerOverrideProfileHandler {
 
-    GameProfile getProfile(T entity);
+    GameProfile getProfile(Entity entity);
 
 }

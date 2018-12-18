@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
@@ -23,7 +24,7 @@ public class FAQCommand extends MiniPlugin implements ICommand {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        plugin.getConfigManager().addConfigFile("faq.json", configFile = new JsonConfigFile()).run();
+        plugin.getConfigManager().addConfigFile("faq.json", configFile = new JsonConfigPrettyFile()).run();
         plugin.getCommandManager().addCommand(this);
     }
 

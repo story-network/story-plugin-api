@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.util.MessageUtil;
@@ -28,7 +29,7 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     @Override
     public void onLoad(StoryPlugin plugin) {
         try {
-            plugin.getConfigManager().addConfigFile("rank.json", configFile = new JsonConfigFile()).getSync();
+            plugin.getConfigManager().addConfigFile("rank.json", configFile = new JsonConfigPrettyFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }

@@ -12,6 +12,7 @@ import com.google.gson.JsonElement;
 import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.rank.RankUpdateEvent;
@@ -47,8 +48,8 @@ public class PermissionManager extends ServerExtension implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin) {
         try {
-            plugin.getConfigManager().addConfigFile("permission_rank.json", rankConfigFile = new JsonConfigFile()).getSync();
-            plugin.getConfigManager().addConfigFile("permission_player.json", playerConfigFile = new JsonConfigFile()).getSync();
+            plugin.getConfigManager().addConfigFile("permission_rank.json", rankConfigFile = new JsonConfigPrettyFile()).getSync();
+            plugin.getConfigManager().addConfigFile("permission_player.json", playerConfigFile = new JsonConfigPrettyFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }

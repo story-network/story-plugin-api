@@ -1,5 +1,6 @@
 package com.storycraft.util.reflect;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -66,6 +67,20 @@ public class Reflect {
         return null;
     }
 
+    public static <T>WrappedConstructor<T> getConstructor(Class<T> c, Class... params) {
+        try {
+            Constructor<T> constructor = getDeclaredConstructor(c, params);
+
+            return new WrappedConstructor<>(constructor);
+
+        } catch (Exception e) {
+            System.out.println("Error to get class " + c.getName() + " Constructor : " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private static Method getDeclaredMethod(Class<?> c, String name, Class<?>... classes) {
         try {
             Method method = c.getDeclaredMethod(name, classes);
@@ -74,6 +89,20 @@ public class Reflect {
             return method;
         } catch (Exception e) {
             System.out.println(name + " method in " + c.getName() + " not found");
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private static Constructor getDeclaredConstructor(Class<?> c, Class<?>... classes) {
+        try {
+            Constructor constructor = c.getDeclaredConstructor(classes);
+            constructor.setAccessible(true);
+
+            return constructor;
+        } catch (Exception e) {
+            System.out.println("Selected Constructor in " + c.getName() + " not found");
             e.printStackTrace();
         }
 
@@ -168,6 +197,34 @@ public class Reflect {
         public T invoke(C object, Object... objects){
             try {
                 return (T) method.invoke(object, objects);
+            } catch (Exception e) {
+                System.out.println("Error to invoke " + getName() + " : " + e.getLocalizedMessage());
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
+
+    public static class WrappedConstructor<T> {
+
+        private Constructor<T> constructor;
+
+        public WrappedConstructor(Constructor<T> constructor){
+            this.constructor = constructor;
+        }
+
+        public Constructor getConstructor() {
+            return constructor;
+        }
+
+        public String getName(){
+            return constructor.getName();
+        }
+
+        public T createNew(Object... objects){
+            try {
+                return constructor.newInstance(objects);
             } catch (Exception e) {
                 System.out.println("Error to invoke " + getName() + " : " + e.getLocalizedMessage());
                 e.printStackTrace();

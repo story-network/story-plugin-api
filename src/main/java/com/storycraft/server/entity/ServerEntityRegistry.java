@@ -41,17 +41,17 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
     }
 
     @Override
-    public void add(String name, CustomEntityInfo item) throws Exception {
-        if (contains(name))
+    public void add(int id, String name, CustomEntityInfo item) throws Exception {
+        if (contains(name) || containsId(id))
             throw new Exception("Entity with " + name + " already exists");
 
         EntityTypes.a a = createA(item.getEntityClass(), item.getEntityConstructor());
         EntityTypes entityTypes = EntityTypes.a(name, a);
 
-        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(item.getSaveName(), entityTypes);
+        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, item.getSaveName(), entityTypes);
 
         customEntityMap.put(name, item);
-        customEntityIdMap.put(net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(entityTypes), item);
+        customEntityIdMap.put(id, item);
     }
 
     public void addDefaultOverride(EntityTypes defaultType, CustomEntityInfo item) throws Exception {
@@ -59,7 +59,15 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
         if (key != null) {
             String name = key.getKey();
             customEntityMap.put(name, item);
-            customEntityIdMap.put(net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(defaultType), item);
+
+            int id = net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(defaultType);
+
+            EntityTypes.a a = createA(item.getEntityClass(), item.getEntityConstructor());
+            EntityTypes entityTypes = EntityTypes.a(name, a);
+
+            net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, item.getSaveName(), entityTypes);
+
+            customEntityIdMap.put(id, item);
         }
     }
 
@@ -111,5 +119,10 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
     @Override
     public CustomEntityInfo getById(int id) {
         return customEntityIdMap.get(id);
+    }
+
+    @Override
+    public boolean containsId(int id) {
+        return customEntityIdMap.containsKey(id);
     }
 }

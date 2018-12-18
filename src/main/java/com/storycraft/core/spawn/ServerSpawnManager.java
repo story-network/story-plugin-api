@@ -6,6 +6,7 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.util.MessageUtil;
@@ -38,7 +39,7 @@ public class ServerSpawnManager extends MiniPlugin implements Listener {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        plugin.getConfigManager().addConfigFile("spawn.json", configFile = new JsonConfigFile()).run();
+        plugin.getConfigManager().addConfigFile("spawn.json", configFile = new JsonConfigPrettyFile()).run();
 
         plugin.getCommandManager().addCommand(new SpawnCommand());
         plugin.getCommandManager().addCommand(new SetSpawnCommand());

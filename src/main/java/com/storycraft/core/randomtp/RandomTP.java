@@ -9,6 +9,7 @@ import com.storycraft.command.ICommand;
 import com.storycraft.config.IConfigEntry;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.util.MessageUtil;
@@ -31,7 +32,7 @@ public class RandomTP extends MiniPlugin implements ICommand {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-        plugin.getConfigManager().addConfigFile("randomtp.json", configFile = new JsonConfigFile()).run();
+        plugin.getConfigManager().addConfigFile("randomtp.json", configFile = new JsonConfigPrettyFile()).run();
         plugin.getCommandManager().addCommand(this);
     }
 

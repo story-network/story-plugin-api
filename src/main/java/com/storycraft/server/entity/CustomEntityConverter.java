@@ -1,14 +1,19 @@
 package com.storycraft.server.entity;
 
+import java.util.List;
 import java.util.UUID;
 
+import com.mojang.authlib.GameProfile;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.reflect.Reflect;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_13_R2.DataWatcher;
 import net.minecraft.server.v1_13_R2.Entity;
 import net.minecraft.server.v1_13_R2.EntityTypes;
+import net.minecraft.server.v1_13_R2.EnumGamemode;
+import net.minecraft.server.v1_13_R2.IChatBaseComponent;
 import net.minecraft.server.v1_13_R2.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
@@ -45,6 +50,11 @@ public class CustomEntityConverter implements Listener {
 
     private Reflect.WrappedField<? extends Entity, DataWatcher> dataWatcherEntityField;
 
+    private Reflect.WrappedField<List<Object>, PacketPlayOutPlayerInfo> infoDataListField;
+
+    private Class playerInfoDataClass;
+    private Reflect.WrappedConstructor<Object> playerInfoDataConstructor;
+
     public CustomEntityConverter(ServerEntityRegistry serverEntityRegistry) {
         this.serverEntityRegistry = serverEntityRegistry;
 
@@ -67,8 +77,18 @@ public class CustomEntityConverter implements Listener {
         this.namedEntityPitchField = Reflect.getField(PacketPlayOutNamedEntitySpawn.class, "g");
         this.namedMetadataField = Reflect.getField(PacketPlayOutNamedEntitySpawn.class, "h");
 
-
         this.dataWatcherEntityField = Reflect.getField(DataWatcher.class, "c");
+
+        this.infoDataListField = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
+
+        try {
+            this.playerInfoDataClass = Class
+                    .forName("net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo$PlayerInfoData");
+
+            this.playerInfoDataConstructor = Reflect.getConstructor(playerInfoDataClass, PacketPlayOutPlayerInfo.class, GameProfile.class, int.class, EnumGamemode.class, IChatBaseComponent.class);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public ServerEntityRegistry getServerEntityRegistry() {
@@ -100,7 +120,14 @@ public class CustomEntityConverter implements Listener {
         Entity e = dataWatcherEntityField.get(watcher);
 
         PacketPlayOutPlayerInfo fakeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER);
+        Object playerInfoDataAdd = playerInfoDataConstructor.createNew(fakeInfo, info.getProfileHandler().getProfile(e), EnumGamemode.NOT_SET, new TextComponent());
+
+        infoDataListField.get(fakeInfo).add(playerInfoDataAdd);
+
         PacketPlayOutPlayerInfo removeFakeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER);
+        Object playerInfoDataRemove = playerInfoDataConstructor.createNew(removeFakeInfo, info.getProfileHandler().getProfile(e), EnumGamemode.NOT_SET);
+
+        infoDataListField.get(removeFakeInfo).add(playerInfoDataRemove);
 
         PacketPlayOutNamedEntitySpawn playerSpawn = new PacketPlayOutNamedEntitySpawn();
 

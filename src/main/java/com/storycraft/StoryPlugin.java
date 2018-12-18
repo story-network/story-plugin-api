@@ -5,6 +5,7 @@ import com.storycraft.core.broadcast.BroadcastManager;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.chat.ChatManager;
@@ -100,7 +101,7 @@ public class StoryPlugin extends JavaPlugin {
         this.commandManager = new CommandManager(this);
 
         try {
-            getConfigManager().addConfigFile("server.json", serverConfig = new JsonConfigFile()).getSync();
+            getConfigManager().addConfigFile("server.json", serverConfig = new JsonConfigPrettyFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }
