@@ -1,5 +1,7 @@
 package com.storycraft.test;
 
+import java.util.UUID;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.storycraft.StoryPlugin;
@@ -10,9 +12,23 @@ import com.storycraft.server.event.server.ServerUpdateEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import net.minecraft.server.v1_13_R2.Blocks;
+import net.minecraft.server.v1_13_R2.ChatComponentText;
+import net.minecraft.server.v1_13_R2.DataWatcher;
 import net.minecraft.server.v1_13_R2.Entity;
+import net.minecraft.server.v1_13_R2.EntityHuman;
+import net.minecraft.server.v1_13_R2.EntityLiving;
+import net.minecraft.server.v1_13_R2.EntityMonster;
 import net.minecraft.server.v1_13_R2.EntityPlayer;
+import net.minecraft.server.v1_13_R2.EntityTypes;
 import net.minecraft.server.v1_13_R2.EntityZombie;
+import net.minecraft.server.v1_13_R2.IRangedEntity;
+import net.minecraft.server.v1_13_R2.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_13_R2.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_13_R2.PathfinderGoalMoveTowardsRestriction;
+import net.minecraft.server.v1_13_R2.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_13_R2.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_13_R2.PathfinderGoalZombieAttack;
 import net.minecraft.server.v1_13_R2.World;
 
 public class TestFunction implements Listener {
@@ -40,10 +56,29 @@ public class TestFunction implements Listener {
 
     }
 
-    public static class TestZombiePlayer extends EntityZombie {
+    public static class TestZombiePlayer extends EntityMonster {
+
         public TestZombiePlayer(World w) {
-            super(w);
+            super(EntityTypes.a("player_zombie"), w);
+
+            setCustomNameVisible(true);
+            setCustomName(new ChatComponentText("owo"));
+
+            this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 0.2D, false));
+            this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
+            this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+            this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
+
+            this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+
+            setFlag(4, true);
         }
+
+        @Override
+        public boolean isPersistent() {
+            return true;
+        }
+
     }
 
     public static class ZombieProfileHandler implements IPlayerOverrideProfileHandler {
@@ -52,14 +87,14 @@ public class TestFunction implements Listener {
         private String signature;
 
         public ZombieProfileHandler() {
-            this.texture = "eyJ0aW1lc3RhbXAiOjE1NDUwNzk5MzYwMjMsInByb2ZpbGVJZCI6IjU2ZTQyNDMwODg2ZjQxMTk5YjRjNWNkZWI2YTc0YjdmIiwicHJvZmlsZU5hbWUiOiJzcGVjdHJlcGhvZW5peCIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRlNWIwZWI0M2NkOWJmMzNjN2MxYTU1NjQwYWNmMDFjOGU1MGFiNjI0NzdiZDhiN2ZlZmUyMzg1M2JjMDFjIn19fQ==";
-            this.signature = "fxKXCWjFV6egrM7pYvvmlpwVD8Wor9hrrJLeHg/J2PQ+UOhdUKJ0wMMoAmAQAZzgs4d2URpk3xZkIfrwlFbS0jEyMJcNa/ewcdFhvNsyqZpUosHn4NDCOL69WzJ1UatzKXeS7jElyn9PiFMKNcLrO7jOr9cQkFl0YIEsexQd/5ZPH/S8m+K7lUBexoUOkVyzqEKr2Hlu6ntl6v7n34B+SXGUF4WRcVuznUjSzwtDdqPn2rpfgvRnCygLLS8Grx/erTMLWiJWK21xi2gA9x7pjNBsabn7sOlRcIYZ+F4Y6/mqCRP0ueZ1GUUoiHdciL1osI6pdnkwUy0Db5ONvK2qwboNhj38zcgj4YLZu4B6bZAxu6yjyAhUdoulfiIwtZxWov1y+mkxjnrejhYtf/RNxH3FVAN0GeZeFCsvmC9wQgiocHVZhOMDjhqBeklpc8KwRVHDPnMFL6y8xEy1BOROvcOoNDFBRDzFCl8lZj9TBRX2lcbbjVM45sTHGAXVJ+HVPXDkqrVNTOCDjkLM+8TjiwxEtS0YrFdRThXzoHOBmNLXufFtykKvLFdePjYS0/rYTISAJg9VA+NC9hM3c6MXyl3lPCqNbigN6jh2Zsj2Qbp/weKCOVfD2rB65xqTTcki79KGhJ7dzj1asvFf3UJwiVK/Amw186IJStbMHsjHUfw=";
+            this.texture = "eyJ0aW1lc3RhbXAiOjE1MzE2MjYzMDI5MTEsInByb2ZpbGVJZCI6IjEwMGU2MWE5YzU2ODRkNDg4N2MzMzBhNzg0NTE1NGE5IiwicHJvZmlsZU5hbWUiOiJzdG9yeWNyYWZ0Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81NWY4MjczMjY5ZTc5NzU5MzRlY2NhZDFiNTZmYzVmYTUxNGM0MWU2NzU3NTk2MDg2NTJlNGNkNWI3Y2FlMzEifX19";
+            this.signature = "PWa/+TuZGqQlCwwsDzSX7cqeTxV3Dj9EogTtQEjbvzIu3LoWQhj7Jh04+U4b16jtJgE71VQoBi/Upi0u9QpSLY0QrUsq4Ll2MbM0dFXN1zvTjaTKKxfLjy4fKZRa2wCn1r2xQBjRIUrsMSUOZ5S9uCAWyYDsTHFEf8Yq6/Hx2xd29pnpTEOngzMCFEUK5lYFuVlNN2zWYSqO8czNfmLWG/gVpd1oO0G/8eDlCeXBSfCXAF2VbPy1S30b4IWUAk+I/KpWgSzDcVuMiTpN1GfPNMUbdj1Q88kf8cj3DyRPKZLiib4ALVF7DKILeKIOoAKYYjV+AnBeVfyjREMf1QK/Ily1O026LvbDG2I5bCDQg4HRQXc3G9EN88Hfw/Fy7Mggte6XWHXiN3X+dgx5zygP9svH733ZFIQE7vWatfAxjNfliVv2Uas61JrlpUft/mlDxL4qKFPaYtEmSI6Y8sJhPgtm0WXL8mr9+dCGA/CgIkM5nAeN77jouF0FMuN8EZPWqEOMxdrCeEkoanDyCLR67l0Y9cIJObbAHPcOhdvSoXzw4LxtMUlZpRHPE7BSOQXoK6hv2TydQxeWC04JbKCmniyGVxQfv6ooUZv+Fu/aL2g3TNgQpWFfhEVzOyJZxBLgxbz3n6kNfbfE+hHs9dPIzczfGSwRb9upTMRZa0LKolk=";
 
         }
 
         @Override
         public GameProfile getProfile(Entity entity) {
-            GameProfile profile = new GameProfile(entity.getUniqueID(), "InfectedPlayer");
+            GameProfile profile = new GameProfile(UUID.fromString("100e61a9-c568-4d48-87c3-30a7845154a9"), entity.getCustomName().getText());
 
             profile.getProperties().put("textures", new Property("textures", texture, signature));
 

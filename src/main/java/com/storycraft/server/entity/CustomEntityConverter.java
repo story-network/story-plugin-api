@@ -8,12 +8,13 @@ import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.reflect.Reflect;
 
-import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_13_R2.ChatComponentText;
 import net.minecraft.server.v1_13_R2.DataWatcher;
 import net.minecraft.server.v1_13_R2.Entity;
 import net.minecraft.server.v1_13_R2.EntityTypes;
 import net.minecraft.server.v1_13_R2.EnumGamemode;
 import net.minecraft.server.v1_13_R2.IChatBaseComponent;
+import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_13_R2.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
@@ -96,21 +97,23 @@ public class CustomEntityConverter implements Listener {
     }
 
     @EventHandler
-    public void onLivingPacket(AsyncPacketOutEvent e) {
+    public void onEntityPacket(AsyncPacketOutEvent e) {
         if (e.getPacket() instanceof PacketPlayOutSpawnEntityLiving) {
             PacketPlayOutSpawnEntityLiving packet = (PacketPlayOutSpawnEntityLiving) e.getPacket();
+            int id = livingEntityTypeIdField.get(packet);
 
-            CustomEntityInfo info = getServerEntityRegistry().getById(livingEntityTypeIdField.get(packet));
-            if (getServerEntityRegistry().containsItem(info)) {
-                EntityTypes clientType = info.getClientEntityTypes();
+            if (!getServerEntityRegistry().containsNetworkId(id))
+                return;
 
-                if (!(info instanceof CustomPlayerInfo)) {
-                    livingEntityTypeIdField.set(packet, net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(clientType));
-                }
-                else {
-                    e.setCancelled(true);
-                    handleOverridePlayerInternal(packet, e.getTarget(), (CustomPlayerInfo) info);
-                }
+            CustomEntityInfo info = getServerEntityRegistry().getByNetworkId(id);
+            EntityTypes clientType = info.getClientEntityTypes();
+
+            if (!(info instanceof CustomPlayerInfo)) {
+                livingEntityTypeIdField.set(packet, net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(clientType));
+            }
+            else {
+                e.setCancelled(true);
+                handleOverridePlayerInternal(packet, e.getTarget(), (CustomPlayerInfo) info);
             }
         }
     }
@@ -120,12 +123,12 @@ public class CustomEntityConverter implements Listener {
         Entity e = dataWatcherEntityField.get(watcher);
 
         PacketPlayOutPlayerInfo fakeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER);
-        Object playerInfoDataAdd = playerInfoDataConstructor.createNew(fakeInfo, info.getProfileHandler().getProfile(e), EnumGamemode.NOT_SET, new TextComponent());
+        Object playerInfoDataAdd = playerInfoDataConstructor.createNew(fakeInfo, info.getProfileHandler().getProfile(e), 0, EnumGamemode.NOT_SET, new ChatComponentText(""));
 
         infoDataListField.get(fakeInfo).add(playerInfoDataAdd);
 
         PacketPlayOutPlayerInfo removeFakeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER);
-        Object playerInfoDataRemove = playerInfoDataConstructor.createNew(removeFakeInfo, info.getProfileHandler().getProfile(e), EnumGamemode.NOT_SET);
+        Object playerInfoDataRemove = playerInfoDataConstructor.createNew(removeFakeInfo, info.getProfileHandler().getProfile(e), 0, EnumGamemode.NOT_SET, new ChatComponentText(""));
 
         infoDataListField.get(removeFakeInfo).add(playerInfoDataRemove);
 
@@ -140,7 +143,8 @@ public class CustomEntityConverter implements Listener {
         namedEntityPitchField.set(playerSpawn, livingEntityPitchField.get(living));
         namedMetadataField.set(playerSpawn, livingMetadataField.get(living));
 
-        ConnectionUtil.sendPacket(p, fakeInfo, playerSpawn, removeFakeInfo);
+        ConnectionUtil.sendPacket(p, fakeInfo, playerSpawn);
+        ConnectionUtil.sendPacket(p, removeFakeInfo);
     }
 
 

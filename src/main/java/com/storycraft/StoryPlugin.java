@@ -61,7 +61,7 @@ import java.util.logging.Logger;
 
 public class StoryPlugin extends JavaPlugin {
 
-    private static String TEMP_FILE_NAME = "StoryServer.jar";
+    private static String TEMP_FILE_NAME = "Server.jar";
 
     private File originalFile;
     private File originalDataFolder;
