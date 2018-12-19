@@ -47,9 +47,14 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
     }
 
     @Override
-    public void add(int id, String name, CustomEntityInfo item) throws Exception {
-        if (contains(name) || containsId(id))
-            throw new Exception("Entity with " + name + " already exists");
+    public void unInitialize(StoryPlugin plugin) {
+        
+    }
+
+    @Override
+    public void add(int id, CustomEntityInfo item) throws Exception {
+        if (contains(item.getName().getKey()) || containsId(id))
+            throw new Exception("Entity with " + item.getName() + " already exists");
 
         EntityTypes.a a = createA(item.getEntityClass(), item.getEntityConstructor());
 
@@ -59,7 +64,7 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
 
         Map<Object, Type<?>> types = (Map<Object, Type<?>>) choice.types();
 
-        String key = "minecraft:" + name;
+        String key = item.getName().b() + ":" + item.getName().getKey();
         Type<?> value = types.get(EntityTypes.getName(item.getClientEntityTypes()));
 
         if (types.containsKey(key)) {
@@ -68,11 +73,11 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
 
         types.put(key, value);
 
-        EntityTypes entityTypes = EntityTypes.a(name, a);
+        EntityTypes entityTypes = EntityTypes.a(item.getName().getKey(), a);
 
-        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, item.getSaveName(), entityTypes);
+        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, item.getName(), entityTypes);
 
-        customEntityMap.put(name, item);
+        customEntityMap.put(item.getName().getKey(), item);
         customEntityIdMap.put(id, item);
         customEntityNetworkIdMap.put(net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(entityTypes), item);
     }

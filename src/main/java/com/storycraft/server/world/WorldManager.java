@@ -38,8 +38,12 @@ public class WorldManager extends ServerExtension {
         this.isLoaded = true;
         //pre set plugin
         setPlugin(plugin);
-        loadDefault();
         loadUniverse();
+    }
+
+    @Override
+    public void onEnable() {
+        loadDefault();
     }
 
     @Override

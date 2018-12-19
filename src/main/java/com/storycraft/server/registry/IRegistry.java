@@ -4,10 +4,11 @@ import com.storycraft.StoryPlugin;
 
 public interface IRegistry<T> {
 
-    void add(int id, String name, T item) throws Exception;
+    void add(int id, T item) throws Exception;
 
     void initialize(StoryPlugin plugin);
     void preInitialize(StoryPlugin plugin);
+    void unInitialize(StoryPlugin plugin);
 
     boolean contains(String name);
     boolean containsId(int id);

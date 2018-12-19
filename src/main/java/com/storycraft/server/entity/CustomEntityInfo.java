@@ -13,21 +13,21 @@ public class CustomEntityInfo {
     private Function<? super World, ? extends Entity> entityConstructor;
     private EntityTypes<?> clientEntityTypes;
 
-    private MinecraftKey saveName;
+    private MinecraftKey name;
 
-    public CustomEntityInfo(String saveName, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, EntityTypes clientEntityTypes) {
-        this(new MinecraftKey(saveName), entityClass, entityConstructor, clientEntityTypes);
+    public CustomEntityInfo(String name, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, EntityTypes clientEntityTypes) {
+        this(new MinecraftKey(name), entityClass, entityConstructor, clientEntityTypes);
     }
 
-    public CustomEntityInfo(MinecraftKey saveName, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, EntityTypes clientEntityTypes) {
-        this.saveName = saveName;
+    public CustomEntityInfo(MinecraftKey name, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, EntityTypes clientEntityTypes) {
+        this.name = name;
         this.entityClass = entityClass;
         this.entityConstructor = entityConstructor;
         this.clientEntityTypes = clientEntityTypes;
     }
 
-    public MinecraftKey getSaveName() {
-        return saveName;
+    public MinecraftKey getName() {
+        return name;
     }
 
     public Class<? extends Entity> getEntityClass() {

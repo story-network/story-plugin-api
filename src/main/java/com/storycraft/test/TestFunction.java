@@ -43,8 +43,7 @@ public class TestFunction implements Listener {
         plugin.getServer().getPluginManager().registerEvents(new TestFunction(plugin), plugin);
 
         try {
-            plugin.getServerManager().getRegistryManager().getEntityRegistry().add(220, "player_zombie",
-                    new CustomPlayerInfo("player_zombie", TestZombiePlayer.class, TestZombiePlayer::new,
+            plugin.getServerManager().getRegistryManager().getEntityRegistry().add(220, new CustomPlayerInfo("player_zombie", TestZombiePlayer.class, TestZombiePlayer::new,
                             new ZombieProfileHandler()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,7 +63,7 @@ public class TestFunction implements Listener {
             setCustomNameVisible(true);
             setCustomName(new ChatComponentText("owo"));
 
-            this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 0.2D, false));
+            this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 0.75D, false));
             this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
             this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
             this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
