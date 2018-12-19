@@ -54,13 +54,13 @@ public class WorldManager extends ServerExtension {
 
     private void loadDefault() {
         Server server = getPlugin().getServer();
-        loadDefaultWorld(defaultOverworld = new DefaultUniverse(server.getWorld("world")));
+        /*loadDefaultWorld(defaultOverworld = new DefaultUniverse(server.getWorld("world")));
 
         if (server.getAllowNether())
             loadDefaultWorld(defaultNether = new DefaultUniverse(server.getWorld("world_nether")));
 
         if (server.getAllowEnd())
-            loadDefaultWorld(defaultTheEnd = new DefaultUniverse(server.getWorld("world_the_end")));
+            loadDefaultWorld(defaultTheEnd = new DefaultUniverse(server.getWorld("world_the_end")));*/
     }
 
     private void loadUniverse() {
