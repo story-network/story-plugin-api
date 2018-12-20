@@ -141,7 +141,7 @@ public class CustomEntityConverter implements Listener {
             for (Statistic<?> stat : new ArrayList<>(map.keySet())) {
                 if (StatisticList.ENTITY_KILLED.equals(stat.a()) || StatisticList.ENTITY_KILLED_BY.equals(stat.a())) {
                     EntityTypes type = (EntityTypes) stat.b();
-                    if (getServerEntityRegistry().contains(IRegistry.ENTITY_TYPE.getKey(type).toString())) {
+                    if (getServerEntityRegistry().contains(IRegistry.ENTITY_TYPE.getKey(type).getKey())) {
                         map.remove(stat);
                     }
                 }
@@ -177,7 +177,10 @@ public class CustomEntityConverter implements Listener {
 
         ConnectionUtil.sendPacket(p, fakeInfo, playerSpawn);
 
-        ConnectionUtil.sendPacket(p, removeFakeInfo);
+        getServerEntityRegistry().getRegistryManager().runSync(() -> {
+            ConnectionUtil.sendPacket(p, removeFakeInfo);
+            return null;
+        });
     }
 
 

@@ -157,6 +157,10 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
         return customEntityNetworkIdMap.get(id);
     }
 
+    public RegistryManager getRegistryManager() {
+        return manager;
+    }
+
     @Override
     public boolean containsId(int id) {
         return customEntityIdMap.containsKey(id);

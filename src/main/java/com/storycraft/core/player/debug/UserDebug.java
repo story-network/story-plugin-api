@@ -13,6 +13,8 @@ import net.minecraft.server.v1_13_R2.PacketPlayOutLogin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import io.netty.buffer.Unpooled;
+
 public class UserDebug extends MiniPlugin implements Listener {
 
     private static final boolean DEFAULT = false;
@@ -56,7 +58,7 @@ public class UserDebug extends MiniPlugin implements Listener {
             MinecraftKey key = payloadChannel.get(packet);
 
             if (PacketPlayOutCustomPayload.b.equals(key)) {
-                PacketDataSerializer serializer = dataSerializer.get(packet);
+                PacketDataSerializer serializer = new PacketDataSerializer(Unpooled.buffer());
 
                 serializer.a(getPlugin().getServerName());
 

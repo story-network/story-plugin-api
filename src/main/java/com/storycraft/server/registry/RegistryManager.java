@@ -1,5 +1,8 @@
 package com.storycraft.server.registry;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.entity.ServerEntityRegistry;
