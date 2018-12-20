@@ -1,6 +1,8 @@
 package com.storycraft.server.entity;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
@@ -14,15 +16,19 @@ import net.minecraft.server.v1_13_R2.Entity;
 import net.minecraft.server.v1_13_R2.EntityTypes;
 import net.minecraft.server.v1_13_R2.EnumGamemode;
 import net.minecraft.server.v1_13_R2.IChatBaseComponent;
+import net.minecraft.server.v1_13_R2.IRegistry;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_13_R2.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntity;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_13_R2.PacketPlayOutStatistic;
+import net.minecraft.server.v1_13_R2.Statistic;
+import net.minecraft.server.v1_13_R2.StatisticList;
 import net.minecraft.server.v1_13_R2.World;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
+import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,6 +64,8 @@ public class CustomEntityConverter implements Listener {
 
     private Reflect.WrappedField<List<Object>, PacketPlayOutPlayerInfo> infoDataListField;
 
+    private Reflect.WrappedField<Object2IntMap<Statistic<?>>, PacketPlayOutStatistic> statisticMap;
+
     private Class playerInfoDataClass;
     private Reflect.WrappedConstructor<Object> playerInfoDataConstructor;
 
@@ -88,6 +96,8 @@ public class CustomEntityConverter implements Listener {
         this.dataWatcherEntityField = Reflect.getField(DataWatcher.class, "c");
 
         this.infoDataListField = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
+
+        this.statisticMap = Reflect.getField(PacketPlayOutStatistic.class, "a");
 
         try {
             this.playerInfoDataClass = Class
@@ -124,7 +134,18 @@ public class CustomEntityConverter implements Listener {
             }
         }
         else if (e.getPacket() instanceof PacketPlayOutStatistic) {
-            
+            PacketPlayOutStatistic packet = (PacketPlayOutStatistic) e.getPacket();
+
+            Map<Statistic<?>, Integer> map = statisticMap.get(packet);
+
+            for (Statistic<?> stat : new ArrayList<>(map.keySet())) {
+                if (StatisticList.ENTITY_KILLED.equals(stat.a()) || StatisticList.ENTITY_KILLED_BY.equals(stat.a())) {
+                    EntityTypes type = (EntityTypes) stat.b();
+                    if (getServerEntityRegistry().contains(IRegistry.ENTITY_TYPE.getKey(type).toString())) {
+                        map.remove(stat);
+                    }
+                }
+            }
         }
     }
 
