@@ -14,7 +14,7 @@ public class EntityPacketUtil {
     private static Reflect.WrappedField<Integer, PacketPlayOutSpawnEntityWeather> entityWeatherIdField;
     private static Reflect.WrappedField<Integer, PacketPlayOutNamedEntitySpawn> entityPlayerIdField;
 
-    public static Packet getEntitySpawnPacket(Entity entity){
+    public static Packet getEntitySpawnPacket(Entity entity) {
         EntityTrackerEntry entry = new EntityTrackerEntry(entity, 0, 0, 0, true);
 
         if (entitySpawnMethod == null)

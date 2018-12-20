@@ -17,7 +17,9 @@ import net.minecraft.server.v1_13_R2.IChatBaseComponent;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_13_R2.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntity;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_13_R2.PacketPlayOutStatistic;
 import net.minecraft.server.v1_13_R2.World;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
@@ -28,6 +30,8 @@ import org.bukkit.event.Listener;
 public class CustomEntityConverter implements Listener {
 
     private ServerEntityRegistry serverEntityRegistry;
+
+    private Reflect.WrappedField<Integer, PacketPlayOutSpawnEntity> entityTypeIdField;
 
     private Reflect.WrappedField<Integer, PacketPlayOutSpawnEntityLiving> livingEntityIdField;
     private Reflect.WrappedField<UUID, PacketPlayOutSpawnEntityLiving> livingEntityUUIDField;
@@ -59,6 +63,8 @@ public class CustomEntityConverter implements Listener {
 
     public CustomEntityConverter(ServerEntityRegistry serverEntityRegistry) {
         this.serverEntityRegistry = serverEntityRegistry;
+
+        this.entityTypeIdField = Reflect.getField(PacketPlayOutSpawnEntity.class, "k");
 
         this.livingEntityIdField = Reflect.getField(PacketPlayOutSpawnEntityLiving.class, "a");
         this.livingEntityUUIDField = Reflect.getField(PacketPlayOutSpawnEntityLiving.class, "b");
@@ -116,6 +122,9 @@ public class CustomEntityConverter implements Listener {
                 e.setCancelled(true);
                 handleOverridePlayerInternal(packet, e.getTarget(), (CustomPlayerInfo) info);
             }
+        }
+        else if (e.getPacket() instanceof PacketPlayOutStatistic) {
+            
         }
     }
 
