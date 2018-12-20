@@ -9,6 +9,8 @@ import net.minecraft.server.v1_13_R2.World;
 
 public class CustomEntityInfo {
 
+    protected static String DEFAULT_DOMAIN = "server";
+
     private Class<? extends Entity> entityClass;
     private Function<? super World, ? extends Entity> entityConstructor;
     private EntityTypes<?> clientEntityTypes;
@@ -16,7 +18,7 @@ public class CustomEntityInfo {
     private MinecraftKey name;
 
     public CustomEntityInfo(String name, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, EntityTypes clientEntityTypes) {
-        this(new MinecraftKey(name), entityClass, entityConstructor, clientEntityTypes);
+        this(new MinecraftKey(DEFAULT_DOMAIN, name), entityClass, entityConstructor, clientEntityTypes);
     }
 
     public CustomEntityInfo(MinecraftKey name, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, EntityTypes clientEntityTypes) {

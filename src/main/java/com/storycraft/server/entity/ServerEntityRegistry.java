@@ -73,8 +73,7 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
 
         types.put(key, value);
 
-        EntityTypes entityTypes = EntityTypes.a(item.getName().getKey(), a);
-
+        EntityTypes entityTypes = a.a(key);
         net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, item.getName(), entityTypes);
 
         customEntityMap.put(item.getName().getKey(), item);
@@ -91,7 +90,7 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
             int id = net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(defaultType);
 
             EntityTypes.a a = createA(item.getEntityClass(), item.getEntityConstructor());
-            EntityTypes entityTypes = EntityTypes.a(name, a);
+            EntityTypes entityTypes = a.a(name);
 
             net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, key, entityTypes);
 

@@ -58,7 +58,7 @@ public class TestFunction implements Listener {
     public static class TestZombiePlayer extends EntityMonster {
 
         public TestZombiePlayer(World w) {
-            super(EntityTypes.a("player_zombie"), w);
+            super(EntityTypes.a("server:player_zombie"), w);
 
             setCustomNameVisible(true);
             setCustomName(new ChatComponentText("owo"));
@@ -93,7 +93,7 @@ public class TestFunction implements Listener {
 
         @Override
         public GameProfile getProfile(Entity entity) {
-            GameProfile profile = new GameProfile(entity.getUniqueID(), entity.getCustomName().getText());
+            GameProfile profile = new GameProfile(entity.getUniqueID(), entity.getScoreboardDisplayName().getText());
 
             profile.getProperties().put("textures", new Property("textures", texture, signature));
 

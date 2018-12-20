@@ -13,12 +13,12 @@ public class CustomPlayerInfo extends CustomEntityInfo {
 
     private IPlayerOverrideProfileHandler profileHandler;
 
-    public CustomPlayerInfo(String saveName, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, IPlayerOverrideProfileHandler profileHandler) {
-        this(new MinecraftKey(saveName), entityClass, entityConstructor, profileHandler);
+    public CustomPlayerInfo(String name, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, IPlayerOverrideProfileHandler profileHandler) {
+        this(new MinecraftKey(CustomEntityInfo.DEFAULT_DOMAIN, name), entityClass, entityConstructor, profileHandler);
     }
 
-    public CustomPlayerInfo(MinecraftKey saveName, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, IPlayerOverrideProfileHandler profileHandler) {
-        super(saveName, entityClass, entityConstructor, EntityTypes.PLAYER);
+    public CustomPlayerInfo(MinecraftKey name, Class<? extends Entity> entityClass, Function<? super World, ? extends Entity> entityConstructor, IPlayerOverrideProfileHandler profileHandler) {
+        super(name, entityClass, entityConstructor, EntityTypes.PLAYER);
 
         this.profileHandler = profileHandler;
     }

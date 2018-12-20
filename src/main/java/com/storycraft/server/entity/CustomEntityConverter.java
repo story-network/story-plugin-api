@@ -18,6 +18,7 @@ import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_13_R2.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_13_R2.World;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
 import org.bukkit.entity.Player;
@@ -123,12 +124,13 @@ public class CustomEntityConverter implements Listener {
         Entity e = dataWatcherEntityField.get(watcher);
 
         PacketPlayOutPlayerInfo fakeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER);
-        Object playerInfoDataAdd = playerInfoDataConstructor.createNew(fakeInfo, info.getProfileHandler().getProfile(e), 0, EnumGamemode.NOT_SET, new ChatComponentText(""));
+        GameProfile profile = info.getProfileHandler().getProfile(e);
+        Object playerInfoDataAdd = playerInfoDataConstructor.createNew(fakeInfo, profile, 0, EnumGamemode.NOT_SET, new ChatComponentText(""));
 
         infoDataListField.get(fakeInfo).add(playerInfoDataAdd);
 
         PacketPlayOutPlayerInfo removeFakeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER);
-        Object playerInfoDataRemove = playerInfoDataConstructor.createNew(removeFakeInfo, info.getProfileHandler().getProfile(e), 0, EnumGamemode.NOT_SET, new ChatComponentText(""));
+        Object playerInfoDataRemove = playerInfoDataConstructor.createNew(removeFakeInfo, profile, 0, EnumGamemode.NOT_SET, new ChatComponentText(""));
 
         infoDataListField.get(removeFakeInfo).add(playerInfoDataRemove);
 
@@ -144,6 +146,7 @@ public class CustomEntityConverter implements Listener {
         namedMetadataField.set(playerSpawn, livingMetadataField.get(living));
 
         ConnectionUtil.sendPacket(p, fakeInfo, playerSpawn);
+
         ConnectionUtil.sendPacket(p, removeFakeInfo);
     }
 
