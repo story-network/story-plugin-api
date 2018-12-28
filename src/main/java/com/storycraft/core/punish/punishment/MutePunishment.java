@@ -22,7 +22,7 @@ public class MutePunishment implements IPunishment {
 
         @EventHandler
         public void onChat(AsyncPlayerChatEvent e) {
-            if (getTarget().equals(e.getPlayer()))
+            if (getTarget().equals(e.getPlayer().getUniqueId()))
                 e.setCancelled(true);
         }
     }
