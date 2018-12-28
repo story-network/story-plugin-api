@@ -76,7 +76,10 @@ public class PunishManager extends MiniPlugin implements Listener {
             return handlerList.get(id);
         else {
             List<IPunishment.PunishmentHandler> list = new ArrayList<>();
-            return handlerList.put(id, list);
+            
+            handlerList.put(id, list);
+
+            return list;
         }
     }
     
