@@ -11,6 +11,7 @@ import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.punish.IPunishment.PunishmentHandler;
+import com.storycraft.core.punish.punishment.FreezePunishment;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
@@ -40,7 +41,7 @@ public class PunishManager extends MiniPlugin implements Listener {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-
+        addPunishment("freeze", new FreezePunishment());
 
         try {
             plugin.getConfigManager().addConfigFile("punishment.json", configFile = new JsonConfigPrettyFile()).getSync();
