@@ -75,7 +75,8 @@ public class PunishManager extends MiniPlugin implements Listener {
         if (handlerList.containsKey(id))
             return handlerList.get(id);
         else {
-            return handlerList.put(id, new ArrayList<>());
+            List<IPunishment.PunishmentHandler> list = new ArrayList<>();
+            return handlerList.put(id, list);
         }
     }
     
@@ -194,8 +195,6 @@ public class PunishManager extends MiniPlugin implements Listener {
     }
 
     public void addPlayerPunishment(UUID id, String name) {
-        JsonConfigEntry entry = getIdEntry(id);
-
         IPunishment punishment = getPunishment(name);
 
         if (punishment == null)
@@ -305,7 +304,7 @@ public class PunishManager extends MiniPlugin implements Listener {
 
                 List<String> list = getPlayerPunishment(offline.getUniqueId());
 
-                if (list.isEmpty()) {
+                if (list == null || list.isEmpty()) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 은(는) 아무런 제한도 갖고있지 않습니다"));
                 }
                 else {
