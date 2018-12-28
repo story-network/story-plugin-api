@@ -183,7 +183,7 @@ public class PunishManager extends MiniPlugin implements Listener {
             for (int i = 0; i < list.size(); i++)
                 list.set(i, array.get(i).getAsString());
         } catch (Exception e) {
-            configFile.set("punishment_list", list = new ArrayList<>());
+            entry.set("punishment_list", list = new ArrayList<>());
         }
 
         return list;
