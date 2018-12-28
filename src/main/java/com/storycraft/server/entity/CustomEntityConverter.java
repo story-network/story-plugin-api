@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
+import com.storycraft.StoryPlugin;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.reflect.Reflect;
@@ -177,8 +178,13 @@ public class CustomEntityConverter implements Listener {
 
         ConnectionUtil.sendPacket(p, fakeInfo, playerSpawn);
 
+        StoryPlugin plugin = getServerEntityRegistry().getRegistryManager().getPlugin();
+
         getServerEntityRegistry().getRegistryManager().runSync(() -> {
-            ConnectionUtil.sendPacket(p, removeFakeInfo);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                ConnectionUtil.sendPacket(p, removeFakeInfo);
+            }, 1);
+            
             return null;
         });
     }

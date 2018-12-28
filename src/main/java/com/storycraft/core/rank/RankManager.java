@@ -107,13 +107,13 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "ì‚¬ìš©ë²• /rank <set/get/list>"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?‚¬?š©ë²? /rank <set/get/list>"));
             return;
         }
 
         if ("set".equals(args[0])) {
             if (args.length < 3) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "ì‚¬ìš©ë²• /rank set <í”Œë ˆì´ì–´ ì´ë¦„> <ë­í¬>"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?‚¬?š©ë²? /rank set <?”Œ? ˆ?´?–´ ?´ë¦?> <?­?¬>"));
                 return;
             }
 
@@ -123,7 +123,7 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
             Player p = getPlugin().getServer().getPlayer(name);
     
             if (p == null) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "í”Œë ˆì´ì–´ " + name + " ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤."));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?”Œ? ˆ?´?–´ " + name + " ?„ ì°¾ì„ ?ˆ˜ ?—†?Šµ?‹ˆ?‹¤."));
                 return;
             }
     
@@ -136,7 +136,7 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
             }
     
             if (!found) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "ì•Œ ìˆ˜ ì—†ëŠ” ë­í¬ ì…ë‹ˆë‹¤"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?•Œ ?ˆ˜ ?—†?Š” ?­?¬ ?…?‹ˆ?‹¤"));
                 return;
             }
     
@@ -144,12 +144,12 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
             ServerRank rank = ServerRank.valueOf(rankName);
     
             getPlugin().getRankManager().setRank(p, rank);
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "RankManager", p.getName() + " ì˜ ë­í¬ëŠ” ì´ì œ " + rank.name() + " ì…ë‹ˆë‹¤"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "RankManager", p.getName() + " ?˜ ?­?¬?Š” ?´? œ " + rank.name() + " ?…?‹ˆ?‹¤"));
             getPlugin().getServer().getPluginManager().callEvent(new RankUpdateEvent(p, from, rank));
         }
         else if ("get".equals(args[0])) {
             if (args.length < 2) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "ì‚¬ìš©ë²• /rank get <í”Œë ˆì´ì–´ ì´ë¦„>"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?‚¬?š©ë²? /rank get <?”Œ? ˆ?´?–´ ?´ë¦?>"));
                 return;
             }
 
@@ -158,21 +158,21 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
             Player p = getPlugin().getServer().getPlayer(name);
     
             if (p == null) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "í”Œë ˆì´ì–´ " + name + " ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤."));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?”Œ? ˆ?´?–´ " + name + " ?„ ì°¾ì„ ?ˆ˜ ?—†?Šµ?‹ˆ?‹¤."));
                 return;
             }
 
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "RankManager", p.getName() + " ì˜ ë­í¬ëŠ” " + ChatColor.WHITE + getPlugin().getRankManager().getRank(p).toString() + ChatColor.GRAY + " ì…ë‹ˆë‹¤"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "RankManager", p.getName() + " ?˜ ?­?¬?Š” " + ChatColor.WHITE + getPlugin().getRankManager().getRank(p).toString() + ChatColor.GRAY + " ?…?‹ˆ?‹¤"));
         }
         else if ("list".equals(args[0])) {
             StringJoiner sj = new StringJoiner(", ");
                 for (ServerRank r : ServerRank.values())
                     sj.add(r.name());
     
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "ì‚¬ìš© ê°€ëŠ¥í•œ ë­í¬ ëª©ë¡: " + sj.toString()));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?‚¬?š© ê°??Š¥?•œ ?­?¬ ëª©ë¡: " + sj.toString()));
         }
         else {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "ì‚¬ìš©ë²• /rank <set/get/list>"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "RankManager", "?‚¬?š©ë²? /rank <set/get/list>"));
         }
     }
 

@@ -31,7 +31,7 @@ public class RegistryManager extends ServerExtension {
 
     private void initRegistry(StoryPlugin plugin){
         getEntityRegistry().initialize(plugin);
-}
+    }
 
     public ServerEntityRegistry getEntityRegistry() {
         return entityRegistry;

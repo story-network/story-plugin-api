@@ -10,6 +10,9 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldInitEvent;
 
 import net.minecraft.server.v1_13_R2.MinecraftServer;
 
@@ -17,16 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-public class WorldManager extends ServerExtension {
+public class WorldManager extends ServerExtension implements Listener {
 
     private boolean isLoaded;
     Map<String, IUniverse> universeList;
-
-    private DefaultUniverse defaultOverworld;
-    private DefaultUniverse defaultNether;
-    private DefaultUniverse defaultTheEnd;
 
     public WorldManager(){
         this.universeList = new HashMap<>();
@@ -43,7 +41,7 @@ public class WorldManager extends ServerExtension {
 
     @Override
     public void onEnable() {
-        loadDefault();
+        getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
     @Override
@@ -52,15 +50,15 @@ public class WorldManager extends ServerExtension {
             unloadAll();
     }
 
-    private void loadDefault() {
-        Server server = getPlugin().getServer();
-        /*loadDefaultWorld(defaultOverworld = new DefaultUniverse(server.getWorld("world")));
+    @EventHandler
+    public void onWorldLoad(WorldInitEvent e) {
+        World w = e.getWorld();
 
-        if (server.getAllowNether())
-            loadDefaultWorld(defaultNether = new DefaultUniverse(server.getWorld("world_nether")));
+        if (contains(w.getName())) {
+            return;
+        }
 
-        if (server.getAllowEnd())
-            loadDefaultWorld(defaultTheEnd = new DefaultUniverse(server.getWorld("world_the_end")));*/
+        loadDefaultWorld(new DefaultUniverse(w));
     }
 
     private void loadUniverse() {
@@ -68,15 +66,15 @@ public class WorldManager extends ServerExtension {
     }
 
     public DefaultUniverse getDefaultOverworld() {
-        return defaultOverworld;
+        return (DefaultUniverse) getByName("world");
     }
 
     public DefaultUniverse getDefaultNether() {
-        return defaultNether;
+        return (DefaultUniverse) getByName("world_nether");
     }
 
     public DefaultUniverse getDefaultTheEnd() {
-        return defaultTheEnd;
+        return (DefaultUniverse) getByName("world_the_end");
     }
 
     public IUniverse getByName(String name){

@@ -7,6 +7,9 @@ import com.mojang.datafixers.types.templates.TaggedChoice;
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.registry.IRegistry;
 import com.storycraft.server.registry.RegistryManager;
+import com.storycraft.util.reflect.Reflect;
+import com.storycraft.util.reflect.Reflect.WrappedField;
+
 import net.minecraft.server.v1_13_R2.*;
 
 import java.util.HashMap;

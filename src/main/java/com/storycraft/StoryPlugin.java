@@ -9,9 +9,11 @@ import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.chat.ChatManager;
+import com.storycraft.core.chat.ColoredChat;
 import com.storycraft.core.combat.DamageHologram;
 import com.storycraft.core.config.IngameConfigManager;
 import com.storycraft.core.discord.DiscordChatHook;
+import com.storycraft.core.player.PlayerManager;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
@@ -22,6 +24,7 @@ import com.storycraft.core.fly.FlyCommand;
 import com.storycraft.core.dropping.DropCounter;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.plugin.IngamePluginManager;
+import com.storycraft.core.punish.PunishManager;
 import com.storycraft.core.randomtp.RandomTP;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.saving.AutoSaveManager;
@@ -74,6 +77,10 @@ public class StoryPlugin extends JavaPlugin {
     private ConfigManager localConfigManager;
     private ServerManager serverManager;
 
+    private PlayerManager playerManager;
+
+    private PunishManager punishManager;
+
     private RankManager rankManager;
 
     private ServerDecorator decorator;
@@ -117,6 +124,8 @@ public class StoryPlugin extends JavaPlugin {
     private void preInitMiniPlugin() {
         MiniPluginLoader loader = getMiniPluginLoader();
         loader.addMiniPlugin(rankManager = new RankManager());
+        loader.addMiniPlugin(playerManager = new PlayerManager());
+        loader.addMiniPlugin(punishManager = new PunishManager());
     }
 
     private void initMiniPlugin() {
@@ -127,19 +136,16 @@ public class StoryPlugin extends JavaPlugin {
         loader.addMiniPlugin(new ChatManager());
         loader.addMiniPlugin(new EntityBlood());
         loader.addMiniPlugin(new DropCounter());
-        loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(new RandomTP());
         loader.addMiniPlugin(new DiscordChatHook());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
         loader.addMiniPlugin(new BroadcastManager());
+        loader.addMiniPlugin(new ColoredChat());
         loader.addMiniPlugin(new FlyCommand());
         loader.addMiniPlugin(new FAQCommand());
-        loader.addMiniPlugin(new PlayerCustomSkin());
-        loader.addMiniPlugin(new HomeManager());
         loader.addMiniPlugin(new UUIDRevealCommand());
         loader.addMiniPlugin(new AutoSaveManager());
-        loader.addMiniPlugin(new UserDebug());
         loader.addMiniPlugin(new WorldTeleporter());
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new TeleportAskCommand());
@@ -285,6 +291,18 @@ public class StoryPlugin extends JavaPlugin {
             serverConfig.set("server-name", defaultName);
 
             return defaultName;
+        }
+    }
+
+    public String getServerHomepage(){
+        try {
+            return serverConfig.get("server-web").getAsString();
+        } catch (Exception e) {
+            String defaultURL = "https://";
+
+            serverConfig.set("server-web", defaultURL);
+
+            return defaultURL;
         }
     }
 

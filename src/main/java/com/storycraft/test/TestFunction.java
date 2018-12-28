@@ -23,11 +23,13 @@ import net.minecraft.server.v1_13_R2.EntityPlayer;
 import net.minecraft.server.v1_13_R2.EntityTypes;
 import net.minecraft.server.v1_13_R2.EntityZombie;
 import net.minecraft.server.v1_13_R2.IRangedEntity;
+import net.minecraft.server.v1_13_R2.PathfinderGoalEatTile;
 import net.minecraft.server.v1_13_R2.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_13_R2.PathfinderGoalMeleeAttack;
 import net.minecraft.server.v1_13_R2.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_13_R2.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_13_R2.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_13_R2.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_13_R2.PathfinderGoalZombieAttack;
 import net.minecraft.server.v1_13_R2.World;
 
@@ -63,19 +65,29 @@ public class TestFunction implements Listener {
             setCustomNameVisible(true);
             setCustomName(new ChatComponentText("owo"));
 
-            this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 0.75D, false));
+            this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 0.7D, false));
+            this.goalSelector.a(3, new PathfinderGoalRandomStroll(this, 0.5d, 1));
             this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
             this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
             this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
 
-            this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+            this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+            this.targetSelector.a(1, new PathfinderGoalEatTile(this));
 
-            setFlag(4, true);
+            this.setFlag(7, true);
         }
 
         @Override
         public boolean isPersistent() {
             return true;
+        }
+
+        @Override
+        public void W() {
+            super.W();
+
+            if (!this.getFlag(7))
+                this.setFlag(7, true);
         }
 
     }
