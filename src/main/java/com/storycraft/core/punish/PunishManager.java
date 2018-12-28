@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
@@ -179,15 +180,15 @@ public class PunishManager extends MiniPlugin implements Listener {
         try {
             JsonArray array = entry.get("punishment_list").getAsJsonArray();
 
-            int length = array.size();
+            String[] arr = new String[array.size()];
 
-            list = new ArrayList<>(length);
-
-            for (int i = 0; i < length; i++)
-                list.set(i, array.get(i).getAsString());
+            for (int i = 0; i < arr.length; i++)
+                arr[i] = array.get(i).getAsString();
+            
+            list = Lists.newArrayList(arr);
 
         } catch (Exception e) {
-            entry.set("punishment_list", list = new ArrayList<>());
+            setPlayerPunishment(id, list = new ArrayList<>());
         }
 
         return list;
@@ -195,8 +196,6 @@ public class PunishManager extends MiniPlugin implements Listener {
 
     public void setPlayerPunishment(UUID id, List<String> list) {
         JsonConfigEntry entry = getIdEntry(id);
-
-        setPunishmentEnabled(id, true);
 
         entry.set("punishment_list", list);
     }
