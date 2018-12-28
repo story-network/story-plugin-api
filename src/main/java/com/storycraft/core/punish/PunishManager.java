@@ -1,17 +1,21 @@
 package com.storycraft.core.punish;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.gson.JsonArray;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.core.punish.IPunishment.PunishmentHandler;
-import com.storycraft.core.punish.punishment.FreezePunishment;
+import com.storycraft.core.punish.punishment.*;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
@@ -25,6 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.json.simple.JSONArray;
 
 public class PunishManager extends MiniPlugin implements Listener {
 
@@ -32,7 +37,7 @@ public class PunishManager extends MiniPlugin implements Listener {
 
     private Map<String, IPunishment> punishmentList;
 
-    private Map<UUID, IPunishment.PunishmentHandler> handlerList;
+    private Map<UUID, List<IPunishment.PunishmentHandler>> handlerList;
 
     public PunishManager() {
         this.punishmentList = new HashMap<>();
@@ -42,6 +47,7 @@ public class PunishManager extends MiniPlugin implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin) {
         addPunishment("freeze", new FreezePunishment());
+        addPunishment("mute", new MutePunishment());
 
         try {
             plugin.getConfigManager().addConfigFile("punishment.json", configFile = new JsonConfigPrettyFile()).getSync();
@@ -56,34 +62,55 @@ public class PunishManager extends MiniPlugin implements Listener {
     public void onEnable() {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
 
-        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
-            String name = getPlayerPunishment(p.getUniqueId());
-            if (name != null) {
-                IPunishment punishment = getPunishment(name);
+        loadConfig();
+    }
 
-                if (punishment != null) {
-                    addHandler(p.getUniqueId(), punishment);
+    private void loadConfig() {
+        for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+            List<String> nameList = getPlayerPunishment(p.getUniqueId());
+                for (String name : nameList) {
+                    if (name != null) {
+                        IPunishment punishment = getPunishment(name);
+
+                        if (punishment != null) {
+                            addHandler(p.getUniqueId(), punishment);
+                    }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onConfigReload(ConfigUpdateEvent e) {
+        if (configFile.equals(e.getConfig())) {
+            for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+                removeAllHandler(p.getUniqueId());
+            }
+
+            loadConfig();
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLogin(AsyncPlayerPreLoginEvent e) {
         if (e.getLoginResult() == Result.ALLOWED && hasPunishment(e.getUniqueId())) {
-            IPunishment punishment = getPunishment(getPlayerPunishment(e.getUniqueId()));
+            List<String> punishList = getPlayerPunishment(e.getUniqueId());
 
-            if (punishment == null)
-                return;
+            for (String name : punishList) {
+                IPunishment punishment = getPunishment(name);
 
-            addHandler(e.getUniqueId(), punishment);
+                if (punishment == null)
+                    return;
+
+                addHandler(e.getUniqueId(), punishment);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent e) {
         if (hasHandler(e.getPlayer().getUniqueId())) {
-            removeHandler(e.getPlayer().getUniqueId());
+            removeAllHandler(e.getPlayer().getUniqueId());
         }
     }
 
@@ -118,28 +145,32 @@ public class PunishManager extends MiniPlugin implements Listener {
         entry.set("punishment_enabled", flag);
     }
 
-    public void removePlayerPunishment(UUID id) {
+    public void removeAllPlayerPunishment(UUID id) {
         setPunishmentEnabled(id, false);
 
-        removeHandler(id);
+        removeAllHandler(id);
     }
 
-    public String getPlayerPunishment(UUID id) {
+    public List<String> getPlayerPunishment(UUID id) {
         if (!hasPunishment(id))
             return null;
         
         JsonConfigEntry entry = getIdEntry(id);
-
+        List<String> list = null;
         try {
-            return entry.get("punishment_type").getAsString();
-        } catch (Exception e) {
-            configFile.set("punishment_type", "");
+            JsonArray array = entry.get("punishment_list").getAsJsonArray();
+            list = new ArrayList<>(array.size());
 
-            return "";
+            for (int i = 0; i < list.size(); i++)
+                list.set(i, array.get(i).getAsString());
+        } catch (Exception e) {
+            configFile.set("punishment_list", list = new ArrayList<>());
         }
+
+        return list;
     }
 
-    public void setPlayerPunishment(UUID id, String name) {
+    public void addPlayerPunishment(UUID id, String name) {
         JsonConfigEntry entry = getIdEntry(id);
 
         IPunishment punishment = getPunishment(name);
@@ -149,7 +180,9 @@ public class PunishManager extends MiniPlugin implements Listener {
 
         setPunishmentEnabled(id, true);
 
-        entry.set("punishment_type", name);
+        List<String> punishList = getPlayerPunishment(id);
+
+        entry.set("punishment_list", punishList.add(name));
 
         addHandler(id, punishment);
     }
@@ -157,10 +190,15 @@ public class PunishManager extends MiniPlugin implements Listener {
     protected void addHandler(UUID id, IPunishment punishment) {
         PunishmentHandler handler = punishment.createPunishmentHandler(id);
 
-        if (hasHandler(id))
-            removeHandler(id);
+        List<PunishmentHandler> punishmentList;
+        if (!hasHandler(id)) {
+            handlerList.put(id, punishmentList = new ArrayList<>());
+        }
+        else {
+            punishmentList = handlerList.get(id);
+        }
         
-        handlerList.put(id, handler);
+        punishmentList.add(handler);
         getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
     }
 
@@ -168,9 +206,16 @@ public class PunishManager extends MiniPlugin implements Listener {
         return handlerList.containsKey(id);
     }
 
-    protected void removeHandler(UUID id) {
+    protected void removeAllHandler(UUID id) {
         if (handlerList.containsKey(id)) {
-            HandlerList.unregisterAll(handlerList.remove(id));
+            for (IPunishment.PunishmentHandler handler : handlerList.get(id))
+                removeHandler(id, handler);
+        }
+    }
+
+    protected void removeHandler(UUID id, IPunishment.PunishmentHandler handler) {
+        if (handlerList.containsKey(id) && handlerList.get(id).remove(handler)) {
+            HandlerList.unregisterAll(handler);
         }
     }
 
@@ -198,7 +243,7 @@ public class PunishManager extends MiniPlugin implements Listener {
         @Override
         public void onCommand(CommandSender sender, String[] args) {
             if (args.length < 1) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish <set / remove / list>"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish <add / get / clear / list>"));
                 return;
             }
 
@@ -207,9 +252,32 @@ public class PunishManager extends MiniPlugin implements Listener {
             if ("list".equals(option)) {
                 sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "사용가능한 Punishment 목록: " + String.join(", ", punishmentList.keySet())));
             }
-            else if ("remove".equals(option)) {
+            else if ("get".equals(option)) {
                 if (args.length < 2) {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish remove <플레이어 이름>"));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish get <플레이어 이름>"));
+                    return;
+                }
+
+                String name = args[1];
+                OfflinePlayer offline = getPlugin().getServer().getOfflinePlayer(name);
+
+                if (offline == null) {
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 을(를) 찾을 수 없습니다"));
+                    return;
+                }
+
+                List<String> list = getPlayerPunishment(offline.getUniqueId());
+
+                if (list.isEmpty()) {
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 은(는) 아무런 제한도 갖고있지 않습니다"));
+                }
+                else {
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 가 가지고 있는 제한 목록: " + String.join(", ", list)));
+                }
+            }
+            else if ("clear".equals(option)) {
+                if (args.length < 2) {
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish clear <플레이어 이름>"));
                     return;
                 }
 
@@ -225,14 +293,14 @@ public class PunishManager extends MiniPlugin implements Listener {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 은(는) 아무 제한을 갖고 있지 않습니다"));
                 }
                 else {
-                    removePlayerPunishment(offline.getUniqueId());
+                    removeAllPlayerPunishment(offline.getUniqueId());
 
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 의 제한 " + getPlayerPunishment(offline.getUniqueId()) + " 을(를) 제거했습니다"));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 의 제한 " + getPlayerPunishment(offline.getUniqueId()).size() + " 개 를 모두 제거했습니다"));
                 }
             }
-            else if ("set".equals(option)) {
+            else if ("add".equals(option)) {
                 if (args.length < 3) {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish remove <플레이어 이름> <punishment>"));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish add <플레이어 이름> <punishment>"));
                     return;
                 }
 
@@ -252,12 +320,12 @@ public class PunishManager extends MiniPlugin implements Listener {
                     return;
                 }
 
-                setPlayerPunishment(offline.getUniqueId(), punishName);
+                addPlayerPunishment(offline.getUniqueId(), punishName);
 
                 sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 에게 " + punishName + " 제한을 적용했습니다"));
 
                 if (offline.isOnline()) {
-                    offline.getPlayer().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PunishManager", punishName + " 제한이 적용되었습니다"));
+                    offline.getPlayer().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PunishManager", sender.getName() + "에 의해 " + punishName + " 제한이 적용되었습니다"));
                 }
             }
             else {

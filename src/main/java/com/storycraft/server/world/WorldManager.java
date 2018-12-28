@@ -118,7 +118,7 @@ public class WorldManager extends ServerExtension implements Listener {
             return;
 
         for (Chunk chunk : universe.getBukkitWorld().getLoadedChunks()){
-            chunk.unload(universe.canSave());
+            chunk.unload(universe.canSave(), false);
         }
 
         universe.unload();
