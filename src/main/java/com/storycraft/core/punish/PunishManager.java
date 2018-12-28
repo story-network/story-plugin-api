@@ -151,7 +151,7 @@ public class PunishManager extends MiniPlugin implements Listener {
         try {
             return entry.get("punishment_enabled").getAsBoolean();
         } catch (Exception e) {
-            entry.set("punishment_enabled", false);
+            setPunishmentEnabled(id, false);
 
             return false;
         }
@@ -178,10 +178,14 @@ public class PunishManager extends MiniPlugin implements Listener {
         List<String> list = null;
         try {
             JsonArray array = entry.get("punishment_list").getAsJsonArray();
-            list = new ArrayList<>(array.size());
 
-            for (int i = 0; i < list.size(); i++)
+            int length = array.size();
+
+            list = new ArrayList<>(length);
+
+            for (int i = 0; i < length; i++)
                 list.set(i, array.get(i).getAsString());
+
         } catch (Exception e) {
             entry.set("punishment_list", list = new ArrayList<>());
         }
@@ -225,7 +229,7 @@ public class PunishManager extends MiniPlugin implements Listener {
         List<String> punishList = getPlayerPunishment(id);
 
         if (punishList.remove(name)) {
-            entry.set("punishment_list", name);
+            setPlayerPunishment(id, punishList);
 
             removeAllHandler(id);
             loadHandler(id);
@@ -369,7 +373,7 @@ public class PunishManager extends MiniPlugin implements Listener {
                 }
             }
             else {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish <set / remove / list>"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish <add / get / clear / list>"));
             }
         }
 
