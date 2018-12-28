@@ -44,12 +44,11 @@ public class TestFunction implements Listener {
     public static void test(StoryPlugin plugin, org.bukkit.World world) {
         plugin.getServer().getPluginManager().registerEvents(new TestFunction(plugin), plugin);
 
-        try {
-            plugin.getServerManager().getRegistryManager().getEntityRegistry().add(220, new CustomPlayerInfo("player_zombie", TestZombiePlayer.class, TestZombiePlayer::new,
-                            new ZombieProfileHandler()));
+        /*try {
+            plugin.getServerManager().getRegistryManager().getEntityRegistry().add(220, new CustomPlayerInfo("player_zombie", TestZombiePlayer.class, TestZombiePlayer::new, new ZombieProfileHandler()));
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @EventHandler
