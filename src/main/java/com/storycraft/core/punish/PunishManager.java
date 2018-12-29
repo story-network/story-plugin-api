@@ -1,6 +1,7 @@
 package com.storycraft.core.punish;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,23 +15,19 @@ import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
-import com.storycraft.core.config.ConfigUpdateEvent;
-import com.storycraft.core.punish.IPunishment.PunishmentHandler;
 import com.storycraft.core.punish.punishment.*;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
-import org.json.simple.JSONArray;
 
 public class PunishManager extends MiniPlugin implements Listener {
 
@@ -38,11 +35,11 @@ public class PunishManager extends MiniPlugin implements Listener {
 
     private Map<String, IPunishment> punishmentList;
 
-    private Map<UUID, List<IPunishment.PunishmentHandler>> handlerList;
+    private Map<UUID, Map<PunishmentInfo, IPunishment.PunishmentHandler>> handlerMap;
 
     public PunishManager() {
         this.punishmentList = new HashMap<>();
-        this.handlerList = new HashMap<>();
+        this.handlerMap = new HashMap<>();
     }
 
     @Override
@@ -63,76 +60,59 @@ public class PunishManager extends MiniPlugin implements Listener {
     public void onEnable() {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
 
-        loadConfig();
-    }
-
-    private void loadConfig() {
         for (Player p : getPlugin().getServer().getOnlinePlayers()) {
-            loadHandler(p.getUniqueId());
-        }
-    }
-
-    protected List<IPunishment.PunishmentHandler> getPlayerHandlerList(UUID id) {
-        if (handlerList.containsKey(id))
-            return handlerList.get(id);
-        else {
-            List<IPunishment.PunishmentHandler> list = new ArrayList<>();
-
-            handlerList.put(id, list);
-
-            return list;
-        }
-    }
-    
-    private void loadHandler(UUID id) {
-        if (isPunishmentEnabled(id)) {
-            List<String> nameList = getPlayerPunishment(id);
-                for (String name : nameList) {
-                    if (name != null) {
-                        IPunishment punishment = getPunishment(name);
-
-                        if (punishment != null) {
-                            addHandler(id, punishment);
-                    }
-                }
-            }
+            addPlayerHandler(p.getUniqueId());
         }
     }
 
     @EventHandler
-    public void onConfigReload(ConfigUpdateEvent e) {
-        if (configFile.equals(e.getConfig())) {
-            for (Player p : getPlugin().getServer().getOnlinePlayers()) {
-                removeAllHandler(p.getUniqueId());
-            }
-
-            loadConfig();
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     public void onLogin(AsyncPlayerPreLoginEvent e) {
-        if (e.getLoginResult() == Result.ALLOWED && isPunishmentEnabled(e.getUniqueId())) {
-            List<String> punishList = getPlayerPunishment(e.getUniqueId());
-
-            for (String name : punishList) {
-                IPunishment punishment = getPunishment(name);
-
-                if (punishment == null)
-                    return;
-
-                addHandler(e.getUniqueId(), punishment);
-            }
-        }
+        addPlayerHandler(e.getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        if (hasHandler(e.getPlayer().getUniqueId())) {
-            removeAllHandler(e.getPlayer().getUniqueId());
+        removePlayerHandler(e.getPlayer().getUniqueId());
+    }
+
+    protected void addPlayerHandler(UUID id) {
+        List<PunishmentInfo> infoList = getPlayerPunishment(id);
+
+        Map<PunishmentInfo, IPunishment.PunishmentHandler> playerHandlerMap = getPlayerHandlerMap(id);
+
+        for (PunishmentInfo info : infoList) {
+            IPunishment.PunishmentHandler handler = info.getType().createPunishmentHandler(id);
+            getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
+            playerHandlerMap.put(info, handler);
         }
     }
 
+    protected void removePlayerHandler(UUID id) {
+        List<PunishmentInfo> infoList = getPlayerPunishment(id);
+
+        Map<PunishmentInfo, IPunishment.PunishmentHandler> playerHandlerMap = getPlayerHandlerMap(id);
+
+        for (PunishmentInfo info : playerHandlerMap.keySet()) {
+            IPunishment.PunishmentHandler handler = playerHandlerMap.get(info);
+
+            HandlerList.unregisterAll(handler);
+        }
+
+        handlerMap.remove(id);
+    }
+
+    protected Map<PunishmentInfo, IPunishment.PunishmentHandler> getPlayerHandlerMap(UUID id) {
+        if (handlerMap.containsKey(id))
+            return handlerMap.get(id);
+        else {
+            Map<PunishmentInfo, IPunishment.PunishmentHandler> map = new HashMap<>();
+
+            handlerMap.put(id, map);
+
+            return map;
+        }
+    }
+    
     public boolean containsPunishment(String name) {
         return punishmentList.containsKey(name);
     }
@@ -146,44 +126,27 @@ public class PunishManager extends MiniPlugin implements Listener {
         return entry;
     }
 
-    public boolean isPunishmentEnabled(UUID id) {
-        JsonConfigEntry entry = getIdEntry(id);
-
-        try {
-            return entry.get("punishment_enabled").getAsBoolean();
-        } catch (Exception e) {
-            setPunishmentEnabled(id, false);
-
-            return false;
-        }
-    }
-
-    public void setPunishmentEnabled(UUID id, boolean flag) {
-        JsonConfigEntry entry = getIdEntry(id);
-
-        entry.set("punishment_enabled", flag);
-    }
-
     public void removeAllPlayerPunishment(UUID id) {
-        setPunishmentEnabled(id, false);
-
         setPlayerPunishment(id, new ArrayList<>());
-        removeAllHandler(id);
     }
 
-    public List<String> getPlayerPunishment(UUID id) {
-        if (!isPunishmentEnabled(id))
-            return null;
-        
+    public List<PunishmentInfo> getPlayerPunishment(UUID id) {
         JsonConfigEntry entry = getIdEntry(id);
-        List<String> list = null;
+        List<PunishmentInfo> list = null;
         try {
             JsonArray array = entry.get("punishment_list").getAsJsonArray();
 
-            String[] arr = new String[array.size()];
+            PunishmentInfo[] arr = new PunishmentInfo[array.size()];
 
-            for (int i = 0; i < arr.length; i++)
-                arr[i] = array.get(i).getAsString();
+            for (int i = 0; i < arr.length; i++) {
+                JsonConfigEntry obj = new JsonConfigEntry(array.get(i).getAsJsonObject());
+                IPunishment punishment = getPunishment(obj.get("type").getAsString());
+
+                if (punishment == null)
+                    continue;
+
+                arr[i] = new PunishmentInfo(punishment, obj.get("expire_at").getAsLong());
+            }
             
             list = Lists.newArrayList(arr);
 
@@ -194,7 +157,7 @@ public class PunishManager extends MiniPlugin implements Listener {
         return list;
     }
 
-    public void setPlayerPunishment(UUID id, List<String> list) {
+    public void setPlayerPunishment(UUID id, List<PunishmentInfo> list) {
         JsonConfigEntry entry = getIdEntry(id);
 
         entry.set("punishment_list", list);
@@ -206,59 +169,48 @@ public class PunishManager extends MiniPlugin implements Listener {
         if (punishment == null)
             return;
 
-        setPunishmentEnabled(id, true);
-
-        List<String> punishList = getPlayerPunishment(id);
-
-        punishList.add(name);
-
-        setPlayerPunishment(id, punishList);
-
-        addHandler(id, punishment);
+        addPlayerPunishment(id, new PunishmentInfo(punishment, -1));
     }
 
-    public void removePlayerPunishment(UUID id, String name) {
-        JsonConfigEntry entry = getIdEntry(id);
-
+    public void addPlayerPunishment(UUID id, String name, long expireAt) {
         IPunishment punishment = getPunishment(name);
 
         if (punishment == null)
             return;
 
-        List<String> punishList = getPlayerPunishment(id);
+        addPlayerPunishment(id, new PunishmentInfo(punishment, expireAt));
+    }
 
-        if (punishList.remove(name)) {
+    public void addPlayerPunishment(UUID id, PunishmentInfo info) {
+        List<PunishmentInfo> punishList = getPlayerPunishment(id);
+
+        punishList.add(info);
+
+        setPlayerPunishment(id, punishList);
+    }
+
+    public void removePlayerPunishment(UUID id, String name) {
+        IPunishment punishment = getPunishment(name);
+
+        if (punishment == null)
+            return;
+
+        List<PunishmentInfo> punishList = getPlayerPunishment(id);
+
+        for (PunishmentInfo info : new ArrayList<>(punishList)) {
+            if (info.getType().equals(punishment)) {
+                punishList.remove(info);
+            }
+        }
+
+        setPlayerPunishment(id, punishList);
+    }
+
+    public void removePlayerPunishment(UUID id, PunishmentInfo info) {
+        List<PunishmentInfo> punishList = getPlayerPunishment(id);
+
+        if (punishList.remove(info))
             setPlayerPunishment(id, punishList);
-
-            removeAllHandler(id);
-            loadHandler(id);
-        }
-    }
-
-    protected void addHandler(UUID id, IPunishment punishment) {
-        PunishmentHandler handler = punishment.createPunishmentHandler(id);
-
-        List<PunishmentHandler> punishmentList = getPlayerHandlerList(id);
-        
-        punishmentList.add(handler);
-        getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
-    }
-
-    protected boolean hasHandler(UUID id) {
-        return handlerList.containsKey(id);
-    }
-
-    protected void removeAllHandler(UUID id) {
-        if (handlerList.containsKey(id)) {
-            for (IPunishment.PunishmentHandler handler : handlerList.get(id))
-                removeHandler(id, handler);
-        }
-    }
-
-    protected void removeHandler(UUID id, IPunishment.PunishmentHandler handler) {
-        if (getPlayerHandlerList(id).contains(handler)) {
-            HandlerList.unregisterAll(handler);
-        }
     }
 
     public void addPunishment(String name, IPunishment punishment) {
@@ -273,6 +225,24 @@ public class PunishManager extends MiniPlugin implements Listener {
             return null;
         
         return punishmentList.get(name);
+    }
+
+    public boolean containsPunishment(IPunishment punishment) {
+        return punishmentList.containsValue(punishment);
+    }
+
+    public String getName(IPunishment punishment) {
+        if (!containsPunishment(punishment))
+            return null;
+
+        for (String name : punishmentList.keySet()) {
+            IPunishment p = punishmentList.get(name);
+
+            if (p.equals(punishment))
+                return name;
+        }
+        
+        return null;
     }
 
     public class PunishCommand implements ICommand {
@@ -308,13 +278,20 @@ public class PunishManager extends MiniPlugin implements Listener {
                     return;
                 }
 
-                List<String> list = getPlayerPunishment(offline.getUniqueId());
+                List<PunishmentInfo> list = getPlayerPunishment(offline.getUniqueId());
 
                 if (list == null || list.isEmpty()) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 은(는) 아무런 제한도 갖고있지 않습니다"));
                 }
                 else {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 가 가지고 있는 제한 목록: " + String.join(", ", list)));
+                    String[] punishList = new String[list.size()];
+
+                    for (int i = 0; i < punishList.length; i++) {
+                        PunishmentInfo info = list.get(i);
+                        punishList[i] = (info.getExpireAt() > 0 ? ChatColor.GOLD + new Date(info.getExpireAt()).toGMTString() + ChatColor.WHITE + " 까지 " : "") + ChatColor.YELLOW + getName(info.getType()) + ChatColor.WHITE + " 제한";
+                    }
+
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 가 가지고 있는 제한 목록: " + String.join("\n", punishList)));
                 }
             }
             else if ("clear".equals(option)) {
@@ -331,24 +308,33 @@ public class PunishManager extends MiniPlugin implements Listener {
                     return;
                 }
 
-                if (!isPunishmentEnabled(offline.getUniqueId())) {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 은(는) 아무 제한을 갖고 있지 않습니다"));
-                }
-                else {
-                    int size = getPlayerPunishment(offline.getUniqueId()).size();
-                    removeAllPlayerPunishment(offline.getUniqueId());
+                int size = getPlayerPunishment(offline.getUniqueId()).size();
 
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 의 제한 " + size + " 개 를 모두 제거했습니다"));
+                if (size < 1) {
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 은(는) 아무 제한을 갖고 있지 않습니다"));
+                    return;
                 }
+
+                removeAllPlayerPunishment(offline.getUniqueId());
+
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 의 제한 " + size + " 개 를 모두 제거했습니다"));
             }
             else if ("add".equals(option)) {
                 if (args.length < 3) {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish add <플레이어 이름> <punishment>"));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish add <플레이어 이름> <punishment> [지속시간]"));
                     return;
                 }
 
                 String name = args[1];
                 String punishName = args[2];
+
+                long expireAt = -1;
+
+                if (args.length > 3) {
+                    try {
+                        expireAt = System.currentTimeMillis() + Long.parseLong(args[3]);
+                    } catch (Exception e) {}
+                }
 
                 OfflinePlayer offline = getPlugin().getServer().getOfflinePlayer(name);
                 IPunishment punishment = getPunishment(punishName);
@@ -363,9 +349,9 @@ public class PunishManager extends MiniPlugin implements Listener {
                     return;
                 }
 
-                addPlayerPunishment(offline.getUniqueId(), punishName);
+                addPlayerPunishment(offline.getUniqueId(), punishName, expireAt);
 
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 에게 " + punishName + " 제한을 적용했습니다"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 에게 " + punishName + " 제한을 " + (expireAt > 0 ? new Date(expireAt).toGMTString() + " 까지 " : "") + " 적용합니다"));
 
                 if (offline.isOnline()) {
                     offline.getPlayer().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PunishManager", sender.getName() + "에 의해 " + punishName + " 제한이 적용되었습니다"));
