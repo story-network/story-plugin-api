@@ -16,6 +16,7 @@ import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.punish.punishment.*;
+import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
@@ -75,16 +76,36 @@ public class PunishManager extends MiniPlugin implements Listener {
         removePlayerHandler(e.getPlayer().getUniqueId());
     }
 
+    @EventHandler
+    public void onUpdate(ServerUpdateEvent e) {
+        long now = System.currentTimeMillis();
+
+        for (UUID id : new ArrayList<>(handlerMap.keySet())) {
+
+            Map<PunishmentInfo, IPunishment.PunishmentHandler> map = handlerMap.get(id);
+
+            for (PunishmentInfo info : new ArrayList<>(map.keySet())) {
+                if (info.isExpired(now)) {
+                    map.remove(info);
+                }
+            }
+        }
+    }
+
     protected void addPlayerHandler(UUID id) {
         List<PunishmentInfo> infoList = getPlayerPunishment(id);
 
+        for (PunishmentInfo info : infoList) {
+            addPlayerHandler(id, info);
+        }
+    }
+
+    protected void addPlayerHandler(UUID id, PunishmentInfo info) {
         Map<PunishmentInfo, IPunishment.PunishmentHandler> playerHandlerMap = getPlayerHandlerMap(id);
 
-        for (PunishmentInfo info : infoList) {
-            IPunishment.PunishmentHandler handler = info.getType().createPunishmentHandler(id);
-            getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
-            playerHandlerMap.put(info, handler);
-        }
+        IPunishment.PunishmentHandler handler = info.getType().createPunishmentHandler(id);
+        getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
+        playerHandlerMap.put(info, handler);
     }
 
     protected void removePlayerHandler(UUID id) {
@@ -92,13 +113,24 @@ public class PunishManager extends MiniPlugin implements Listener {
 
         Map<PunishmentInfo, IPunishment.PunishmentHandler> playerHandlerMap = getPlayerHandlerMap(id);
 
-        for (PunishmentInfo info : playerHandlerMap.keySet()) {
-            IPunishment.PunishmentHandler handler = playerHandlerMap.get(info);
-
-            HandlerList.unregisterAll(handler);
+        for (PunishmentInfo info : new ArrayList<>(playerHandlerMap.keySet())) {
+            removePlayerHandler(id, info);
         }
 
         handlerMap.remove(id);
+    }
+
+    protected void removePlayerHandler(UUID id, PunishmentInfo info) {
+        Map<PunishmentInfo, IPunishment.PunishmentHandler> playerHandlerMap = getPlayerHandlerMap(id);
+
+        if (!playerHandlerMap.containsValue(info))
+            return;
+
+        IPunishment.PunishmentHandler handler = playerHandlerMap.get(info);
+
+        HandlerList.unregisterAll(handler);
+
+        playerHandlerMap.remove(info);
     }
 
     protected Map<PunishmentInfo, IPunishment.PunishmentHandler> getPlayerHandlerMap(UUID id) {
@@ -187,6 +219,7 @@ public class PunishManager extends MiniPlugin implements Listener {
         punishList.add(info);
 
         setPlayerPunishment(id, punishList);
+        addPlayerHandler(id, info);
     }
 
     public void removePlayerPunishment(UUID id, String name) {
@@ -200,6 +233,7 @@ public class PunishManager extends MiniPlugin implements Listener {
         for (PunishmentInfo info : new ArrayList<>(punishList)) {
             if (info.getType().equals(punishment)) {
                 punishList.remove(info);
+                removePlayerHandler(id, info);
             }
         }
 
@@ -209,8 +243,10 @@ public class PunishManager extends MiniPlugin implements Listener {
     public void removePlayerPunishment(UUID id, PunishmentInfo info) {
         List<PunishmentInfo> punishList = getPlayerPunishment(id);
 
-        if (punishList.remove(info))
+        if (punishList.remove(info)) {
+            removePlayerHandler(id, info);
             setPlayerPunishment(id, punishList);
+        }
     }
 
     public void addPunishment(String name, IPunishment punishment) {
