@@ -183,8 +183,6 @@ public class Explosion extends MiniPlugin {
             Random rnd = new Random();
             
             World w = center.getWorld();
-
-            int sizeSqrt = (int) Math.sqrt(blockList.size());
     
             Function<Block, Void> handle = b -> {
                 if (b == null || b.getType() == Material.AIR || isExplosive(b.getType()))
@@ -205,7 +203,7 @@ public class Explosion extends MiniPlugin {
                         loc.getBlock().setBlockData(data);
                     };
 
-                    getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), task, (int) ((RESTORE_DELAY + rnd.nextDouble() * sizeSqrt * RESTORE_INTERVAL) / 50));
+                    getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), task, (int) ((RESTORE_DELAY + rnd.nextDouble() * blockList.size() * 0.5 * RESTORE_INTERVAL) / 50));
                 }
     
                 if (rnd.nextDouble() <= limit){
