@@ -87,7 +87,7 @@ public class PunishManager extends MiniPlugin implements Listener {
 
             for (PunishmentInfo info : new ArrayList<>(map.keySet())) {
                 if (info.isExpired(now)) {
-                    map.remove(info);
+                    removePlayerPunishment(id, info);
                 }
             }
         }
@@ -124,7 +124,7 @@ public class PunishManager extends MiniPlugin implements Listener {
     protected void removePlayerHandler(UUID id, PunishmentInfo info) {
         Map<PunishmentInfo, IPunishment.PunishmentHandler> playerHandlerMap = getPlayerHandlerMap(id);
 
-        if (!playerHandlerMap.containsValue(info))
+        if (!playerHandlerMap.containsKey(info))
             return;
 
         IPunishment.PunishmentHandler handler = playerHandlerMap.get(info);
@@ -161,6 +161,7 @@ public class PunishManager extends MiniPlugin implements Listener {
 
     public void removeAllPlayerPunishment(UUID id) {
         setPlayerPunishment(id, new ArrayList<>());
+        removePlayerHandler(id);
     }
 
     public List<PunishmentInfo> getPlayerPunishment(UUID id) {
@@ -375,7 +376,7 @@ public class PunishManager extends MiniPlugin implements Listener {
             }
             else if ("add".equals(option)) {
                 if (args.length < 3) {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish add <플레이어 이름> <punishment> [지속시간]"));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "사용법 /punish add <플레이어 이름> <punishment> [지속시간(초)]"));
                     return;
                 }
 
@@ -386,7 +387,7 @@ public class PunishManager extends MiniPlugin implements Listener {
 
                 if (args.length > 3) {
                     try {
-                        expireAt = System.currentTimeMillis() + Long.parseLong(args[3]);
+                        expireAt = System.currentTimeMillis() + Long.parseLong(args[3]) * 1000;
                     } catch (Exception e) {}
                 }
 
