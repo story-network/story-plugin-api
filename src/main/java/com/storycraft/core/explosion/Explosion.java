@@ -52,7 +52,11 @@ public class Explosion extends MiniPlugin {
     @Override
     public void onLoad(StoryPlugin plugin) {
         this.explosionHandler = new ExplosionHandler(this);
-        plugin.getConfigManager().addConfigFile("explosion.json", configFile = new JsonConfigPrettyFile());
+        try {
+            plugin.getConfigManager().addConfigFile("explosion.json", configFile = new JsonConfigPrettyFile()).getSync();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
