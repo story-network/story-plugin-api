@@ -26,10 +26,6 @@ public abstract class Hologram {
         return location;
     }
 
-    public void onInteract(PlayerInteractEvent e){
-
-    }
-
     public void onAdd() {
 
     }

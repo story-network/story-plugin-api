@@ -3,29 +3,47 @@ package com.storycraft.core.hologram;
 import com.storycraft.StoryPlugin;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.server.clientside.ClientEntityManager;
+import com.storycraft.server.packet.AsyncPacketInEvent;
+import com.storycraft.util.reflect.Reflect;
+import com.storycraft.util.reflect.Reflect.WrappedField;
+
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+
 import net.minecraft.server.v1_13_R2.ChatComponentText;
 import net.minecraft.server.v1_13_R2.Entity;
+import net.minecraft.server.v1_13_R2.PacketPlayInUseEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HologramManager extends MiniPlugin {
+public class HologramManager extends MiniPlugin implements Listener {
 
     private static final double HOLOGRAM_OFFSET = 0.75;
 
     private ClientEntityManager manager;
     private Map<Hologram, List<Entity>> hologramListMap;
 
+    private WrappedField<Integer, PacketPlayInUseEntity> idField;
+
     public HologramManager(){
         this.manager = new ClientEntityManager();
         this.hologramListMap = new HashMap<>();
+
+        this.idField = Reflect.getField(PacketPlayInUseEntity.class, "a");
     }
 
     @Override
     public void onLoad(StoryPlugin plugin){
         plugin.getMiniPluginLoader().addMiniPlugin(manager);
+    }
+
+    @Override
+    public void onEnable() {
+        getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
     @Override
@@ -35,6 +53,23 @@ public class HologramManager extends MiniPlugin {
         }
 
         hologramListMap.clear();
+    }
+
+    @EventHandler
+    public void onPacketIn(AsyncPacketInEvent e) {
+        if (e.getPacket() instanceof PacketPlayInUseEntity) {
+            PacketPlayInUseEntity packet = (PacketPlayInUseEntity) e.getPacket();
+
+            int id = idField.get(packet);
+
+            for (Hologram hologram : new ArrayList<>(hologramListMap.keySet())) {
+                for (Entity entity : new ArrayList<>(hologramListMap.get(hologram))) {
+                    if (entity.getId() == id) {
+                        getPlugin().getServer().getPluginManager().callEvent(new HologramInteractEvent(e.getSender(), hologram));
+                    }
+                }
+            }
+        }
     }
 
     public boolean contains(Hologram hologram){

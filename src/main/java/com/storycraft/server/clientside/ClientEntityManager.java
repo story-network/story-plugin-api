@@ -104,7 +104,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChunkLoad(AsyncPlayerLoadChunkEvent e){
+    public void onPlayerChunkLoad(AsyncPlayerLoadChunkEvent e) {
         if (!entityMap.containsKey(e.getWorld()))
             return;
 
