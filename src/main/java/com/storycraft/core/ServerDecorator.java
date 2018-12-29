@@ -1,6 +1,7 @@
 package com.storycraft.core;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.core.advancement.AdvancementManager;
 import com.storycraft.core.dropping.HologramXPDrop;
 import com.storycraft.core.hologram.HologramManager;
 import com.storycraft.core.morph.MorphManager;
@@ -11,6 +12,7 @@ public class ServerDecorator {
     private StoryPlugin plugin;
 
     private HologramManager hologramManager;
+    private AdvancementManager advancementManager;
 
     private HologramXPDrop hologramXPDrop;
     private MorphManager morphManager;
@@ -26,6 +28,7 @@ public class ServerDecorator {
         MiniPluginLoader loader = plugin.getMiniPluginLoader();
 
         loader.addMiniPlugin(hologramManager = new HologramManager());
+        loader.addMiniPlugin(advancementManager = new AdvancementManager());
         loader.addMiniPlugin(hologramXPDrop = new HologramXPDrop());
         loader.addMiniPlugin(morphManager = new MorphManager());
         loader.addMiniPlugin(playerList = new ServerPlayerList());
@@ -45,6 +48,10 @@ public class ServerDecorator {
 
     public MorphManager getMorphManager() {
         return morphManager;
+    }
+    
+    public AdvancementManager getAdvancementManager() {
+        return advancementManager;
     }
 
     public ServerPlayerList getPlayerList() {
