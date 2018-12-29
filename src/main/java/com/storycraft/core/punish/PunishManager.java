@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigEntry;
@@ -192,7 +193,22 @@ public class PunishManager extends MiniPlugin implements Listener {
     public void setPlayerPunishment(UUID id, List<PunishmentInfo> list) {
         JsonConfigEntry entry = getIdEntry(id);
 
-        entry.set("punishment_list", list);
+        List<JsonObject> objectList = new ArrayList<>(list.size());
+
+        for (PunishmentInfo info : list) {
+            objectList.add(toConfigObject(info));
+        }
+
+        entry.set("punishment_list", objectList);
+    }
+
+    protected JsonObject toConfigObject(PunishmentInfo info) {
+        JsonObject obj = new JsonObject();
+
+        obj.addProperty("type", getName(info.getType()));
+        obj.addProperty("expire_at", info.getExpireAt());
+
+        return obj;
     }
 
     public void addPlayerPunishment(UUID id, String name) {
@@ -219,7 +235,9 @@ public class PunishManager extends MiniPlugin implements Listener {
         punishList.add(info);
 
         setPlayerPunishment(id, punishList);
-        addPlayerHandler(id, info);
+
+        if (getPlugin().getServer().getOfflinePlayer(id).isOnline())
+            addPlayerHandler(id, info);
     }
 
     public void removePlayerPunishment(UUID id, String name) {
@@ -327,7 +345,7 @@ public class PunishManager extends MiniPlugin implements Listener {
                         punishList[i] = (info.getExpireAt() > 0 ? ChatColor.GOLD + new Date(info.getExpireAt()).toGMTString() + ChatColor.WHITE + " 까지 " : "") + ChatColor.YELLOW + getName(info.getType()) + ChatColor.WHITE + " 제한";
                     }
 
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 가 가지고 있는 제한 목록: " + String.join("\n", punishList)));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "PunishManager", "플레이어 " + name + " 가 가지고 있는 제한 목록: \n" + String.join("\n", punishList)));
                 }
             }
             else if ("clear".equals(option)) {
@@ -387,7 +405,7 @@ public class PunishManager extends MiniPlugin implements Listener {
 
                 addPlayerPunishment(offline.getUniqueId(), punishName, expireAt);
 
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 에게 " + punishName + " 제한을 " + (expireAt > 0 ? new Date(expireAt).toGMTString() + " 까지 " : "") + " 적용합니다"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "PunishManager", "플레이어 " + name + " 에게 " + punishName + " 제한을 " + (expireAt > 0 ? new Date(expireAt).toGMTString() + " 까지 " : "") + "적용합니다"));
 
                 if (offline.isOnline()) {
                     offline.getPlayer().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "PunishManager", sender.getName() + "에 의해 " + punishName + " 제한이 적용되었습니다"));
