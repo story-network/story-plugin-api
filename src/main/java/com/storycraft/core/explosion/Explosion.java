@@ -32,7 +32,7 @@ import java.util.function.Function;
 public class Explosion extends MiniPlugin {
 
     protected final static float LIGHTNING_EXPLOSION = 2.25f;
-    protected final static float MOB_FIREBALL_POWER = 3.125f;
+    protected final static float MOB_FIREBALL_POWER = 2.025f;
 
     protected final static int RESTORE_DELAY = 5000;
     protected final static int RESTORE_INTERVAL = 50;
