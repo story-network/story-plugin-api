@@ -27,4 +27,14 @@ public class PunishmentInfo {
     public boolean isExpired(long time) {
         return getExpireAt() <= time;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PunishmentInfo) {
+            PunishmentInfo info = (PunishmentInfo) obj;
+
+            return info.getExpireAt() == getExpireAt() && info.getType() == getType();
+        }
+        return false;
+    }
 }

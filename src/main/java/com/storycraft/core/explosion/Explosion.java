@@ -189,29 +189,31 @@ public class Explosion extends MiniPlugin {
             Function<Block, Void> handle = b -> {
                 if (b == null || b.getType() == Material.AIR || isExplosive(b.getType()))
                     return null;
+
+                BlockData data = b.getBlockData();
+
+                if (type == ExplosionType.FLYING_BLOCKS_RESTORE_RANDOM) {
+                    b.setType(Material.AIR);
+
+                    Location loc = b.getLocation();
+
+                    Runnable task = () -> {
+                        if (loc.getBlock().getType() != Material.AIR)
+                            return;
+
+                        w.playEffect(loc.getBlock().getLocation(), Effect.STEP_SOUND, BlockIdUtil.getCombinedId(data));
+                        loc.getBlock().setBlockData(data);
+                    };
+
+                    getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), task, (int) ((RESTORE_DELAY + rnd.nextDouble() * sizeSqrt * RESTORE_INTERVAL) / 50));
+                }
     
                 if (rnd.nextDouble() <= limit){
                     Vector vec = b.getLocation().toVector().subtract(center.toVector());
     
                     if (vec.getY() < 0)
                         vec.setY(vec.getY() * -1);
-    
-                    BlockData data = b.getBlockData();
 
-                    if (type == ExplosionType.FLYING_BLOCKS_RESTORE_RANDOM) {
-                        Location loc = b.getLocation();
-
-                        Runnable task = () -> {
-                            if (loc.getBlock().getType() != Material.AIR)
-                                return;
-
-                            w.playEffect(loc.getBlock().getLocation(), Effect.STEP_SOUND, BlockIdUtil.getCombinedId(data));
-                            loc.getBlock().setBlockData(data);
-                        };
-
-                        getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), task, (int) ((RESTORE_DELAY + rnd.nextDouble() * sizeSqrt * RESTORE_INTERVAL) / 50));
-                    }
-    
                     getExplosion().runSync(() -> {
                         FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), data);
     

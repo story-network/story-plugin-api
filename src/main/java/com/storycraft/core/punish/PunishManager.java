@@ -262,8 +262,9 @@ public class PunishManager extends MiniPlugin implements Listener {
     public void removePlayerPunishment(UUID id, PunishmentInfo info) {
         List<PunishmentInfo> punishList = getPlayerPunishment(id);
 
+        removePlayerHandler(id, info);
+
         if (punishList.remove(info)) {
-            removePlayerHandler(id, info);
             setPlayerPunishment(id, punishList);
         }
     }
