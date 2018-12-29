@@ -111,7 +111,7 @@ public class ForgeServerPing extends ServerPing {
 
         @Override
         public JsonElement serialize(ForgeServerPing forgeServerPing, Type type, JsonSerializationContext jsc) {
-            JsonObject obj = (JsonObject) new ServerPing.Serializer().a(forgeServerPing.serverPing, type, jsc);
+            JsonObject obj = (JsonObject) new ServerPing.Serializer().serialize(forgeServerPing.serverPing, type, jsc);
 
             obj.add("modinfo", createModInfo(forgeServerPing));
 
@@ -120,7 +120,7 @@ public class ForgeServerPing extends ServerPing {
 
         @Override
         public ForgeServerPing deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-            return new ForgeServerPing(new ServerPing.Serializer().a(jsonElement, type, jdc));
+            return new ForgeServerPing(new ServerPing.Serializer().deserialize(jsonElement, type, jdc));
         }
     }
 }
