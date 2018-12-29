@@ -25,7 +25,7 @@ public class PunishmentInfo {
     }
 
     public boolean isExpired(long time) {
-        return getExpireAt() <= time;
+        return getExpireAt() >= 0 && getExpireAt() <= time;
     }
 
     @Override
