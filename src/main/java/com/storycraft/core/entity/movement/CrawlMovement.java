@@ -42,6 +42,13 @@ public class CrawlMovement extends MiniPlugin implements Listener {
         }
     }
 
+    @EventHandler
+    public void hideOnCrawl(PlayerToggleSneakEvent e) {
+        if (isCrawling(e.getPlayer()) && !e.isSneaking()) {
+            e.setCancelled(true);
+        }
+    }
+
     public boolean isCrawling(LivingEntity e) {
         if (!e.hasMetadata("crawling"))
             return false;
@@ -61,11 +68,26 @@ public class CrawlMovement extends MiniPlugin implements Listener {
     }
     
     public void setCrawling(LivingEntity e, boolean flag) {
-        if (e.hasMetadata("crawling"))
+        if (e.hasMetadata("crawling")) {
+            if (isCrawling(e) == flag)
+                return;
+            
             e.removeMetadata("crawling", getPlugin());
+        }
+
+        EntityToggleCrawlEvent event = new EntityToggleCrawlEvent(e, flag);
+        getPlugin().getServer().getPluginManager().callEvent(event);
+        
+        if (event.isCancelled())
+            return;
         
         e.setMetadata("crawling", new FixedMetadataValue(getPlugin(), flag));
         e.setGliding(flag);
+        
+        if (e instanceof Player) {
+            Player p = (Player) e;
+            p.setSneaking(flag);
+        }
     }
 
 }
