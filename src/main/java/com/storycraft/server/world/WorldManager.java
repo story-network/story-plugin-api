@@ -122,7 +122,12 @@ public class WorldManager extends ServerExtension implements Listener {
     }
 
     protected void loadDefaultWorld(DefaultUniverse universe) {
+        if (universe.isLoaded() || !isLoaded)
+            return;
+        
         universeList.putIfAbsent(universe.getName(), universe);
+
+        loadWorldAddon(universe);
     }
 
     public List<String> getWorldCustomAddonList(IUniverse universe) {
