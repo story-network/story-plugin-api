@@ -44,7 +44,7 @@ public class WorldManager extends ServerExtension implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin){
         this.isLoaded = true;
-        
+
         plugin.getMiniPluginLoader().addMiniPlugin(addonManager);
 
         try {
@@ -123,7 +123,7 @@ public class WorldManager extends ServerExtension implements Listener {
     }
 
     protected void loadDefaultWorld(DefaultUniverse universe) {
-        if (universe.isLoaded() || !isLoaded)
+        if (!isLoaded)
             return;
         
         universeList.putIfAbsent(universe.getName(), universe);
