@@ -18,6 +18,7 @@ import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
 import com.storycraft.core.entity.EntityBlood;
+import com.storycraft.core.entity.EntityManager;
 import com.storycraft.core.explosion.Explosion;
 import com.storycraft.core.faq.FAQCommand;
 import com.storycraft.core.fly.FlyCommand;
@@ -34,6 +35,7 @@ import com.storycraft.core.teleport.TeleportAskCommand;
 import com.storycraft.core.uuid.UUIDRevealCommand;
 import com.storycraft.core.world.WorldTeleporter;
 import com.storycraft.server.ServerManager;
+import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.storage.TempStorage;
@@ -45,11 +47,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.netty.buffer.Unpooled;
+import net.minecraft.server.v1_13_R2.MinecraftKey;
 import net.minecraft.server.v1_13_R2.MinecraftServer;
+import net.minecraft.server.v1_13_R2.PacketDataSerializer;
+import net.minecraft.server.v1_13_R2.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_13_R2.World;
 import net.minecraft.server.v1_13_R2.WorldServer;
 
@@ -62,7 +70,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class StoryPlugin extends JavaPlugin {
+public class StoryPlugin extends JavaPlugin implements Listener {
 
     private static String TEMP_FILE_NAME = "Server.jar";
 
@@ -78,6 +86,7 @@ public class StoryPlugin extends JavaPlugin {
     private ServerManager serverManager;
 
     private PlayerManager playerManager;
+    private EntityManager entityManager;
 
     private PunishManager punishManager;
 
@@ -88,6 +97,9 @@ public class StoryPlugin extends JavaPlugin {
     private boolean initalized = false;
 
     private TempStorage tempStorage;
+
+    private Reflect.WrappedField<MinecraftKey, PacketPlayOutCustomPayload> payloadChannel;
+    private Reflect.WrappedField<PacketDataSerializer, PacketPlayOutCustomPayload> dataSerializer;
 
     public StoryPlugin() {
         this.tempStorage = new TempStorage();
@@ -101,6 +113,9 @@ public class StoryPlugin extends JavaPlugin {
         
         this.originalFile = originalFile;
         this.originalDataFolder = originalDataFolder;
+
+        this.payloadChannel = Reflect.getField(PacketPlayOutCustomPayload.class, "i");
+        this.dataSerializer = Reflect.getField(PacketPlayOutCustomPayload.class, "j");
         
         this.pluginDataStorage = new PluginDataStorage(this);
         this.miniPluginLoader = new MiniPluginLoader(this);
@@ -125,6 +140,7 @@ public class StoryPlugin extends JavaPlugin {
         MiniPluginLoader loader = getMiniPluginLoader();
         loader.addMiniPlugin(rankManager = new RankManager());
         loader.addMiniPlugin(playerManager = new PlayerManager());
+        loader.addMiniPlugin(entityManager = new EntityManager());
         loader.addMiniPlugin(punishManager = new PunishManager());
     }
 
@@ -210,6 +226,8 @@ public class StoryPlugin extends JavaPlugin {
         else{
             getMiniPluginLoader().onEnable();
 
+            getServer().getPluginManager().registerEvents(this, this);
+
             TestFunction.test(this, getServer().getWorld("world"));
         }
     }
@@ -228,6 +246,23 @@ public class StoryPlugin extends JavaPlugin {
         ServerPluginManager pluginManager = getServerManager().getServerPluginManager();
         pluginManager.unloadPlugin(this);
         pluginManager.enablePlugin(pluginManager.loadPlugin(getOriginalFile()));
+    }
+
+    @EventHandler
+    public void onServerBrandSend(AsyncPacketOutEvent e) {
+        if (e.getPacket() instanceof PacketPlayOutCustomPayload) {
+            PacketPlayOutCustomPayload packet = (PacketPlayOutCustomPayload) e.getPacket();
+
+            MinecraftKey key = payloadChannel.get(packet);
+
+            if (PacketPlayOutCustomPayload.b.equals(key)) {
+                PacketDataSerializer serializer = new PacketDataSerializer(Unpooled.buffer());
+
+                serializer.a(getServerName());
+
+                dataSerializer.set(packet, serializer);
+            }
+        }
     }
 
     public boolean isInitalized() {
@@ -256,6 +291,14 @@ public class StoryPlugin extends JavaPlugin {
 
     public ConfigManager getConfigManager() {
         return localConfigManager;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 
     public ServerManager getServerManager() {

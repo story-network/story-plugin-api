@@ -7,9 +7,11 @@ import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.config.ConfigUpdateEvent;
+import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.MessageUtil;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_13_R2.PacketPlayOutEntityStatus;
 
 import java.util.StringJoiner;
 
@@ -89,10 +92,17 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent e) {
         updatePlayerName(e.getPlayer());
+        updatePlayerLevel(e.getPlayer());
     }
 
     protected void updatePlayerName(Player p) {
         p.setPlayerListName(getRank(p).getNameColor() + p.getName());
+    }
+
+    protected void updatePlayerLevel(Player p) {
+        ServerRank rank = getRank(p);
+
+        ConnectionUtil.sendPacket(p, new PacketPlayOutEntityStatus(((CraftPlayer)p).getHandle(), (byte) (0x24 + Math.min(Math.max(rank.getRankLevel(), 0), 4))));
     }
 
     public boolean hasPermission(Player p, ServerRank minRank) {
@@ -102,6 +112,7 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
     @EventHandler
     public void onRankUpdate(RankUpdateEvent e) {
         updatePlayerName(e.getPlayer());
+        updatePlayerLevel(e.getPlayer());
     }
 
     @Override

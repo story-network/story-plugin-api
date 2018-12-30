@@ -7,6 +7,7 @@ import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.player.login.ServerKickMessage;
+import com.storycraft.core.player.movement.CrawlToggler;
 import com.storycraft.core.skin.PlayerCustomSkin;
 
 public class PlayerManager extends MiniPlugin {
@@ -20,6 +21,7 @@ public class PlayerManager extends MiniPlugin {
         loader.addMiniPlugin(new PlayerCustomSkin());
         loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(homeManager = new HomeManager());
+        loader.addMiniPlugin(new CrawlToggler());
         loader.addMiniPlugin(new UserDebug());
         loader.addMiniPlugin(new ServerKickMessage());
     }

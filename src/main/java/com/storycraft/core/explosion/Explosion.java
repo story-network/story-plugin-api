@@ -35,7 +35,7 @@ public class Explosion extends MiniPlugin {
     protected final static float MOB_FIREBALL_POWER = 2.025f;
 
     protected final static int RESTORE_DELAY = 5000;
-    protected final static int RESTORE_INTERVAL = 50;
+    protected final static int RESTORE_INTERVAL = 100;
 
     private JsonConfigFile configFile;
 
@@ -178,7 +178,8 @@ public class Explosion extends MiniPlugin {
             if (blockList.size() == 0)
                 return;
     
-            double limit = (Math.log(blockList.size()) / Math.pow(blockList.size(), 0.61275));
+            double sizeAdjusted = Math.pow(blockList.size(), 0.61275);
+            double limit = (Math.log(blockList.size()) / sizeAdjusted);
     
             Random rnd = new Random();
             
@@ -203,7 +204,7 @@ public class Explosion extends MiniPlugin {
                         loc.getBlock().setBlockData(data);
                     };
 
-                    getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), task, (int) ((RESTORE_DELAY + rnd.nextDouble() * blockList.size() * 0.5 * RESTORE_INTERVAL) / 50));
+                    getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), task, (int) ((RESTORE_DELAY + rnd.nextDouble() * sizeAdjusted * RESTORE_INTERVAL) / 50));
                 }
     
                 if (rnd.nextDouble() <= limit){
