@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.storycraft.core.MiniPlugin;
 import com.storycraft.server.world.addon.*;
 
 import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-public class WorldAddonManager implements Listener {
+public class WorldAddonManager extends MiniPlugin implements Listener {
     
     private WorldManager manager;
 
@@ -25,6 +26,15 @@ public class WorldAddonManager implements Listener {
         this.manager = manager;
 
         initDefaultAddon();
+    }
+
+    @Override
+    public void onEnable() {
+        for (List<IWorldAddon.AddonHandler> handlerList : worldAddonHandlerMap.values()) {
+            for (IWorldAddon.AddonHandler handler : handlerList) {
+                getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
+            }
+        }
     }
 
     protected void initDefaultAddon() {
@@ -114,7 +124,9 @@ public class WorldAddonManager implements Listener {
         IWorldAddon.AddonHandler handler = addon.createHandler(w);
 
         getAddonHandlerList(w).add(handler);
-        getWorldManager().getPlugin().getServer().getPluginManager().registerEvents(handler, getWorldManager().getPlugin());
+
+        if (isEnabled())
+            getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
     }
 
     public boolean hasAddonToWorld(World w, String name) {

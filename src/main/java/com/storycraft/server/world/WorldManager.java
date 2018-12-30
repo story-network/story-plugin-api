@@ -44,14 +44,18 @@ public class WorldManager extends ServerExtension implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin){
         this.isLoaded = true;
+        
+        plugin.getMiniPluginLoader().addMiniPlugin(addonManager);
+
         try {
             plugin.getConfigManager().addConfigFile("world_addons.json", worldCustomAddonConfig = new JsonConfigPrettyFile()).getSync();
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
+        
         //pre set plugin
         setPlugin(plugin);
+
         loadUniverse();
     }
 
@@ -59,6 +63,14 @@ public class WorldManager extends ServerExtension implements Listener {
     public void onEnable() {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
         getPlugin().getServer().getPluginManager().registerEvents(addonManager, getPlugin());
+
+        for (World w : getPlugin().getServer().getWorlds()) {
+            if (contains(w.getName())) {
+                return;
+            }
+    
+            loadDefaultWorld(new DefaultUniverse(w));
+        }
     }
 
     @Override
@@ -69,17 +81,6 @@ public class WorldManager extends ServerExtension implements Listener {
 
     public WorldAddonManager getAddonManager() {
         return addonManager;
-    }
-
-    @EventHandler
-    public void onWorldLoad(WorldInitEvent e) {
-        World w = e.getWorld();
-
-        if (contains(w.getName())) {
-            return;
-        }
-
-        loadDefaultWorld(new DefaultUniverse(w));
     }
 
     @EventHandler
@@ -165,18 +166,8 @@ public class WorldManager extends ServerExtension implements Listener {
         List<String> requiredAddonList = getWorldCustomAddonList(universe);
         requiredAddonList.addAll(Lists.newArrayList(universe.getRequiredAddonList()));
 
-        for (String name : requiredAddonList) {
-            if (getAddonManager().contains(name)) {
-                IWorldAddon addon = getAddonManager().getByName(name);
-
-                if (!addonList.contains(addon)) {
-                    addonList.add(addon);
-                }
-            }
-        }
-
-        for (IWorldAddon addon : addonList)
-            getAddonManager().addAddonToWorld(w, addon);
+        for (String name : requiredAddonList)
+            getAddonManager().addAddonToWorld(w, name);
     }
 
     protected void unloadWorldAddon(IUniverse universe) {
