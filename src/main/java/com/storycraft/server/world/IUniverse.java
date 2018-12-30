@@ -5,23 +5,27 @@ import org.bukkit.WorldType;
 
 public interface IUniverse {
 
-    public String getName();
+    String getName();
 
-    public boolean isLoaded();
+    boolean isLoaded();
 
-    public boolean canSave();
+    boolean canSave();
 
-    public long getSeed();
+    long getSeed();
 
-    public boolean isStructureGen();
+    boolean isStructureGen();
 
-    public void onLoad();
-    public void onUnload();
+    void onLoad();
+    void onUnload();
 
-    public World getBukkitWorld();
+    World getBukkitWorld();
 
-    public World.Environment getEnvironment();
+    World.Environment getEnvironment();
 
-    public WorldType getWorldType();
+    WorldType getWorldType();
+
+    default String[] getRequiredAddonList() {
+        return new String[]{};
+    }
 
 }
