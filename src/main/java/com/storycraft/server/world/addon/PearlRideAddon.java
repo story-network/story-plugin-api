@@ -39,7 +39,7 @@ public class PearlRideAddon implements IWorldAddon {
                     LivingEntity living = ((LivingEntity)pearl.getShooter());
                     
                     living.leaveVehicle();
-                    living.addPassenger(pearl);
+                    pearl.addPassenger(living);
                 }
             }
         }
