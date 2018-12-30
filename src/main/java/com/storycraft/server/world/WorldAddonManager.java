@@ -39,6 +39,8 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
 
     protected void initDefaultAddon() {
         addAddon("NoPhysics", new NoPhysicsAddon());
+        addAddon("FixedMob", new FixedMobAddon());
+        addAddon("NoFallDamage", new NoFallDamageAddon());
         addAddon("NoFluidPhysics", new NoFluidPhysicsAddon());
         addAddon("SnowPick", new SnowPickAddon());
         addAddon("PearlRide", new PearlRideAddon());
