@@ -37,6 +37,6 @@ public class BuildUniverse extends CustomUniverse {
 
     @Override
     public String[] getRequiredAddonList() {
-        return new String[] { "NoPhysics" };
+        return new String[] { "NoPhysics", "FixedMob", "NoFallDamage" };
     }
 }
