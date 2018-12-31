@@ -1,7 +1,151 @@
 package com.storycraft.core.advancement;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Lists;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.advancement.Advancement.FrameType;
+import com.storycraft.util.ConnectionUtil;
+
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+
+import net.minecraft.server.v1_13_R2.Advancement;
+import net.minecraft.server.v1_13_R2.AdvancementFrameType;
+import net.minecraft.server.v1_13_R2.AdvancementProgress;
+import net.minecraft.server.v1_13_R2.AdvancementRequirements;
+import net.minecraft.server.v1_13_R2.AdvancementRewards;
+import net.minecraft.server.v1_13_R2.ChatComponentText;
+import net.minecraft.server.v1_13_R2.Criterion;
+import net.minecraft.server.v1_13_R2.CriterionInstance;
+import net.minecraft.server.v1_13_R2.CriterionProgress;
+import net.minecraft.server.v1_13_R2.MinecraftKey;
+import net.minecraft.server.v1_13_R2.MinecraftServer;
+import net.minecraft.server.v1_13_R2.PacketPlayOutAdvancements;
 
 public class AdvancementManager extends MiniPlugin {
+
+    public void broadcastDisplay(AdvancementDisplay... displayList) {
+        broadcastDisplay(false, displayList);
+    }
+
+    public void broadcastDisplay(boolean removeCurrent, AdvancementDisplay... displayList) {
+        sendDisplayToPlayer(getPlugin().getServer().getOnlinePlayers(), removeCurrent, displayList);
+    }
+
+    public void sendDisplayToPlayer(Player p, AdvancementDisplay... displayList) {
+        sendDisplayToPlayer(p, false, displayList);
+    }
+
+    public void sendDisplayToPlayer(Player p, boolean removeCurrent, AdvancementDisplay... displayList) {
+        sendDisplayToPlayer(Lists.newArrayList(p), removeCurrent, displayList);
+    }
+
+    public void sendDisplayToPlayer(Collection<? extends Player> playerList, boolean removeCurrent, AdvancementDisplay... displayList) {
+
+        List<Advancement> list = new ArrayList<>(displayList.length);
+
+        Map<MinecraftKey, AdvancementProgress> progressMap = new HashMap<>();
+        Map<MinecraftKey, AdvancementProgress> doneProgressMap = new HashMap<>();
+
+        for (AdvancementDisplay display : displayList) {
+            Advancement d = createAdvancement("advancement_" + System.nanoTime(), display, Lists.newArrayList(createSimpleCriterion("server:toast")), new String[][] { { "server:toast" } });
+            list.add(d);
+
+            AdvancementProgress ad = createProgress(d);
+            ad.a("server:toast");
+
+            progressMap.put(d.getName(), createProgress(d));
+            doneProgressMap.put(d.getName(), ad);
+        }
+
+        PacketPlayOutAdvancements advancementInitPacket = new PacketPlayOutAdvancements(removeCurrent, list, new HashSet<>(), progressMap);
+        PacketPlayOutAdvancements advancementDonePacket = new PacketPlayOutAdvancements(removeCurrent, list, new HashSet<>(), doneProgressMap);
+
+        for (Player p : playerList)
+            ConnectionUtil.sendPacket(p, advancementInitPacket, advancementDonePacket);
+    }
+
+    public Advancement createAdvancement(String name) {
+        return createAdvancement(name, null);
+    }
+
+    public Advancement createAdvancement(String name, AdvancementDisplay display) {
+        return createAdvancement(name, display, new ArrayList<>());
+    }
+
+    public Advancement createAdvancement(String name, AdvancementDisplay display, List<Criterion> criterionList) {
+        return createAdvancement(name, display, criterionList, new String[0][0]);
+    }
+
+    public Advancement createAdvancement(String name, AdvancementDisplay display, List<Criterion> criterionList, String[][] doneList) {
+        Map<String, Criterion> criterionMap = new HashMap<>();
+
+        for (Criterion crit : criterionList) {
+            criterionMap.put(crit.a().a().toString(), crit);
+        }
+
+        Advancement advancement = new Advancement(new MinecraftKey(name), null, display == null ? null : getNMSDisplay(display), AdvancementRewards.a, criterionMap, doneList);
+
+        return advancement;
+    }
+
+    public AdvancementProgress createProgress(Advancement advancement) {
+        AdvancementProgress progress = new AdvancementProgress();
+
+        progress.a(advancement.getCriteria(), advancement.i());
+
+        return progress;
+    }
+
+    public CriterionProgress createCriterionProgress(long time) {
+        return CriterionProgress.a(time + "");
+    }
+
+    public Criterion createSimpleCriterion(String name) {
+        return new Criterion(new CriterionInstance(){
+        
+            @Override
+            public MinecraftKey a() {
+                return new MinecraftKey(name);
+            }
+        });
+    }
+
+    public net.minecraft.server.v1_13_R2.AdvancementDisplay getNMSDisplay(AdvancementDisplay display) {
+        
+        net.minecraft.server.v1_13_R2.AdvancementDisplay nmsDisplay = new net.minecraft.server.v1_13_R2.AdvancementDisplay(
+            CraftItemStack.asNMSCopy(display.getIcon()),
+            new ChatComponentText(display.getTitle()),
+            new ChatComponentText(display.getDescription()),
+            null,
+            getNMSFrameType(display.getFrameType()),
+            display.hasBackground(),
+            display.isToast(),
+            display.isHidden());
     
+        return nmsDisplay;
+    }
+
+    public AdvancementFrameType getNMSFrameType(FrameType type) {
+        if (type == null)
+            return null;
+
+        switch (type) {
+            case TASK:
+                return AdvancementFrameType.TASK;
+            case GOAL:
+                return AdvancementFrameType.GOAL;
+            case CHALLENGE:
+                return AdvancementFrameType.CHALLENGE;
+            default:
+                return null;
+        }
+    }
 }
