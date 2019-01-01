@@ -32,7 +32,7 @@ public class PearlRideAddon implements IWorldAddon {
         
         @EventHandler
         public void onThrow(ProjectileLaunchEvent e) {
-            if (e.getEntity() instanceof EnderPearl) {
+            if (e.getEntity() instanceof EnderPearl && isTargetWorld(e.getEntity().getWorld())) {
                 EnderPearl pearl = (EnderPearl) e.getEntity();
 
                 if (pearl.getShooter() instanceof LivingEntity) {
