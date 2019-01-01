@@ -36,6 +36,7 @@ public class ToastCommand extends MiniPlugin implements ICommand {
         Player pl = getPlugin().getServer().getPlayer(targetPlayer);
         if (pl == null) {
             sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "Toast", "플레이어 " + targetPlayer + " 을(를) 찾을 수 없습니다"));
+            return;
         }
 
         FrameType type;
@@ -58,7 +59,7 @@ public class ToastCommand extends MiniPlugin implements ICommand {
                 return;
         }
 
-        Material icon = Material.valueOf(args[2]);
+        Material icon = Material.getMaterial(args[2]);
 
         if (icon == null) {
             sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "Toast", "알 수 없는 토스트 아이콘입니다"));
