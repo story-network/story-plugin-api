@@ -10,7 +10,7 @@ public class AdvancementDisplay {
     private ItemStack icon;
     private Advancement.FrameType frameType;
 
-    private boolean hasBackground;
+    private boolean announce;
     private boolean toast;
     private boolean hidden;
 
@@ -20,7 +20,7 @@ public class AdvancementDisplay {
         this.icon = new ItemStack(Material.STONE);
         this.frameType = Advancement.FrameType.TASK;
 
-        this.hasBackground = false;
+        this.announce = true;
         this.toast = true;
         this.hidden = false;
     }
@@ -37,8 +37,8 @@ public class AdvancementDisplay {
         return frameType;
     }
 
-    public boolean hasBackground() {
-        return hasBackground;
+    public boolean needAnnounce() {
+        return announce;
     }
 
     public boolean isHidden() {
@@ -65,8 +65,8 @@ public class AdvancementDisplay {
         this.hidden = hidden;
     }
 
-    public void setHasBackground(boolean hasBackground) {
-        this.hasBackground = hasBackground;
+    public void setAnnounce(boolean announce) {
+        this.announce = announce;
     }
 
     public void setToastEnabled(boolean toast) {
@@ -107,8 +107,8 @@ public class AdvancementDisplay {
             return this;
         }
     
-        public Builder setHasBackground(boolean hasBackground) {
-            display.setHasBackground(hasBackground);
+        public Builder setAnnounce(boolean flag) {
+            display.setAnnounce(flag);
 
             return this;
         }

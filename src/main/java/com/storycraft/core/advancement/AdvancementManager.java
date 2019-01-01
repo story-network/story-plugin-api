@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.advancement.Advancement.FrameType;
 import com.storycraft.util.ConnectionUtil;
@@ -25,51 +26,44 @@ import net.minecraft.server.v1_13_R2.ChatComponentText;
 import net.minecraft.server.v1_13_R2.Criterion;
 import net.minecraft.server.v1_13_R2.CriterionInstance;
 import net.minecraft.server.v1_13_R2.CriterionProgress;
+import net.minecraft.server.v1_13_R2.ItemStack;
 import net.minecraft.server.v1_13_R2.MinecraftKey;
 import net.minecraft.server.v1_13_R2.MinecraftServer;
 import net.minecraft.server.v1_13_R2.PacketPlayOutAdvancements;
 
 public class AdvancementManager extends MiniPlugin {
 
-    public void broadcastDisplay(AdvancementDisplay... displayList) {
-        broadcastDisplay(false, displayList);
+    public void broadcastToast(String text, FrameType frameType, org.bukkit.inventory.ItemStack icon) {
+        sendToastToPlayer(getPlugin().getServer().getOnlinePlayers(), text, frameType, icon);
     }
 
-    public void broadcastDisplay(boolean removeCurrent, AdvancementDisplay... displayList) {
-        sendDisplayToPlayer(getPlugin().getServer().getOnlinePlayers(), removeCurrent, displayList);
+    public void sendToastToPlayer(Player p, String text, FrameType frameType, org.bukkit.inventory.ItemStack icon) {
+        sendToastToPlayer(Lists.newArrayList(p), text, frameType, icon);
     }
 
-    public void sendDisplayToPlayer(Player p, AdvancementDisplay... displayList) {
-        sendDisplayToPlayer(p, false, displayList);
-    }
+    public void sendToastToPlayer(Collection<? extends Player> playerList, String text, FrameType frameType, org.bukkit.inventory.ItemStack icon) {
 
-    public void sendDisplayToPlayer(Player p, boolean removeCurrent, AdvancementDisplay... displayList) {
-        sendDisplayToPlayer(Lists.newArrayList(p), removeCurrent, displayList);
-    }
-
-    public void sendDisplayToPlayer(Collection<? extends Player> playerList, boolean removeCurrent, AdvancementDisplay... displayList) {
-
-        List<Advancement> list = new ArrayList<>(displayList.length);
+        List<Advancement> list = new ArrayList<>(1);
 
         Map<MinecraftKey, AdvancementProgress> progressMap = new HashMap<>();
         Map<MinecraftKey, AdvancementProgress> doneProgressMap = new HashMap<>();
 
-        for (AdvancementDisplay display : displayList) {
-            Advancement d = createAdvancement("advancement_" + System.nanoTime(), display, Lists.newArrayList(createSimpleCriterion("server:toast")), new String[][] { { "server:toast" } });
-            list.add(d);
+        String tempName = "advancement_" + System.nanoTime();
 
-            AdvancementProgress ad = createProgress(d);
-            ad.a("server:toast");
+        Advancement d = createAdvancement(tempName, new AdvancementDisplay.Builder().setTitle(text).setFrameType(frameType).setHidden(true).setIcon(icon).getDisplay(), Lists.newArrayList(createSimpleCriterion("server:toast")), new String[][] { { "server:toast" } });
+        list.add(d);
 
-            progressMap.put(d.getName(), createProgress(d));
-            doneProgressMap.put(d.getName(), ad);
-        }
+        AdvancementProgress ad = createProgress(d);
+        ad.a("server:toast");
 
-        PacketPlayOutAdvancements advancementInitPacket = new PacketPlayOutAdvancements(removeCurrent, list, new HashSet<>(), progressMap);
-        PacketPlayOutAdvancements advancementDonePacket = new PacketPlayOutAdvancements(removeCurrent, list, new HashSet<>(), doneProgressMap);
+        progressMap.put(d.getName(), createProgress(d));
+        doneProgressMap.put(d.getName(), ad);
+
+        PacketPlayOutAdvancements advancementDonePacket = new PacketPlayOutAdvancements(false, list, new HashSet<>(), doneProgressMap);
+        PacketPlayOutAdvancements advancementRemovePacket = new PacketPlayOutAdvancements(false, new ArrayList<>(), Sets.newHashSet(new MinecraftKey(tempName)), new HashMap<>());
 
         for (Player p : playerList)
-            ConnectionUtil.sendPacket(p, advancementInitPacket, advancementDonePacket);
+            ConnectionUtil.sendPacket(p, advancementDonePacket, advancementRemovePacket);
     }
 
     public Advancement createAdvancement(String name) {
@@ -126,7 +120,7 @@ public class AdvancementManager extends MiniPlugin {
             new ChatComponentText(display.getDescription()),
             null,
             getNMSFrameType(display.getFrameType()),
-            display.hasBackground(),
+            display.needAnnounce(),
             display.isToast(),
             display.isHidden());
     
