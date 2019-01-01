@@ -2,6 +2,7 @@ package com.storycraft;
 
 import com.mojang.authlib.yggdrasil.response.User;
 import com.storycraft.core.broadcast.BroadcastManager;
+import com.storycraft.core.broadcast.ToastCommand;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.config.json.JsonConfigFile;
@@ -160,6 +161,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new ColoredChat());
         loader.addMiniPlugin(new FlyCommand());
         loader.addMiniPlugin(new FAQCommand());
+        loader.addMiniPlugin(new ToastCommand());
         loader.addMiniPlugin(new UUIDRevealCommand());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new WorldTeleporter());

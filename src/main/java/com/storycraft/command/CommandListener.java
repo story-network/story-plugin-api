@@ -17,9 +17,11 @@ import org.bukkit.event.server.ServerCommandEvent;
 import net.minecraft.server.v1_13_R2.CommandBossBar;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CommandListener extends MiniPlugin implements Listener {
+
     private CommandManager manager;
 
     public CommandListener(CommandManager manager){
@@ -68,11 +70,86 @@ public class CommandListener extends MiniPlugin implements Listener {
             return true;
         }
 
-        String[] args = rawCommand.length() != commandStr.length() ? parseArguments(rawCommand.substring(commandStr.length() + 1)) : new String[0];
+        String[] parsed = rawCommand.length() != commandStr.length() ? parseArguments(rawCommand.substring(commandStr.length() + 1)) : new String[0];
 
-        command.onCommand(sender, args);
+        List<String[]> list = getExcutableCommandList(sender, parsed);
+
+        for (String[] args : list)
+            command.onCommand(sender, args);
 
         return true;
+    }
+
+    public List<String[]> getExcutableCommandList(CommandSender sender, String[] args) {
+
+        List<String[]> list = new ArrayList<>();
+
+        Player nearest = null;
+
+        if (sender instanceof Player) {
+            nearest = (Player) sender;
+        }
+        else if (sender instanceof BlockCommandSender){
+            BlockCommandSender bSender = (BlockCommandSender) sender;
+
+            double shortest = Long.MAX_VALUE;
+
+            for (Player p : bSender.getBlock().getLocation().getWorld().getPlayers()) {
+                double dq = p.getLocation().distanceSquared(bSender.getBlock().getLocation());
+                if (dq < shortest) {
+                    shortest = dq;
+                    nearest = p;
+                }
+            }
+
+            if (nearest == null) {
+                nearest = getRandomPlayer();
+            }
+        }
+
+        //FIRST
+
+        List<Integer> allPlayerSelector = new ArrayList<>();
+
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.equals("@p")) {
+                args[i] = nearest.getName();
+            }
+            else if (arg.equals("@r")) {
+                args[i] = getRandomPlayer().getName();
+            }
+            else if (arg.equals("@s")) {
+                args[i] = sender.getName();
+            }
+            else if (args[i].equals("@a")) {
+                allPlayerSelector.add(i);
+            }
+        }
+
+        //SECOND
+
+        if (allPlayerSelector.size() > 0) {
+            for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+                String[] argsCopy = args.clone();
+                
+                for (int i : allPlayerSelector) {
+                    argsCopy[i] = p.getName();
+                }
+
+                list.add(argsCopy);
+            }
+        }
+        else {
+            list.add(args);
+        }
+
+        return list;
+    }
+
+    public Player getRandomPlayer() {
+        Collection<? extends Player> list = getPlugin().getServer().getOnlinePlayers();
+        return ((Player)list.toArray()[((int) (Math.random() * (list.size() - 1)))]);
     }
 
     //Legacy
@@ -84,6 +161,7 @@ public class CommandListener extends MiniPlugin implements Listener {
         char[] charArray = rawArguments.toCharArray();
         boolean stringMode = false;
 
+        char lastChar = '\0';
         for (int i = 0; i < charArray.length; i++) {
             char c = charArray[i];
 
@@ -106,6 +184,8 @@ public class CommandListener extends MiniPlugin implements Listener {
                     buffer += c;
                 }
             }
+
+            lastChar = c;
         }
 
         if (buffer != "")
