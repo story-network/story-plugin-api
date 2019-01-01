@@ -1,33 +1,47 @@
 package com.storycraft.core.morph;
 
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.morph.entity.IMorphEntity;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.EntityPacketUtil;
 import com.storycraft.util.reflect.Reflect;
+import com.storycraft.util.reflect.Reflect.WrappedField;
+
+import net.minecraft.server.v1_13_R2.DataWatcher.Item;
+
 import net.minecraft.server.v1_13_R2.*;
+
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class MorphManager extends MiniPlugin {
 
-    private Map<World, Map<Integer, AbstractMap.SimpleEntry<Entity, Entity>>> morphWorldMap;
+    private List<MorphInfo> morphList;
     private MorphHandler handler;
 
     private Reflect.WrappedField<Integer, PacketPlayOutEntityMetadata> packetMetadataEidField;
 
+    private WrappedField<List<Item<?>>, PacketPlayOutEntityMetadata> itemListField;
+
     public MorphManager(){
-        this.morphWorldMap = new HashMap<>();
+        this.morphList = new ArrayList<>();
 
         this.handler = new MorphHandler();
 
         this.packetMetadataEidField = Reflect.getField(PacketPlayOutEntityMetadata.class, "a");
+        this.itemListField = Reflect.getField(PacketPlayOutEntityMetadata.class, "b");
     }
 
     @Override
@@ -35,57 +49,56 @@ public class MorphManager extends MiniPlugin {
         getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
     }
 
-    public void setMorphToEntity(Entity target, Entity entity){
-        World w = target.getBukkitEntity().getWorld();
-        Map<Integer, AbstractMap.SimpleEntry<Entity, Entity>> morphMap;
+    public void setMorph(Entity e, IMorphEntity morph) {
+        setMorph(new MorphInfo(e, morph));
+    }
 
-        if (!containsWorldMap(w)) {
-            morphWorldMap.put(w, morphMap = new HashMap<>());
-        }
-        else {
-            morphMap = morphWorldMap.get(w);
-        }
+    public void setMorph(MorphInfo info){
+        removeMorph(info.getEntity());
 
-        AbstractMap.SimpleEntry entry = new AbstractMap.SimpleEntry<>(target, entity);
-        if (morphMap.containsKey(target.getId())){
-            morphMap.replace(target.getId(), entry);
-        }
-        else{
-            morphMap.put(target.getId(), entry);
-        }
+        morphList.add(info);
 
         //update again
-        ConnectionUtil.sendPacketNearby(target.getBukkitEntity().getLocation(), EntityPacketUtil.getEntitySpawnPacket(target));
+        Packet spawnPacket = EntityPacketUtil.getEntitySpawnPacket(info.getMorph().getNMSEntity());
+        
+        EntityPacketUtil.setEntityIdPacket(spawnPacket, info.getEntity().getEntityId());
+
+        ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), spawnPacket);
+        ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), EntityPacketUtil.getEntityMetadataPacket(info.getEntity().getEntityId(), info.getMorph().getFixedMetadata(), true));
     }
 
-    protected boolean containsWorldMap(World w){
-        return morphWorldMap.containsKey(w);
+    public boolean containsEntity(Entity e){
+        return getMorphInfo(e) != null;
     }
 
-    public Entity getMorphEntity(Entity target){
-        if (!contains(target))
-            return null;
-
-        return getMorphEntityInternal(target.getBukkitEntity().getWorld(), target.getId()).getValue();
+    private boolean containsEntityInternal(World w, int eid){
+        return getMorphInfoInternal(w, eid) != null;
     }
 
-    private AbstractMap.SimpleEntry<Entity, Entity> getMorphEntityInternal(World w, int eid){
-        return morphWorldMap.get(w).get(eid);
+    public MorphInfo getMorphInfo(Entity e){
+        return getMorphInfoInternal(e.getWorld(), e.getEntityId());
     }
 
-    public void removeMorph(Entity target) {
-        if (!contains(target))
-            return;
+    private MorphInfo getMorphInfoInternal(World w, int eid){
+        for (MorphInfo info : morphList) {
+            if (info.getEntity().getWorld().getName().equals(w.getName()) && info.getEntity().getEntityId() == eid) {
+                return info;
+            }
+        }
 
-        morphWorldMap.get(target.getBukkitEntity().getWorld()).remove(target);
+        return null;
     }
 
-    public boolean contains(Entity target){
-        return containsInternal(target.getBukkitEntity().getWorld(), target.getId());
-    }
+    public void removeMorph(Entity e) {
+        MorphInfo info = getMorphInfo(e);
 
-    private boolean containsInternal(World w, int eid){
-        return containsWorldMap(w) && morphWorldMap.get(w).containsKey(eid);
+        if (info != null) {
+            morphList.remove(info);
+
+            //update
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, EntityPacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()));
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, EntityPacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle()));
+        }
     }
 
     private class MorphHandler implements Listener {
@@ -96,27 +109,26 @@ public class MorphManager extends MiniPlugin {
                 return;
 
             World w = e.getTarget().getWorld();
-            if (!containsWorldMap(w))
-                return;
-
             Packet entitySpawnPacket = e.getPacket();
             int eid = EntityPacketUtil.getEntityIdFromPacket(entitySpawnPacket);
 
-            if (!containsInternal(w, eid))
+            MorphInfo info = getMorphInfoInternal(w, eid);
+
+            if (info == null)
                 return;
 
-            AbstractMap.SimpleEntry<Entity, Entity> entry = getMorphEntityInternal(w, eid);
+            Entity entity = info.getEntity();
+            IMorphEntity morph = info.getMorph();
 
-            Entity target = entry.getKey();
-            Entity entity = entry.getValue();
+            Location loc = entity.getLocation();
 
-            entity.setLocation(target.locX, target.locY, target.locZ, target.yaw, target.pitch);
+            morph.getNMSEntity().setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
-            if (entity instanceof EntityPlayer){
+            if (morph.getNMSEntity() instanceof EntityPlayer){
                 sendFakePlayerPacket(e.getTarget(), (EntityPlayer) entity);
             }
 
-            Packet morphPacket = EntityPacketUtil.getEntitySpawnPacket(entity);
+            Packet morphPacket = EntityPacketUtil.getEntitySpawnPacket(morph.getNMSEntity());
             EntityPacketUtil.setEntityIdPacket(morphPacket, eid);
 
             e.setPacket(morphPacket);
@@ -141,16 +153,24 @@ public class MorphManager extends MiniPlugin {
                 return;
 
             World w = e.getTarget().getWorld();
-            if (!containsWorldMap(w))
-                return;
-
             PacketPlayOutEntityMetadata metadataPacket = (PacketPlayOutEntityMetadata) e.getPacket();
-            int eid = packetMetadataEidField.get(metadataPacket);
 
-            if (!containsInternal(w, eid))
+            int eid = packetMetadataEidField.get(metadataPacket);
+            List<Item<?>> itemList = itemListField.get(metadataPacket);
+
+            MorphInfo info = getMorphInfoInternal(w, eid);
+
+            if (info == null)
                 return;
 
-            e.setPacket(EntityPacketUtil.getEntityMetadataPacket(getMorphEntityInternal(w, eid).getValue()));
+            //for reupdate
+            if (itemList != null) {
+                for (Item<?> item : itemList) {
+                    item.a(true);
+                }
+            }
+
+            e.setPacket(EntityPacketUtil.getEntityMetadataPacket(eid, info.getMorph().getFixedMetadata(), true));
         }
     }
 }

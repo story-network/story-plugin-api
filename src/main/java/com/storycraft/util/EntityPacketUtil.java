@@ -101,6 +101,10 @@ public class EntityPacketUtil {
         return new PacketPlayOutEntityMetadata(e.getId(), watcher, flag);
     }
 
+    public static Packet getEntityMetadataPacket(int id, DataWatcher watcher, boolean flag) {
+        return new PacketPlayOutEntityMetadata(id, watcher, flag);
+    }
+
     public static Packet getEntityDestroyPacket(Entity e) {
         return new PacketPlayOutEntityDestroy(e.getId());
     }

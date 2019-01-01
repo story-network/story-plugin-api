@@ -14,6 +14,7 @@ import com.storycraft.core.chat.ColoredChat;
 import com.storycraft.core.combat.DamageHologram;
 import com.storycraft.core.config.IngameConfigManager;
 import com.storycraft.core.discord.DiscordChatHook;
+import com.storycraft.core.disguise.HeadDisguise;
 import com.storycraft.core.player.PlayerManager;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
@@ -162,6 +163,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new FlyCommand());
         loader.addMiniPlugin(new FAQCommand());
         loader.addMiniPlugin(new ToastCommand());
+        loader.addMiniPlugin(new HeadDisguise());
         loader.addMiniPlugin(new UUIDRevealCommand());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new WorldTeleporter());
