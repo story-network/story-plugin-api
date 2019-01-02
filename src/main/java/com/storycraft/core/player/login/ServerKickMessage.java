@@ -44,10 +44,14 @@ public class ServerKickMessage extends MiniPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onKicked(PlayerKickEvent e) {
-        e.setReason(createKickMessage());
+        e.setReason(createKickMessage(e.getReason()));
     }
 
     public String createKickMessage() {
-        return getPlugin().getServerName() + "\n" + ChatColor.YELLOW + "접속이 허가 되지 않은 계정입니다.\n" + (getPlugin().getServerHomepage().isEmpty() ? "" : ChatColor.WHITE + "자세한 내용은 " + ChatColor.GREEN + getPlugin().getServerHomepage() + ChatColor.WHITE + " 에서 확인할수 있습니다");
+        return getPlugin().getServerName() + "\n" + ChatColor.YELLOW + "접속이 제한되었습니다 .\n" + (getPlugin().getServerHomepage().isEmpty() ? "" : ChatColor.WHITE + "자세한 내용은 " + ChatColor.GREEN + getPlugin().getServerHomepage() + ChatColor.WHITE + " 에서 확인할수 있습니다");
+    }
+
+    public String createKickMessage(String reason) {
+        return getPlugin().getServerName() + "\n" + ChatColor.YELLOW + "접속이 제한되었습니다 .\n" + ChatColor.YELLOW + "사유: " + ChatColor.WHITE + reason + "\n" + (getPlugin().getServerHomepage().isEmpty() ? "" : ChatColor.WHITE + "자세한 내용은 " + ChatColor.GREEN + getPlugin().getServerHomepage() + ChatColor.WHITE + " 에서 확인할수 있습니다");
     }
 }
