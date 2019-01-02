@@ -4,6 +4,7 @@ import com.storycraft.server.entity.metadata.ComparingDataWatcher;
 import com.storycraft.server.entity.metadata.NoGravityDataWatcher;
 import com.storycraft.util.BlockIdUtil;
 
+import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
@@ -18,9 +19,9 @@ public class SimpleBlockMorphEntity implements IMorphEntity {
     private DataWatcher metadata;
 
     public SimpleBlockMorphEntity(org.bukkit.entity.Entity entity, BlockData data) {
-        this.entity = new EntityFallingBlock(((CraftWorld)entity.getWorld()).getHandle(), 0, 0, 0, BlockIdUtil.getNMSBlockData(data));
+        Location loc = entity.getLocation();
 
-        this.entity.setNoGravity(true);
+        this.entity = new EntityFallingBlock(((CraftWorld)entity.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), BlockIdUtil.getNMSBlockData(data));
 
         this.metadata = new NoGravityDataWatcher(new ComparingDataWatcher(((CraftEntity)entity).getHandle(), this.entity));
     }
