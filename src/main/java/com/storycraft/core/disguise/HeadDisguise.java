@@ -43,7 +43,8 @@ public class HeadDisguise extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onPlayerHelmetUpdate(InventoryClickEvent e) {
-        if (e.getWhoClicked() instanceof Player && !e.isCancelled() && e.getWhoClicked().getInventory().equals(e.getClickedInventory()) && e.getSlotType() == InventoryType.SlotType.ARMOR) {
+        if (e.getWhoClicked() instanceof Player && !e.isCancelled() && e.getWhoClicked().getInventory().equals(e.getClickedInventory())
+         && e.getSlot() == e.getWhoClicked().getInventory().getSize() - 2/*Helmet*/) {
             if (updatePlayerMorph((Player) e.getWhoClicked(), e.getCursor())) {
                 e.getWhoClicked().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "HeadDisguise", "머리 아이템이 장착된 상태입니다. 다른 플레이어에게는 해당 몹으로 보이게 됩니다"));
             }
@@ -58,7 +59,7 @@ public class HeadDisguise extends MiniPlugin implements Listener {
         if (item != null) {
             EntityType type = getHeadType(item);
 
-            if (type != null) {
+            if (type != null && p.hasPermission("server.headdisguise." + type.getName())) {
                 getMorphManager().setMorph(new SimpleMorphInfo(p, type));
                 return true;
             }

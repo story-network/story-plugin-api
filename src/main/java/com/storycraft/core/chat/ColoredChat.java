@@ -16,7 +16,7 @@ public class ColoredChat extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
-        if (e.getPlayer().hasPermission("player.chat.color")) {
+        if (e.getPlayer().hasPermission("server.chat.color")) {
             e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
         }
     }

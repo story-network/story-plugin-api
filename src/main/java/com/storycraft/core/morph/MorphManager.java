@@ -4,7 +4,7 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.morph.entity.IMorphEntity;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
-import com.storycraft.util.EntityPacketUtil;
+import com.storycraft.util.PacketUtil;
 import com.storycraft.util.reflect.Reflect;
 import com.storycraft.util.reflect.Reflect.WrappedField;
 
@@ -59,12 +59,12 @@ public class MorphManager extends MiniPlugin {
         morphList.add(info);
 
         //update again
-        Packet spawnPacket = EntityPacketUtil.getEntitySpawnPacket(info.getMorph().getNMSEntity());
+        Packet spawnPacket = PacketUtil.getEntitySpawnPacket(info.getMorph().getNMSEntity());
         
-        EntityPacketUtil.setEntityIdPacket(spawnPacket, info.getEntity().getEntityId());
+        PacketUtil.setEntityIdPacket(spawnPacket, info.getEntity().getEntityId());
 
         ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), spawnPacket);
-        ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), EntityPacketUtil.getEntityMetadataPacket(info.getEntity().getEntityId(), info.getMorph().getFixedMetadata(), true));
+        ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), PacketUtil.getEntityMetadataPacket(info.getEntity().getEntityId(), info.getMorph().getFixedMetadata(), true));
     }
 
     public boolean containsEntity(Entity e){
@@ -96,8 +96,8 @@ public class MorphManager extends MiniPlugin {
             morphList.remove(info);
 
             //update
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, EntityPacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()));
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, EntityPacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle()));
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()));
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle()));
         }
     }
 
@@ -105,12 +105,12 @@ public class MorphManager extends MiniPlugin {
 
         @EventHandler
         public void onEntityPacket(AsyncPacketOutEvent e){
-            if (!EntityPacketUtil.isEntitySpawnPacket(e.getPacket()))
+            if (!PacketUtil.isEntitySpawnPacket(e.getPacket()))
                 return;
 
             World w = e.getTarget().getWorld();
             Packet entitySpawnPacket = e.getPacket();
-            int eid = EntityPacketUtil.getEntityIdFromPacket(entitySpawnPacket);
+            int eid = PacketUtil.getEntityIdFromPacket(entitySpawnPacket);
 
             MorphInfo info = getMorphInfoInternal(w, eid);
 
@@ -128,8 +128,8 @@ public class MorphManager extends MiniPlugin {
                 sendFakePlayerPacket(e.getTarget(), (EntityPlayer) entity);
             }
 
-            Packet morphPacket = EntityPacketUtil.getEntitySpawnPacket(morph.getNMSEntity());
-            EntityPacketUtil.setEntityIdPacket(morphPacket, eid);
+            Packet morphPacket = PacketUtil.getEntitySpawnPacket(morph.getNMSEntity());
+            PacketUtil.setEntityIdPacket(morphPacket, eid);
 
             e.setPacket(morphPacket);
         }
@@ -170,7 +170,7 @@ public class MorphManager extends MiniPlugin {
                 }
             }
 
-            e.setPacket(EntityPacketUtil.getEntityMetadataPacket(eid, info.getMorph().getFixedMetadata(), true));
+            e.setPacket(PacketUtil.getEntityMetadataPacket(eid, info.getMorph().getFixedMetadata(), true));
         }
     }
 }

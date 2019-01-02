@@ -1,9 +1,17 @@
 package com.storycraft.util;
 
-import com.storycraft.util.reflect.Reflect;
-import net.minecraft.server.v1_13_R2.*;
+import java.util.Map;
 
-public class EntityPacketUtil {
+import com.storycraft.util.reflect.Reflect;
+
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
+
+import net.minecraft.server.v1_13_R2.*;
+import net.minecraft.server.v1_13_R2.PacketPlayOutMultiBlockChange.MultiBlockChangeInfo;
+
+public class PacketUtil {
 
     private static Reflect.WrappedMethod<Packet, EntityTrackerEntry> entitySpawnMethod;
 
@@ -13,6 +21,11 @@ public class EntityPacketUtil {
     private static Reflect.WrappedField<Integer, PacketPlayOutSpawnEntityPainting> entityPaintingIdField;
     private static Reflect.WrappedField<Integer, PacketPlayOutSpawnEntityWeather> entityWeatherIdField;
     private static Reflect.WrappedField<Integer, PacketPlayOutNamedEntitySpawn> entityPlayerIdField;
+
+    private static Reflect.WrappedField<IBlockData, PacketPlayOutBlockChange> blockUpdateBlockDataField;
+
+    private static Reflect.WrappedField<ChunkCoordIntPair, PacketPlayOutMultiBlockChange> multiBlockUpdateChunkField;
+    private static Reflect.WrappedField<MultiBlockChangeInfo[], PacketPlayOutMultiBlockChange> multiBlockUpdateInfoField;
 
     public static Packet getEntitySpawnPacket(Entity entity) {
         EntityTrackerEntry entry = new EntityTrackerEntry(entity, 0, 0, 0, true);
@@ -107,6 +120,58 @@ public class EntityPacketUtil {
 
     public static Packet getEntityDestroyPacket(Entity e) {
         return new PacketPlayOutEntityDestroy(e.getId());
+    }
+
+    public static PacketPlayOutBlockChange getBlockUpdatePacket(Location loc, BlockData data) {
+        if (blockUpdateBlockDataField == null) {
+            blockUpdateBlockDataField = Reflect.getField(PacketPlayOutBlockChange.class, "a");
+        }
+
+        PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(null, new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+
+        blockUpdateBlockDataField.set(packet, BlockIdUtil.getNMSBlockData(data));
+
+        return packet;
+    }
+
+    public static PacketPlayOutMultiBlockChange getMultiBlockUpdatePacket(Chunk chunk, Map<Location, BlockData> dataMap) {
+        if (multiBlockUpdateChunkField == null) {
+            multiBlockUpdateChunkField = Reflect.getField(PacketPlayOutMultiBlockChange.class, "a");
+        }
+
+        if (multiBlockUpdateInfoField == null) {
+            multiBlockUpdateInfoField = Reflect.getField(PacketPlayOutMultiBlockChange.class, "b");
+        }
+
+        PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[] infoList = new PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[dataMap.size()];
+
+        PacketPlayOutMultiBlockChange packet = new PacketPlayOutMultiBlockChange();
+
+        int i = 0;
+
+        for (Location loc : dataMap.keySet()) {
+            if (loc.getChunk().equals(chunk)) {
+                IBlockData data = BlockIdUtil.getNMSBlockData(dataMap.get(loc));
+
+                short relPos = 0;
+                relPos = (short) ((loc.getBlockX() - chunk.getX() * 16) << 12); //X
+                relPos = (short) loc.getBlockY();                               //Y
+                relPos = (short) ((loc.getBlockZ() - chunk.getZ() * 16) << 8);  //Z
+
+                infoList[i++] = packet.new MultiBlockChangeInfo(relPos, data);
+            }
+        }
+
+        PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[] list = new PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[i];
+
+        for (int j = 0;j < i; j++) {
+            list[j] = infoList[j];
+        }
+
+        multiBlockUpdateChunkField.set(packet, new ChunkCoordIntPair(chunk.getX(), chunk.getZ()));
+        multiBlockUpdateInfoField.set(packet, list);
+
+        return packet;
     }
 
     public static boolean isEntitySpawnPacket(Packet packet){

@@ -5,6 +5,7 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.MiniPluginLoader;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.player.debug.UserDebug;
+import com.storycraft.core.player.head.CustomHat;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.player.login.ServerKickMessage;
 import com.storycraft.core.player.movement.CrawlToggler;
@@ -23,6 +24,7 @@ public class PlayerManager extends MiniPlugin {
         loader.addMiniPlugin(homeManager = new HomeManager());
         loader.addMiniPlugin(new CrawlToggler());
         loader.addMiniPlugin(new UserDebug());
+        loader.addMiniPlugin(new CustomHat());
         loader.addMiniPlugin(new ServerKickMessage());
     }
 

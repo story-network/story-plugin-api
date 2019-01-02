@@ -3,7 +3,7 @@ package com.storycraft.server.clientside;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.event.client.AsyncPlayerLoadChunkEvent;
 import com.storycraft.util.ConnectionUtil;
-import com.storycraft.util.EntityPacketUtil;
+import com.storycraft.util.PacketUtil;
 import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -74,33 +74,33 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     }
 
     protected void sendSpawnPacket(Player p, Entity e){
-        ConnectionUtil.sendPacket(p, EntityPacketUtil.getEntitySpawnPacket(e));
+        ConnectionUtil.sendPacket(p, PacketUtil.getEntitySpawnPacket(e));
     }
 
     protected void sendSpawnPacket(Entity e){
         Location loc = e.getBukkitEntity().getLocation();
 
-        ConnectionUtil.sendPacketNearby(loc, EntityPacketUtil.getEntitySpawnPacket(e));
+        ConnectionUtil.sendPacketNearby(loc, PacketUtil.getEntitySpawnPacket(e));
     }
 
     protected void sendUpdatePacket(Entity e){
         Location loc = e.getBukkitEntity().getLocation();
 
-        ConnectionUtil.sendPacketNearby(loc, EntityPacketUtil.getEntityMetadataPacket(e));
+        ConnectionUtil.sendPacketNearby(loc, PacketUtil.getEntityMetadataPacket(e));
     }
 
     protected void sendUpdatePacket(Player p, Entity e){
-        ConnectionUtil.sendPacket(p, EntityPacketUtil.getEntityMetadataPacket(e));
+        ConnectionUtil.sendPacket(p, PacketUtil.getEntityMetadataPacket(e));
     }
 
     protected void sendDestroyPacket(Entity e){
         Location loc = e.getBukkitEntity().getLocation();
 
-        ConnectionUtil.sendPacketNearby(loc, EntityPacketUtil.getEntityDestroyPacket(e));
+        ConnectionUtil.sendPacketNearby(loc, PacketUtil.getEntityDestroyPacket(e));
     }
 
     protected void sendDestroyPacket(Player p, Entity e){
-        ConnectionUtil.sendPacket(p, EntityPacketUtil.getEntityDestroyPacket(e));
+        ConnectionUtil.sendPacket(p, PacketUtil.getEntityDestroyPacket(e));
     }
 
     @EventHandler
