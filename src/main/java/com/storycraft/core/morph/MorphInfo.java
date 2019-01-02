@@ -1,12 +1,8 @@
 package com.storycraft.core.morph;
 
-import java.util.UUID;
-
 import com.storycraft.core.morph.entity.IMorphEntity;
 
 import org.bukkit.entity.Entity;
-
-import net.minecraft.server.v1_13_R2.ChatComponentText;
 
 public class MorphInfo {
 

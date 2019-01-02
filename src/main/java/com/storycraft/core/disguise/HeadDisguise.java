@@ -46,6 +46,12 @@ public class HeadDisguise extends MiniPlugin implements Listener {
         if (e.getWhoClicked() instanceof Player && !e.isCancelled() && e.getWhoClicked().getInventory().equals(e.getClickedInventory())
          && e.getSlot() == e.getWhoClicked().getInventory().getSize() - 2/*Helmet*/) {
             if (updatePlayerMorph((Player) e.getWhoClicked(), e.getCursor())) {
+                ItemStack item = e.getCursor();
+                e.setCursor(e.getCurrentItem());
+                e.setCurrentItem(item);
+
+                e.setCancelled(true);
+
                 e.getWhoClicked().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "HeadDisguise", "머리 아이템이 장착된 상태입니다. 다른 플레이어에게는 해당 몹으로 보이게 됩니다"));
             }
         }
@@ -61,6 +67,7 @@ public class HeadDisguise extends MiniPlugin implements Listener {
 
             if (type != null && p.hasPermission("server.headdisguise." + type.getName())) {
                 getMorphManager().setMorph(new SimpleMorphInfo(p, type));
+
                 return true;
             }
             else {
@@ -90,6 +97,9 @@ public class HeadDisguise extends MiniPlugin implements Listener {
 
             case TURTLE_HELMET:
                 return EntityType.TURTLE;
+
+            case SHULKER_SHELL:
+                return EntityType.SHULKER;
 
             default:
                 return null;
