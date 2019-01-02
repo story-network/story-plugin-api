@@ -2,17 +2,18 @@ package com.storycraft.server.entity.metadata;
 
 import java.util.List;
 
+import com.storycraft.util.reflect.Reflect;
+
 import net.minecraft.server.v1_13_R2.DataWatcher;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
-import net.minecraft.server.v1_13_R2.DataWatcherRegistry;
 import net.minecraft.server.v1_13_R2.Entity;
 
 public class NoGravityDataWatcher extends DataWatcher {
 
-    private static DataWatcherObject object;
+    private static DataWatcherObject<Boolean> object;
 
     static {
-        object = DataWatcher.a(Entity.class, DataWatcherRegistry.i);
+        object = (DataWatcherObject) Reflect.getField(Entity.class, "aH").get(null);
     }
 
     private DataWatcher watcher;
@@ -43,8 +44,9 @@ public class NoGravityDataWatcher extends DataWatcher {
         List<Item<?>> list = watcher.b();
 
         for (Item<?> item : list) {
-            if (item.a().a() == this.object.a()) {
-                item.a(isNoGravity());
+            if (item.a().a() == object.a()) {
+                ((Item<Boolean>) item).a(isNoGravity() ? Boolean.TRUE : Boolean.FALSE);
+                break;
             }
         }
 
@@ -56,8 +58,9 @@ public class NoGravityDataWatcher extends DataWatcher {
         List<Item<?>> list = watcher.c();
 
         for (Item<?> item : list) {
-            if (item.a().a() == this.object.a()) {
-                item.a(isNoGravity());
+            if (item.a().a() == object.a()) {
+                ((Item<Boolean>) item).a(isNoGravity() ? Boolean.TRUE : Boolean.FALSE);
+                break;
             }
         }
 
