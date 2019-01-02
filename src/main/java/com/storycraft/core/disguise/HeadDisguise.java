@@ -2,16 +2,17 @@ package com.storycraft.core.disguise;
 
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.morph.MorphManager;
+import com.storycraft.core.morph.SimpleBlockMorphInfo;
 import com.storycraft.core.morph.SimpleMorphInfo;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -66,7 +67,13 @@ public class HeadDisguise extends MiniPlugin implements Listener {
             EntityType type = getHeadType(item);
 
             if (type != null && p.hasPermission("server.headdisguise." + type.getName())) {
-                getMorphManager().setMorph(new SimpleMorphInfo(p, type));
+
+                if (type == EntityType.SHULKER) {
+                    getMorphManager().setMorph(new SimpleBlockMorphInfo(p, Material.SHULKER_BOX.createBlockData()));
+                }
+                else {
+                    getMorphManager().setMorph(new SimpleMorphInfo(p, type));
+                }
 
                 return true;
             }
