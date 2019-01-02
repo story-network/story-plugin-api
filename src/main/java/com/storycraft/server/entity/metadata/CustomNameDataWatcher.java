@@ -63,7 +63,7 @@ public class CustomNameDataWatcher extends DataWatcher {
                 ((Item<Boolean>) item).a(isCustomNameVisible() ? Boolean.TRUE : Boolean.FALSE);
             }
             else if (id == customNameObject.a()) {
-                ((Item<Object>) item).a(new ChatComponentText(getCustomName()));
+                ((Item<Object>) item).a(Optional.of(new ChatComponentText(getCustomName())));
             }
         }
 
@@ -81,7 +81,7 @@ public class CustomNameDataWatcher extends DataWatcher {
                 ((Item<Boolean>) item).a(isCustomNameVisible() ? Boolean.TRUE : Boolean.FALSE);
             }
             else if (id == customNameObject.a()) {
-                ((Item<Object>) item).a(new ChatComponentText(getCustomName()));
+                ((Item<Object>) item).a(Optional.of(new ChatComponentText(getCustomName())));
             }
         }
 

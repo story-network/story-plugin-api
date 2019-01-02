@@ -156,6 +156,10 @@ public class MorphManager extends MiniPlugin {
             PacketPlayOutEntityMetadata metadataPacket = (PacketPlayOutEntityMetadata) e.getPacket();
 
             int eid = packetMetadataEidField.get(metadataPacket);
+
+            if (eid == e.getTarget().getEntityId())
+                return;
+
             List<Item<?>> itemList = itemListField.get(metadataPacket);
 
             MorphInfo info = getMorphInfoInternal(w, eid);
