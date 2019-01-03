@@ -55,14 +55,16 @@ public class CustomNameDataWatcher extends DataWatcher {
     public List<Item<?>> b() {
         List<Item<?>> list = watcher.b();
 
-        for (Item<?> item : list) {
-            int id = item.a().a();
+        if (list != null) {
+            for (Item<?> item : list) {
+                int id = item.a().a();
 
-            if (id == customNameVisibleObject.a()) {
-                ((Item<Boolean>) item).a(isCustomNameVisible() ? Boolean.TRUE : Boolean.FALSE);
-            }
-            else if (id == customNameObject.a()) {
-                ((Item<Object>) item).a(Optional.of(new ChatComponentText(getCustomName())));
+                if (id == customNameVisibleObject.a()) {
+                    ((Item<Boolean>) item).a(isCustomNameVisible() ? Boolean.TRUE : Boolean.FALSE);
+                }
+                else if (id == customNameObject.a()) {
+                    ((Item<Object>) item).a(Optional.of(new ChatComponentText(getCustomName())));
+                }
             }
         }
 
@@ -73,14 +75,16 @@ public class CustomNameDataWatcher extends DataWatcher {
     public List<Item<?>> c() {
         List<Item<?>> list = watcher.c();
 
-        for (Item<?> item : list) {
-            int id = item.a().a();
+        if (list != null) {
+            for (Item<?> item : list) {
+                int id = item.a().a();
 
-            if (id == customNameVisibleObject.a()) {
-                ((Item<Boolean>) item).a(isCustomNameVisible() ? Boolean.TRUE : Boolean.FALSE);
-            }
-            else if (id == customNameObject.a()) {
-                ((Item<Object>) item).a(Optional.of(new ChatComponentText(getCustomName())));
+                if (id == customNameVisibleObject.a()) {
+                    ((Item<Boolean>) item).a(isCustomNameVisible() ? Boolean.TRUE : Boolean.FALSE);
+                }
+                else if (id == customNameObject.a()) {
+                    ((Item<Object>) item).a(Optional.of(new ChatComponentText(getCustomName())));
+                }
             }
         }
 

@@ -43,10 +43,12 @@ public class NoGravityDataWatcher extends DataWatcher {
     public List<Item<?>> b() {
         List<Item<?>> list = watcher.b();
 
-        for (Item<?> item : list) {
-            if (item.a().a() == object.a()) {
-                ((Item<Boolean>) item).a(isNoGravity() ? Boolean.TRUE : Boolean.FALSE);
-                break;
+        if (list != null) {
+            for (Item<?> item : list) {
+                if (item.a().a() == object.a()) {
+                    ((Item<Boolean>) item).a(isNoGravity() ? Boolean.TRUE : Boolean.FALSE);
+                    break;
+                }
             }
         }
 
@@ -57,10 +59,12 @@ public class NoGravityDataWatcher extends DataWatcher {
     public List<Item<?>> c() {
         List<Item<?>> list = watcher.c();
 
-        for (Item<?> item : list) {
-            if (item.a().a() == object.a()) {
-                ((Item<Boolean>) item).a(isNoGravity() ? Boolean.TRUE : Boolean.FALSE);
-                break;
+        if (list != null) {
+            for (Item<?> item : list) {
+                if (item.a().a() == object.a()) {
+                    ((Item<Boolean>) item).a(isNoGravity() ? Boolean.TRUE : Boolean.FALSE);
+                    break;
+                }
             }
         }
 

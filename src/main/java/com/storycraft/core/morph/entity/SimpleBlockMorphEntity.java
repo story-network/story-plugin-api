@@ -8,31 +8,23 @@ import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
+import org.bukkit.entity.Player;
 
 import net.minecraft.server.v1_13_R2.DataWatcher;
-import net.minecraft.server.v1_13_R2.Entity;
 import net.minecraft.server.v1_13_R2.EntityFallingBlock;
 
-public class SimpleBlockMorphEntity implements IMorphEntity {
+public class SimpleBlockMorphEntity extends HoldedMorphEntity {
 
-    private EntityFallingBlock entity;
     private DataWatcher metadata;
 
     public SimpleBlockMorphEntity(org.bukkit.entity.Entity entity, BlockData data) {
-        Location loc = entity.getLocation();
+        super(new EntityFallingBlock(((CraftWorld)entity.getWorld()).getHandle(), entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ(), BlockIdUtil.getNMSBlockData(data)));
 
-        this.entity = new EntityFallingBlock(((CraftWorld)entity.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), BlockIdUtil.getNMSBlockData(data));
-
-        this.metadata = new NoGravityDataWatcher(new ComparingDataWatcher(((CraftEntity)entity).getHandle(), this.entity));
-    }
-
-    @Override
-    public Entity getNMSEntity() {
-        return entity;
+        this.metadata = new NoGravityDataWatcher(new ComparingDataWatcher(((CraftEntity)entity).getHandle(), this.getNMSEntity()));
     }
 
     @Override
 	public DataWatcher getFixedMetadata() {
 		return metadata;
-	}
+    }
 }

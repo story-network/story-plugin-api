@@ -5,12 +5,15 @@ import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.storycraft.StoryPlugin;
+import com.storycraft.core.morph.SimpleBlockMorphInfo;
 import com.storycraft.server.entity.CustomPlayerInfo;
 import com.storycraft.server.entity.override.IPlayerOverrideProfileHandler;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.minecraft.server.v1_13_R2.Blocks;
 import net.minecraft.server.v1_13_R2.ChatComponentText;
@@ -54,6 +57,11 @@ public class TestFunction implements Listener {
     @EventHandler
     public void onUpdate(ServerUpdateEvent e) {
 
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent e) {
+        //plugin.getDecorator().getMorphManager().setMorph(new SimpleBlockMorphInfo(e.getEntity(), Material.DIRT.createBlockData()));
     }
 
     public static class TestZombiePlayer extends EntityMonster {

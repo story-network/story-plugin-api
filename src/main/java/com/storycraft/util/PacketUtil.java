@@ -1,5 +1,6 @@
 package com.storycraft.util;
 
+import java.util.List;
 import java.util.Map;
 
 import com.storycraft.util.reflect.Reflect;
@@ -27,6 +28,10 @@ public class PacketUtil {
     private static Reflect.WrappedField<ChunkCoordIntPair, PacketPlayOutMultiBlockChange> multiBlockUpdateChunkField;
     private static Reflect.WrappedField<MultiBlockChangeInfo[], PacketPlayOutMultiBlockChange> multiBlockUpdateInfoField;
 
+    private static Reflect.WrappedField<int[], PacketPlayOutMount> passengerEidListField;
+
+    private static Reflect.WrappedField<int[], PacketPlayOutEntityDestroy> destroyedEntityEidList;
+
     public static Packet getEntitySpawnPacket(Entity entity) {
         EntityTrackerEntry entry = new EntityTrackerEntry(entity, 0, 0, 0, true);
 
@@ -34,6 +39,14 @@ public class PacketUtil {
             entitySpawnMethod = Reflect.getMethod(EntityTrackerEntry.class, "e");
 
         return entitySpawnMethod.invoke(entry);
+    }
+
+    public static int[] getEntityDestroyList(PacketPlayOutEntityDestroy destroy) {
+        if (destroyedEntityEidList == null) {
+            destroyedEntityEidList  = Reflect.getField(PacketPlayOutEntityDestroy.class, "a");
+        }
+
+        return destroyedEntityEidList.get(destroy);
     }
 
     public static int getEntityIdFromPacket(Packet spawnPacket){
@@ -107,7 +120,11 @@ public class PacketUtil {
     }
 
     public static Packet getEntityMetadataPacket(Entity e) {
-        return getEntityMetadataPacket(e, e.getDataWatcher(), false);
+        return getEntityMetadataPacket(e, false);
+    }
+
+    public static Packet getEntityMetadataPacket(Entity e, boolean flag) {
+        return getEntityMetadataPacket(e, e.getDataWatcher(), flag);
     }
 
     public static Packet getEntityMetadataPacket(Entity e, DataWatcher watcher, boolean flag) {
@@ -120,6 +137,42 @@ public class PacketUtil {
 
     public static Packet getEntityDestroyPacket(Entity e) {
         return new PacketPlayOutEntityDestroy(e.getId());
+    }
+
+    public static PacketPlayOutMount getEntityMountPacket(Entity e) {
+        return new PacketPlayOutMount(e);
+    }
+
+    public static PacketPlayOutMount getEntityMountPacket(Entity e, Entity... passengerList) {
+        int[] list = new int[passengerList.length];
+
+        for (int i = 0; i < list.length; i++) {
+            list[i] = passengerList[i].getId();
+        }
+
+        return getEntityMountPacket(e, list);
+    }
+
+    public static PacketPlayOutMount getEntityMountPacket(Entity e, List<Entity> passengerList) {
+        int[] list = new int[passengerList.size()];
+
+        for (int i = 0; i < list.length; i++) {
+            list[i] = passengerList.get(i).getId();
+        }
+
+        return getEntityMountPacket(e, list);
+    }
+    
+    public static PacketPlayOutMount getEntityMountPacket(Entity e, int... passengerEidList) {
+        if (passengerEidListField == null) {
+            passengerEidListField = Reflect.getField(PacketPlayOutMount.class, "b");
+        }
+
+        PacketPlayOutMount mount = getEntityMountPacket(e);
+
+        passengerEidListField.set(mount, passengerEidList);
+
+        return mount;
     }
 
     public static PacketPlayOutBlockChange getBlockUpdatePacket(Location loc, BlockData data) {

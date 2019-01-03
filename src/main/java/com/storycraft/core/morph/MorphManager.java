@@ -19,12 +19,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MorphManager extends MiniPlugin {
 
@@ -32,6 +30,14 @@ public class MorphManager extends MiniPlugin {
     private MorphHandler handler;
 
     private Reflect.WrappedField<Integer, PacketPlayOutEntityMetadata> packetMetadataEidField;
+
+    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityEidField;
+
+    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelXField;
+    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelYField;
+    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelZField;
+
+    private Reflect.WrappedField<Integer, PacketPlayOutEntityTeleport> packetTeleportEidField;
 
     private WrappedField<List<Item<?>>, PacketPlayOutEntityMetadata> itemListField;
 
@@ -41,6 +47,14 @@ public class MorphManager extends MiniPlugin {
         this.handler = new MorphHandler();
 
         this.packetMetadataEidField = Reflect.getField(PacketPlayOutEntityMetadata.class, "a");
+
+        this.packetEntityEidField = Reflect.getField(PacketPlayOutEntity.class, "a");
+        this.packetEntityRelXField = Reflect.getField(PacketPlayOutEntity.class, "b");
+        this.packetEntityRelYField = Reflect.getField(PacketPlayOutEntity.class, "c");
+        this.packetEntityRelZField = Reflect.getField(PacketPlayOutEntity.class, "d");
+
+        this.packetTeleportEidField = Reflect.getField(PacketPlayOutEntityTeleport.class, "a");
+
         this.itemListField = Reflect.getField(PacketPlayOutEntityMetadata.class, "b");
     }
 
@@ -64,7 +78,7 @@ public class MorphManager extends MiniPlugin {
         PacketUtil.setEntityIdPacket(spawnPacket, info.getEntity().getEntityId());
 
         ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), spawnPacket);
-        ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), PacketUtil.getEntityMetadataPacket(info.getEntity().getEntityId(), info.getMorph().getFixedMetadata(), true));
+        ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), PacketUtil.getEntityMetadataPacket(((CraftEntity)info.getEntity()).getHandle(), true));
     }
 
     public boolean containsEntity(Entity e){
@@ -93,11 +107,12 @@ public class MorphManager extends MiniPlugin {
         MorphInfo info = getMorphInfo(e);
 
         if (info != null) {
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityDestroyPacket(((CraftEntity)e).getHandle()));
             morphList.remove(info);
 
             //update
             ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()));
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle()));
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle(), true));
         }
     }
 
@@ -132,6 +147,11 @@ public class MorphManager extends MiniPlugin {
             PacketUtil.setEntityIdPacket(morphPacket, eid);
 
             e.setPacket(morphPacket);
+
+            runSync(() -> {
+                info.getMorph().onMorphSpawnSend(e.getTarget(), eid);
+                return null;
+            });
         }
 
         protected void sendFakePlayerPacket(Player p, EntityPlayer... playerEntitys) {
@@ -148,7 +168,7 @@ public class MorphManager extends MiniPlugin {
         }
 
         @EventHandler
-        public void onMetadataPacket(AsyncPacketOutEvent e){
+        public void onMetadataPacket(AsyncPacketOutEvent e) {
             if (!(e.getPacket() instanceof PacketPlayOutEntityMetadata))
                 return;
 
@@ -175,6 +195,71 @@ public class MorphManager extends MiniPlugin {
             }
 
             e.setPacket(PacketUtil.getEntityMetadataPacket(eid, info.getMorph().getFixedMetadata(), true));
+            e.setCancelled(info.getMorph().onMorphMetadataSend(e.getTarget()));
+        }
+
+        @EventHandler
+        public void onDestroy(AsyncPacketOutEvent e){
+            if (!(e.getPacket() instanceof PacketPlayOutEntityDestroy))
+                return;
+
+            PacketPlayOutEntityDestroy destroy = (PacketPlayOutEntityDestroy) e.getPacket();
+            World w = e.getTarget().getWorld();
+
+            for (int id : PacketUtil.getEntityDestroyList(destroy)) {
+                MorphInfo info = getMorphInfoInternal(w, id);
+
+                if (info != null) {
+                    info.getMorph().onMorphDestroySend(e.getTarget());
+                }
+            }
+        }
+
+        @EventHandler
+        public void onTeleport(AsyncPacketOutEvent e){
+            if (!(e.getPacket() instanceof PacketPlayOutEntityTeleport))
+                return;
+
+            PacketPlayOutEntityTeleport teleport = (PacketPlayOutEntityTeleport) e.getPacket();
+            int eid = packetTeleportEidField.get(teleport);
+            World w = e.getTarget().getWorld();
+
+            MorphInfo info = getMorphInfoInternal(w, eid);
+
+            if (info != null) {
+                Entity target = info.getEntity();
+                Location loc = target.getLocation();
+
+                e.setCancelled(info.getMorph().onMorphTeleportSend(e.getTarget(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), target.isOnGround()));
+            }
+        }
+
+        @EventHandler
+        public void onEntity(AsyncPacketOutEvent e){
+            if (!(e.getPacket() instanceof PacketPlayOutEntity))
+                return;
+
+            PacketPlayOutEntity entityPacket = (PacketPlayOutEntity) e.getPacket();
+            int eid = packetEntityEidField.get(entityPacket);
+            World w = e.getTarget().getWorld();
+
+            MorphInfo info = getMorphInfoInternal(w, eid);
+
+            if (info != null) {
+                IMorphEntity morphEntity = info.getMorph();
+                Entity target = info.getEntity();
+                Location loc = target.getLocation();
+
+                if (entityPacket instanceof PacketPlayOutEntity.PacketPlayOutEntityLook) {
+                    e.setCancelled(morphEntity.onMorphLookSend(e.getTarget(), (byte) Math.floor(loc.getYaw() * 256f / 360f), (byte) Math.floor(loc.getPitch() * 256f / 360f), target.isOnGround()));
+                }
+                else if (entityPacket instanceof PacketPlayOutEntity.PacketPlayOutRelEntityMove) {
+                    e.setCancelled(morphEntity.onMorphMoveSend(e.getTarget(), packetEntityRelXField.get(entityPacket), packetEntityRelYField.get(entityPacket), packetEntityRelZField.get(entityPacket), target.isOnGround()));
+                }
+                else if (entityPacket instanceof PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook) {
+                    e.setCancelled(morphEntity.onMorphLookAndMove(e.getTarget(), packetEntityRelXField.get(entityPacket), packetEntityRelYField.get(entityPacket), packetEntityRelZField.get(entityPacket), (byte) Math.floor(loc.getYaw() * 256f / 360f), (byte) Math.floor(loc.getPitch() * 256f / 360f), target.isOnGround()));
+                }
+            }
         }
     }
 }
