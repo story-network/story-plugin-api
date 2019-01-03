@@ -15,7 +15,7 @@ public class NamedMorphEntity implements IMorphEntity {
 
     public NamedMorphEntity(IMorphEntity entity, boolean customNameVisible, String customName) {
         this.entity = entity;
-        this.watcher = new CustomNameDataWatcher(watcher, customNameVisible, customName);
+        this.watcher = new CustomNameDataWatcher(entity.getFixedMetadata(), customNameVisible, customName);
     }
 
 	@Override
