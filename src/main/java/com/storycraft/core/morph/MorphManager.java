@@ -2,6 +2,10 @@ package com.storycraft.core.morph;
 
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.morph.entity.IMorphEntity;
+import com.storycraft.server.entity.EntityPacketListener;
+import com.storycraft.server.entity.EntityPacketListenerAbstract;
+import com.storycraft.server.entity.IEntityHandler;
+import com.storycraft.server.packet.AsyncPacketEvent;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.PacketUtil;
@@ -18,49 +22,30 @@ import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MorphManager extends MiniPlugin {
 
-    private List<IMorphInfo> morphList;
-    private MorphHandler handler;
-
-    private Reflect.WrappedField<Integer, PacketPlayOutEntityMetadata> packetMetadataEidField;
-
-    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityEidField;
-
-    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelXField;
-    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelYField;
-    private Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelZField;
-
-    private Reflect.WrappedField<Integer, PacketPlayOutEntityTeleport> packetTeleportEidField;
+    private List<MorphEntityListener> morphList;
 
     private WrappedField<List<Item<?>>, PacketPlayOutEntityMetadata> itemListField;
 
     public MorphManager(){
         this.morphList = new ArrayList<>();
 
-        this.handler = new MorphHandler();
-
-        this.packetMetadataEidField = Reflect.getField(PacketPlayOutEntityMetadata.class, "a");
-
-        this.packetEntityEidField = Reflect.getField(PacketPlayOutEntity.class, "a");
-        this.packetEntityRelXField = Reflect.getField(PacketPlayOutEntity.class, "b");
-        this.packetEntityRelYField = Reflect.getField(PacketPlayOutEntity.class, "c");
-        this.packetEntityRelZField = Reflect.getField(PacketPlayOutEntity.class, "d");
-
-        this.packetTeleportEidField = Reflect.getField(PacketPlayOutEntityTeleport.class, "a");
-
         this.itemListField = Reflect.getField(PacketPlayOutEntityMetadata.class, "b");
     }
 
     @Override
     public void onEnable(){
-        getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
+        for (MorphEntityListener listener : new ArrayList<>(morphList)) {
+            getPlugin().getServer().getPluginManager().registerEvents(listener, getPlugin());
+        }
     }
 
     public void setMorph(Entity e, IMorphEntity morph) {
@@ -70,7 +55,9 @@ public class MorphManager extends MiniPlugin {
     public void setMorph(IMorphInfo info){
         removeMorph(info.getEntity());
 
-        morphList.add(info);
+        MorphEntityListener listener = new MorphEntityListener(info);
+
+        morphList.add(listener);
 
         //update again
         Packet spawnPacket = PacketUtil.getEntitySpawnPacket(info.getMorph().getNMSEntity());
@@ -94,10 +81,21 @@ public class MorphManager extends MiniPlugin {
     }
 
     private IMorphInfo getMorphInfoInternal(World w, int eid){
-        for (IMorphInfo info : morphList) {
+        for (MorphEntityListener listener : morphList) {
+            IMorphInfo info = listener.getInfo();
+
             if (info.getEntity().getWorld().getName().equals(w.getName()) && info.getEntity().getEntityId() == eid) {
                 return info;
             }
+        }
+
+        return null;
+    }
+
+    protected MorphEntityListener getListener(IMorphInfo info) {
+        for (MorphEntityListener listener : morphList) {
+            if (listener.getInfo() == info)
+                return listener;
         }
 
         return null;
@@ -108,7 +106,12 @@ public class MorphManager extends MiniPlugin {
 
         if (info != null) {
             ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityDestroyPacket(((CraftEntity)e).getHandle()));
-            morphList.remove(info);
+
+            MorphEntityListener listener = getListener(info);
+
+            HandlerList.unregisterAll(listener);
+
+            morphList.remove(listener);
 
             //update
             ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()));
@@ -116,77 +119,31 @@ public class MorphManager extends MiniPlugin {
         }
     }
 
-    private class MorphHandler implements Listener {
+    protected class MorphEntityListener extends EntityPacketListenerAbstract {
 
-        @EventHandler
-        public void onEntityPacket(AsyncPacketOutEvent e){
-            if (!PacketUtil.isEntitySpawnPacket(e.getPacket()))
-                return;
+        private IMorphInfo info;
 
-            World w = e.getTarget().getWorld();
-            Packet entitySpawnPacket = e.getPacket();
-            int eid = PacketUtil.getEntityIdFromPacket(entitySpawnPacket);
-
-            IMorphInfo info = getMorphInfoInternal(w, eid);
-
-            if (info == null)
-                return;
-
-            Entity entity = info.getEntity();
-            IMorphEntity morph = info.getMorph();
-
-            Location loc = entity.getLocation();
-
-            morph.getNMSEntity().setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-
-            if (morph.getNMSEntity() instanceof EntityPlayer){
-                sendFakePlayerPacket(e.getTarget(), (EntityPlayer) entity);
-            }
-
-            Packet morphPacket = PacketUtil.getEntitySpawnPacket(morph.getNMSEntity());
-            PacketUtil.setEntityIdPacket(morphPacket, eid);
-
-            e.setPacket(morphPacket);
-
-            runSync(() -> {
-                info.getMorph().onMorphSpawnSend(e.getTarget(), eid);
-                return null;
-            });
+        public MorphEntityListener(IMorphInfo info) {
+            this.info = info;
         }
 
-        protected void sendFakePlayerPacket(Player p, EntityPlayer... playerEntitys) {
-            PacketPlayOutPlayerInfo infoAddPacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, playerEntitys);
-            PacketPlayOutPlayerInfo infoRemovePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, playerEntitys);
-
-            ConnectionUtil.sendPacket(p, infoAddPacket);
-            getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    ConnectionUtil.sendPacket(p, infoRemovePacket);
-                }
-            }, 1);
+        public IMorphInfo getInfo() {
+            return info;
         }
 
-        @EventHandler
-        public void onMetadataPacket(AsyncPacketOutEvent e) {
-            if (!(e.getPacket() instanceof PacketPlayOutEntityMetadata))
-                return;
+        @Override
+        public Entity getEntity() {
+            return getInfo().getEntity();
+        }
 
-            World w = e.getTarget().getWorld();
-            PacketPlayOutEntityMetadata metadataPacket = (PacketPlayOutEntityMetadata) e.getPacket();
-
-            int eid = packetMetadataEidField.get(metadataPacket);
-
-            if (eid == e.getTarget().getEntityId())
-                return;
-
-            List<Item<?>> itemList = itemListField.get(metadataPacket);
-
-            IMorphInfo info = getMorphInfoInternal(w, eid);
-
-            if (info == null)
-                return;
-
+        @Override
+        public IEntityHandler getHandler() {
+            return getInfo().getMorph();
+        }
+        
+        @Override
+        protected void onEntityMetadataPacket(AsyncPacketOutEvent e) {
+            List<Item<?>> itemList = itemListField.get((PacketPlayOutEntityMetadata) e.getPacket());
             //for reupdate
             if (itemList != null) {
                 for (Item<?> item : itemList) {
@@ -194,72 +151,9 @@ public class MorphManager extends MiniPlugin {
                 }
             }
 
-            e.setPacket(PacketUtil.getEntityMetadataPacket(eid, info.getMorph().getFixedMetadata(), true));
-            e.setCancelled(info.getMorph().onMorphMetadataSend(e.getTarget()));
-        }
+            e.setPacket(PacketUtil.getEntityMetadataPacket(getEntity().getEntityId(), getInfo().getMorph().getFixedMetadata(), true));
 
-        @EventHandler
-        public void onDestroy(AsyncPacketOutEvent e){
-            if (!(e.getPacket() instanceof PacketPlayOutEntityDestroy))
-                return;
-
-            PacketPlayOutEntityDestroy destroy = (PacketPlayOutEntityDestroy) e.getPacket();
-            World w = e.getTarget().getWorld();
-
-            for (int id : PacketUtil.getEntityDestroyList(destroy)) {
-                IMorphInfo info = getMorphInfoInternal(w, id);
-
-                if (info != null) {
-                    info.getMorph().onMorphDestroySend(e.getTarget());
-                }
-            }
-        }
-
-        @EventHandler
-        public void onTeleport(AsyncPacketOutEvent e){
-            if (!(e.getPacket() instanceof PacketPlayOutEntityTeleport))
-                return;
-
-            PacketPlayOutEntityTeleport teleport = (PacketPlayOutEntityTeleport) e.getPacket();
-            int eid = packetTeleportEidField.get(teleport);
-            World w = e.getTarget().getWorld();
-
-            IMorphInfo info = getMorphInfoInternal(w, eid);
-
-            if (info != null) {
-                Entity target = info.getEntity();
-                Location loc = target.getLocation();
-
-                e.setCancelled(info.getMorph().onMorphTeleportSend(e.getTarget(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), target.isOnGround()));
-            }
-        }
-
-        @EventHandler
-        public void onEntity(AsyncPacketOutEvent e){
-            if (!(e.getPacket() instanceof PacketPlayOutEntity))
-                return;
-
-            PacketPlayOutEntity entityPacket = (PacketPlayOutEntity) e.getPacket();
-            int eid = packetEntityEidField.get(entityPacket);
-            World w = e.getTarget().getWorld();
-
-            IMorphInfo info = getMorphInfoInternal(w, eid);
-
-            if (info != null) {
-                IMorphEntity morphEntity = info.getMorph();
-                Entity target = info.getEntity();
-                Location loc = target.getLocation();
-
-                if (entityPacket instanceof PacketPlayOutEntity.PacketPlayOutEntityLook) {
-                    e.setCancelled(morphEntity.onMorphLookSend(e.getTarget(), (byte) Math.floor(loc.getYaw() * 256f / 360f), (byte) Math.floor(loc.getPitch() * 256f / 360f), target.isOnGround()));
-                }
-                else if (entityPacket instanceof PacketPlayOutEntity.PacketPlayOutRelEntityMove) {
-                    e.setCancelled(morphEntity.onMorphMoveSend(e.getTarget(), packetEntityRelXField.get(entityPacket), packetEntityRelYField.get(entityPacket), packetEntityRelZField.get(entityPacket), target.isOnGround()));
-                }
-                else if (entityPacket instanceof PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook) {
-                    e.setCancelled(morphEntity.onMorphLookAndMove(e.getTarget(), packetEntityRelXField.get(entityPacket), packetEntityRelYField.get(entityPacket), packetEntityRelZField.get(entityPacket), (byte) Math.floor(loc.getYaw() * 256f / 360f), (byte) Math.floor(loc.getPitch() * 256f / 360f), target.isOnGround()));
-                }
-            }
+            super.onEntityMetadataPacket(e);
         }
     }
 }

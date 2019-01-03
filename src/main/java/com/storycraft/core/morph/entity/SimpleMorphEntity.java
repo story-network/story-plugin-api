@@ -29,42 +29,42 @@ public class SimpleMorphEntity implements IMorphEntity {
 	public DataWatcher getFixedMetadata() {
 		return metadata;
     }
-    
-    @Override
-    public boolean onMorphMetadataSend(Player p) {
-		return false;
-	}
 
     @Override
-    public void onMorphSpawnSend(Player p, int eid) {
-
-    }
-
-    @Override
-    public void onMorphDestroySend(Player p) {
-
-    }
-
-    @Override
-    public boolean onMorphMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround) {
+    public boolean onSpawnSend(Player p, int eid) {
         return false;
     }
 
     @Override
-    public boolean onMorphLookSend(Player p, byte yawAngle, byte pitchAngle, boolean onGround) {
+    public boolean onMetadataSend(Player p) {
         return false;
     }
 
     @Override
-    public boolean onMorphLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle,
+    public boolean onMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround) {
+        return false;
+    }
+
+    @Override
+    public boolean onLookSend(Player p, byte yawAngle, byte pitchAngle, boolean onGround) {
+        return false;
+    }
+
+    @Override
+    public boolean onLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle,
             boolean onGround) {
         return false;
     }
 
     @Override
-    public boolean onMorphTeleportSend(Player p, double locX, double locY, double locZ, float yaw, float pitch,
+    public boolean onTeleportSend(Player p, double locX, double locY, double locZ, float yaw, float pitch,
             boolean onGround) {
         return false;
+    }
+
+    @Override
+    public int[] onDestroySend(Player p, int[] eidList) {
+        return null;
     }
 
 }

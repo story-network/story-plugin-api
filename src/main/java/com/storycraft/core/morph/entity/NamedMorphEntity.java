@@ -29,39 +29,39 @@ public class NamedMorphEntity implements IMorphEntity {
 	}
 
 	@Override
-	public void onMorphSpawnSend(Player p, int eid) {
-		entity.onMorphSpawnSend(p, eid);
+	public boolean onSpawnSend(Player p, int eid) {
+		return entity.onSpawnSend(p, eid);
 	}
 
 	@Override
-	public boolean onMorphMetadataSend(Player p) {
-		return entity.onMorphMetadataSend(p);
+	public boolean onMetadataSend(Player p) {
+		return entity.onMetadataSend(p);
 	}
 
 	@Override
-	public boolean onMorphMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround) {
-		return entity.onMorphMoveSend(p, deltaX, deltaY, deltaZ, onGround);
+	public boolean onMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround) {
+		return entity.onMoveSend(p, deltaX, deltaY, deltaZ, onGround);
 	}
 
 	@Override
-	public boolean onMorphLookSend(Player p, byte yawAngle, byte pitchAngle, boolean onGround) {
-		return entity.onMorphLookSend(p, yawAngle, pitchAngle, onGround);
+	public boolean onLookSend(Player p, byte yawAngle, byte pitchAngle, boolean onGround) {
+		return entity.onLookSend(p, yawAngle, pitchAngle, onGround);
 	}
 
 	@Override
-	public boolean onMorphLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle,
+	public boolean onLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle,
 			boolean onGround) {
-		return entity.onMorphLookAndMove(p, deltaX, deltaY, deltaZ, yawAngle, pitchAngle, onGround);
+		return entity.onLookAndMove(p, deltaX, deltaY, deltaZ, yawAngle, pitchAngle, onGround);
 	}
 
 	@Override
-	public boolean onMorphTeleportSend(Player p, double locX, double locY, double locZ, float yaw, float pitch,
+	public boolean onTeleportSend(Player p, double locX, double locY, double locZ, float yaw, float pitch,
 			boolean onGround) {
-		return entity.onMorphTeleportSend(p, locX, locY, locZ, yaw, pitch, onGround);
+		return entity.onTeleportSend(p, locX, locY, locZ, yaw, pitch, onGround);
 	}
 
 	@Override
-	public void onMorphDestroySend(Player p) {
-		entity.onMorphDestroySend(p);
+	public int[] onDestroySend(Player p, int[] eidList) {
+		return entity.onDestroySend(p, eidList);
 	}
 }
