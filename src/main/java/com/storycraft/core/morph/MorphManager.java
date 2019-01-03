@@ -26,7 +26,7 @@ import java.util.List;
 
 public class MorphManager extends MiniPlugin {
 
-    private List<MorphInfo> morphList;
+    private List<IMorphInfo> morphList;
     private MorphHandler handler;
 
     private Reflect.WrappedField<Integer, PacketPlayOutEntityMetadata> packetMetadataEidField;
@@ -67,7 +67,7 @@ public class MorphManager extends MiniPlugin {
         setMorph(new MorphInfo(e, morph));
     }
 
-    public void setMorph(MorphInfo info){
+    public void setMorph(IMorphInfo info){
         removeMorph(info.getEntity());
 
         morphList.add(info);
@@ -89,12 +89,12 @@ public class MorphManager extends MiniPlugin {
         return getMorphInfoInternal(w, eid) != null;
     }
 
-    public MorphInfo getMorphInfo(Entity e){
+    public IMorphInfo getMorphInfo(Entity e){
         return getMorphInfoInternal(e.getWorld(), e.getEntityId());
     }
 
-    private MorphInfo getMorphInfoInternal(World w, int eid){
-        for (MorphInfo info : morphList) {
+    private IMorphInfo getMorphInfoInternal(World w, int eid){
+        for (IMorphInfo info : morphList) {
             if (info.getEntity().getWorld().getName().equals(w.getName()) && info.getEntity().getEntityId() == eid) {
                 return info;
             }
@@ -104,7 +104,7 @@ public class MorphManager extends MiniPlugin {
     }
 
     public void removeMorph(Entity e) {
-        MorphInfo info = getMorphInfo(e);
+        IMorphInfo info = getMorphInfo(e);
 
         if (info != null) {
             ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityDestroyPacket(((CraftEntity)e).getHandle()));
@@ -127,7 +127,7 @@ public class MorphManager extends MiniPlugin {
             Packet entitySpawnPacket = e.getPacket();
             int eid = PacketUtil.getEntityIdFromPacket(entitySpawnPacket);
 
-            MorphInfo info = getMorphInfoInternal(w, eid);
+            IMorphInfo info = getMorphInfoInternal(w, eid);
 
             if (info == null)
                 return;
@@ -182,7 +182,7 @@ public class MorphManager extends MiniPlugin {
 
             List<Item<?>> itemList = itemListField.get(metadataPacket);
 
-            MorphInfo info = getMorphInfoInternal(w, eid);
+            IMorphInfo info = getMorphInfoInternal(w, eid);
 
             if (info == null)
                 return;
@@ -207,7 +207,7 @@ public class MorphManager extends MiniPlugin {
             World w = e.getTarget().getWorld();
 
             for (int id : PacketUtil.getEntityDestroyList(destroy)) {
-                MorphInfo info = getMorphInfoInternal(w, id);
+                IMorphInfo info = getMorphInfoInternal(w, id);
 
                 if (info != null) {
                     info.getMorph().onMorphDestroySend(e.getTarget());
@@ -224,7 +224,7 @@ public class MorphManager extends MiniPlugin {
             int eid = packetTeleportEidField.get(teleport);
             World w = e.getTarget().getWorld();
 
-            MorphInfo info = getMorphInfoInternal(w, eid);
+            IMorphInfo info = getMorphInfoInternal(w, eid);
 
             if (info != null) {
                 Entity target = info.getEntity();
@@ -243,7 +243,7 @@ public class MorphManager extends MiniPlugin {
             int eid = packetEntityEidField.get(entityPacket);
             World w = e.getTarget().getWorld();
 
-            MorphInfo info = getMorphInfoInternal(w, eid);
+            IMorphInfo info = getMorphInfoInternal(w, eid);
 
             if (info != null) {
                 IMorphEntity morphEntity = info.getMorph();
