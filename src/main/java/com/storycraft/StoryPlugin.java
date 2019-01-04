@@ -305,6 +305,10 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         return localConfigManager;
     }
 
+    public PunishManager getPunishManager() {
+        return punishManager;
+    }
+
     public PlayerManager getPlayerManager() {
         return playerManager;
     }
