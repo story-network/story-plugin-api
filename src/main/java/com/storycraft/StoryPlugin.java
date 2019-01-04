@@ -12,6 +12,7 @@ import com.storycraft.core.ServerDecorator;
 import com.storycraft.core.chat.ChatManager;
 import com.storycraft.core.chat.ColoredChat;
 import com.storycraft.core.combat.DamageHologram;
+import com.storycraft.core.command.SayCommand;
 import com.storycraft.core.config.IngameConfigManager;
 import com.storycraft.core.discord.DiscordChatHook;
 import com.storycraft.core.disguise.HeadDisguise;
@@ -136,6 +137,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         this.decorator = new ServerDecorator(this);
 
         initMiniPlugin();
+        registerCommand();
     }
 
     private void preInitMiniPlugin() {
@@ -170,6 +172,12 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new TeleportAskCommand());
         loader.addMiniPlugin(new PlayerCustomSkin());
+    }
+
+    private void registerCommand() {
+        CommandManager manager = getCommandManager();
+
+        manager.addCommand(new SayCommand());
     }
 
     @Override
