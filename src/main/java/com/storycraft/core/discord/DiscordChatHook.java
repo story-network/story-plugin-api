@@ -55,18 +55,18 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
             if (getWebHookURL().isEmpty())
                 return;
 
-            sendMessage(e.getPlayer().getName(), "https://crafatar.com/avatars/" + e.getPlayer().getPlayerProfile().getId(), e.getMessage());
+            sendMessageAsync(e.getPlayer().getName(), "https://crafatar.com/avatars/" + e.getPlayer().getPlayerProfile().getId(), e.getMessage()).run();
         }
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        sendMessage("Server", " + " + e.getPlayer().getName());
+        sendMessageAsync("Server", " + " + e.getPlayer().getName()).run();
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        sendMessage("Server", " - " + e.getPlayer().getName());
+        sendMessageAsync("Server", " - " + e.getPlayer().getName()).run();
     }
 
     public JsonObject createWebHookObject(String name, String avatarURL, String message) {
@@ -160,11 +160,11 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
         });
     }
 
-    public AsyncTask<Void> sendMessage(String username, String message) {
+    public AsyncTask<Void> sendMessageAsync(String username, String message) {
         return send(createWebHookObject(username, message));
     }
 
-    public AsyncTask<Void> sendMessage(String username, String avatarURL, String message) {
+    public AsyncTask<Void> sendMessageAsync(String username, String avatarURL, String message) {
         return send(createWebHookObject(username, avatarURL, message));
     }
 
