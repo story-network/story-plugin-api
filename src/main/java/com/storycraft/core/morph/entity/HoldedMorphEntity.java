@@ -43,7 +43,10 @@ public abstract class HoldedMorphEntity implements IMorphEntity {
 
         ConnectionUtil.sendPacket(p, PacketUtil.getEntitySpawnPacket(getHolderEntity()));
         ConnectionUtil.sendPacket(p, PacketUtil.getEntityMetadataPacket(getHolderEntity(), true));
-        ConnectionUtil.sendPacket(p, PacketUtil.getEntityMountPacket(getHolderEntity(), eid));
+
+        getHolderEntity().getWorld().getMinecraftServer().postToMainThread(() -> {
+            ConnectionUtil.sendPacket(p, PacketUtil.getEntityMountPacket(getHolderEntity(), eid));
+        });
 
         return false;
     }
