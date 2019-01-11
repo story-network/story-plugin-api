@@ -64,13 +64,16 @@ public class MorphManager extends MiniPlugin {
         morphList.add(listener);
 
         //update again
+        Packet destroyPacket = new PacketPlayOutEntityDestroy(info.getEntity().getEntityId());
+
+        ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), destroyPacket);
+
         if (needRespawn) {
             Packet spawnPacket = PacketUtil.getEntitySpawnPacket(info.getMorph().getNMSEntity());
         
             PacketUtil.setEntityIdPacket(spawnPacket, info.getEntity().getEntityId());
 
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), spawnPacket);
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), PacketUtil.getEntityMetadataPacket(((CraftEntity)info.getEntity()).getHandle(), true));
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), spawnPacket, PacketUtil.getEntityMetadataPacket(((CraftEntity)info.getEntity()).getHandle(), true));
         }
     }
 
@@ -124,9 +127,12 @@ public class MorphManager extends MiniPlugin {
             morphList.remove(listener);
 
             //update
+            Packet destroyPacket = new PacketPlayOutEntityDestroy(info.getEntity().getEntityId());
+
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), destroyPacket);
+
             if (needRespawn) {
-                ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()));
-                ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle(), true));
+                ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()), PacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle(), true));
             }
         }
     }
