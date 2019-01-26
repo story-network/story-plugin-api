@@ -53,9 +53,13 @@ public class MorphManager extends MiniPlugin {
     }
 
     public void setMorph(IMorphInfo info){
+        setMorph(info, !info.getEntity().isDead());
+    }
+
+    public void setMorph(IMorphInfo info, boolean needRespawn){
         removeMorph(info.getEntity());
 
-        setMorphInternal(info, info.getEntity().isValid());
+        setMorphInternal(info, needRespawn);
     }
 
     protected void setMorphInternal(IMorphInfo info, boolean needRespawn){
@@ -111,7 +115,11 @@ public class MorphManager extends MiniPlugin {
     }
 
     public void removeMorph(Entity e) {
-        removeMorphInternal(e, e.isValid());
+        removeMorph(e, !e.isDead());
+    }
+
+    public void removeMorph(Entity e, boolean needRespawn) {
+        removeMorphInternal(e, needRespawn);
     }
 
     protected void removeMorphInternal(Entity e, boolean needRespawn) {

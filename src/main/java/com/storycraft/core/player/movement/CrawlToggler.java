@@ -44,7 +44,7 @@ public class CrawlToggler extends MiniPlugin implements Listener {
     public void toggleCrawling(PlayerToggleSneakEvent e) {
         if (e.isSneaking()) {
             if (sneakTimeMap.containsKey(e.getPlayer().getUniqueId())) {
-                if (System.currentTimeMillis() - sneakTimeMap.remove(e.getPlayer().getUniqueId()) <= DOUBLE_SNEAK_MAX_DELAY) {
+                if (System.currentTimeMillis() - sneakTimeMap.remove(e.getPlayer().getUniqueId()) <= DOUBLE_SNEAK_MAX_DELAY && e.getPlayer().isOnGround()) {
                     getPlugin().getEntityManager().getCrawlMovement().setCrawling(e.getPlayer(), true);
 
                     return;

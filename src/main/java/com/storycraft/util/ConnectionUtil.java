@@ -53,7 +53,7 @@ public class ConnectionUtil {
 
         for (Player p : w.getPlayers()) {
             if (p.getLocation().distanceSquared(location) <= distanceSq && !list.contains(p))
-            sendPacket(p, packets);
+                sendPacket(p, packets);
         }
     }
 }

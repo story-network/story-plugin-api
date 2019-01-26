@@ -40,7 +40,7 @@ public class HeadDisguise extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        getMorphManager().removeMorph(e.getPlayer());
+        getMorphManager().removeMorph(e.getPlayer(), false);
     }
 
     @EventHandler
