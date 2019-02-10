@@ -126,7 +126,9 @@ public class RestartManager extends MiniPlugin implements ICommand {
 
                 System.out.println("Restarting server with current properties...");
 
-                server.primaryThread.interrupt();
+                if(server.primaryThread.isAlive()){
+                    server.primaryThread.interrupt();
+                }
 
                 server.primaryThread.start();
 
