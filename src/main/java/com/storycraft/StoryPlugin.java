@@ -32,6 +32,7 @@ import com.storycraft.core.punish.PunishManager;
 import com.storycraft.core.randomtp.RandomTP;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.saving.AutoSaveManager;
+import com.storycraft.core.server.RestartManager;
 import com.storycraft.core.skin.PlayerCustomSkin;
 import com.storycraft.core.spawn.ServerSpawnManager;
 import com.storycraft.core.teleport.TeleportAskCommand;
@@ -171,6 +172,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new WorldTeleporter());
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new TeleportAskCommand());
+        loader.addMiniPlugin(new RestartManager());
         loader.addMiniPlugin(new PlayerCustomSkin());
     }
 

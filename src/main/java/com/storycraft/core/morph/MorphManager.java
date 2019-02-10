@@ -48,6 +48,13 @@ public class MorphManager extends MiniPlugin {
         }
     }
 
+    @Override
+    public void onDisable(boolean restart) {
+        for (MorphEntityListener listener : new ArrayList<>(morphList)) {
+            removeMorph(listener.getInfo().getEntity(), true);
+        }
+    }
+
     public void setMorph(Entity e, IMorphEntity morph) {
         setMorph(new MorphInfo(e, morph));
     }
@@ -77,7 +84,8 @@ public class MorphManager extends MiniPlugin {
         
             PacketUtil.setEntityIdPacket(spawnPacket, info.getEntity().getEntityId());
 
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), spawnPacket, PacketUtil.getEntityMetadataPacket(((CraftEntity)info.getEntity()).getHandle(), true));
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), spawnPacket);
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), PacketUtil.getEntityMetadataPacket(((CraftEntity)info.getEntity()).getHandle(), true));
         }
     }
 
@@ -126,7 +134,10 @@ public class MorphManager extends MiniPlugin {
         IMorphInfo info = getMorphInfo(e);
 
         if (info != null) {
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityDestroyPacket(((CraftEntity)e).getHandle()));
+            //update
+            Packet destroyPacket = new PacketPlayOutEntityDestroy(info.getEntity().getEntityId());
+
+            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), destroyPacket);
 
             MorphEntityListener listener = getListener(info);
 
@@ -134,13 +145,9 @@ public class MorphManager extends MiniPlugin {
 
             morphList.remove(listener);
 
-            //update
-            Packet destroyPacket = new PacketPlayOutEntityDestroy(info.getEntity().getEntityId());
-
-            ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), info.getEntity(), destroyPacket);
-
             if (needRespawn) {
-                ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()), PacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle(), true));
+                ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntitySpawnPacket(((CraftEntity)e).getHandle()));
+                ConnectionUtil.sendPacketNearbyExcept(info.getEntity().getLocation(), e, PacketUtil.getEntityMetadataPacket(((CraftEntity)e).getHandle(), true));
             }
         }
     }
