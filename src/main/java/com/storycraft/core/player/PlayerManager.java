@@ -22,7 +22,7 @@ public class PlayerManager extends MiniPlugin {
         loader.addMiniPlugin(new PlayerCustomSkin());
         loader.addMiniPlugin(new ServerMotd());
         loader.addMiniPlugin(homeManager = new HomeManager());
-        loader.addMiniPlugin(new CrawlToggler());
+        //loader.addMiniPlugin(new CrawlToggler());
         loader.addMiniPlugin(new UserDebug());
         loader.addMiniPlugin(new CustomHat());
         loader.addMiniPlugin(new ServerKickMessage());

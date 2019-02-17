@@ -11,15 +11,22 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
+import com.storycraft.util.reflect.Reflect;
+import com.storycraft.util.reflect.Reflect.WrappedField;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.spigotmc.WatchdogThread;
 
+import joptsimple.OptionSet;
 import net.minecraft.server.v1_13_R2.MinecraftServer;
+import net.minecraft.server.v1_13_R2.World;
 
 public class RestartManager extends MiniPlugin implements ICommand {
 
@@ -92,7 +99,6 @@ public class RestartManager extends MiniPlugin implements ICommand {
 
     protected AsyncTask<Boolean> restartServerAsync() {
         stopped = false;
-
         // commit new thread before plugin thread closed
         return new AsyncTask<Boolean>(new AsyncTask.AsyncCallable<Boolean>() {
 
@@ -104,12 +110,21 @@ public class RestartManager extends MiniPlugin implements ICommand {
 
                 server.postToMainThread(() -> {
                     try {
+                        WrappedField<Boolean, MinecraftServer> stopFlagField = Reflect.getField(MinecraftServer.class, "isStopped");
+
+                        WatchdogThread.doStop();
+                        stopFlagField.set(server, true);
+
                         server.stop();
-                        stopped = true;
+
+                        if (server.primaryThread.isAlive()) {
+                            server.primaryThread.interrupt();
+                        }
 
                         long stoppedTime = System.currentTimeMillis();
 
                         System.out.println("Server stop task took " + (stoppedTime - time) + " ms");
+                        stopped = true;
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -124,13 +139,32 @@ public class RestartManager extends MiniPlugin implements ICommand {
                     }
                 }
 
+                OptionSet options = server.options;
+
+                WatchdogThread.hasStarted = false;
+                System.gc();
+
                 System.out.println("Restarting server with current properties...");
 
-                if(server.primaryThread.isAlive()){
-                    server.primaryThread.interrupt();
+                WrappedField<WatchdogThread, WatchdogThread> watchdogThread = Reflect.getField(WatchdogThread.class, "instance");
+
+                WrappedField<Long, WatchdogThread> timeoutTime = Reflect.getField(WatchdogThread.class, "timeoutTime");
+                WrappedField<Boolean, WatchdogThread> restartField = Reflect.getField(WatchdogThread.class, "restart");
+
+                WrappedField<Server, Bukkit> serverField = Reflect.getField(Bukkit.class, "server");
+
+                WatchdogThread thread = watchdogThread.get(null);
+
+                if (thread.isAlive()) {
+                    thread.interrupt();
                 }
 
-                server.primaryThread.start();
+                watchdogThread.set(null, null);
+                serverField.set(null, null);
+
+                MinecraftServer.main(options);
+
+                System.gc();
 
                 return true;
             }

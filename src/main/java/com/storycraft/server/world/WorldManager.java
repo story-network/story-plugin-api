@@ -55,8 +55,6 @@ public class WorldManager extends ServerExtension implements Listener {
         
         //pre set plugin
         setPlugin(plugin);
-
-        loadUniverse();
     }
 
     @Override
@@ -71,6 +69,9 @@ public class WorldManager extends ServerExtension implements Listener {
     
             loadDefaultWorld(new DefaultUniverse(w));
         }
+
+        //worlds load after server init
+        getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), this::loadUniverse, 0);
     }
 
     @Override
