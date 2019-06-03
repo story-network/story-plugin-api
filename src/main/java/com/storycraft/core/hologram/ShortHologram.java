@@ -1,9 +1,9 @@
 package com.storycraft.core.hologram;
 
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.EntityAreaEffectCloud;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.EntityAreaEffectCloud;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 
 public class ShortHologram extends Hologram {
 

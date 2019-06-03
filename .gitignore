@@ -1,4 +1,6 @@
 out
 bin
 build
+.gradle
+.settings
 .vscode/sftp.json

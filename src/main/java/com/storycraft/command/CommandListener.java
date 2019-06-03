@@ -14,7 +14,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-import net.minecraft.server.v1_13_R2.CommandBossBar;
+import net.minecraft.server.v1_14_R1.CommandBossBar;
 
 import java.util.ArrayList;
 import java.util.Collection;

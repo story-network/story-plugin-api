@@ -2,13 +2,13 @@ package com.storycraft.core.morph.entity;
 
 import com.storycraft.server.entity.metadata.ComparingDataWatcher;
 
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.v1_13_R2.DataWatcher;
-import net.minecraft.server.v1_13_R2.Entity;
+import net.minecraft.server.v1_14_R1.DataWatcher;
+import net.minecraft.server.v1_14_R1.Entity;
 
 public class SimpleMorphEntity implements IMorphEntity {
 
@@ -41,7 +41,7 @@ public class SimpleMorphEntity implements IMorphEntity {
     }
 
     @Override
-    public boolean onMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround) {
+    public boolean onMoveSend(Player p, short deltaX, short deltaY, short deltaZ, boolean onGround) {
         return false;
     }
 
@@ -51,7 +51,7 @@ public class SimpleMorphEntity implements IMorphEntity {
     }
 
     @Override
-    public boolean onLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle,
+    public boolean onLookAndMove(Player p, short deltaX, short deltaY, short deltaZ, byte yawAngle, byte pitchAngle,
             boolean onGround) {
         return false;
     }

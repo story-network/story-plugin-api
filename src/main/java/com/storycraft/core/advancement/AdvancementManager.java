@@ -11,37 +11,34 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.storycraft.core.MiniPlugin;
-import com.storycraft.core.advancement.Advancement.FrameType;
 import com.storycraft.util.ConnectionUtil;
 
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_14_R1.*;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.v1_13_R2.Advancement;
-import net.minecraft.server.v1_13_R2.AdvancementFrameType;
-import net.minecraft.server.v1_13_R2.AdvancementProgress;
-import net.minecraft.server.v1_13_R2.AdvancementRequirements;
-import net.minecraft.server.v1_13_R2.AdvancementRewards;
-import net.minecraft.server.v1_13_R2.ChatComponentText;
-import net.minecraft.server.v1_13_R2.Criterion;
-import net.minecraft.server.v1_13_R2.CriterionInstance;
-import net.minecraft.server.v1_13_R2.CriterionProgress;
-import net.minecraft.server.v1_13_R2.ItemStack;
-import net.minecraft.server.v1_13_R2.MinecraftKey;
-import net.minecraft.server.v1_13_R2.MinecraftServer;
-import net.minecraft.server.v1_13_R2.PacketPlayOutAdvancements;
+import net.minecraft.server.v1_14_R1.Advancement;
+import net.minecraft.server.v1_14_R1.AdvancementFrameType;
+import net.minecraft.server.v1_14_R1.AdvancementProgress;
+import net.minecraft.server.v1_14_R1.AdvancementRewards;
+import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.Criterion;
+import net.minecraft.server.v1_14_R1.CriterionInstance;
+import net.minecraft.server.v1_14_R1.CriterionProgress;
+import net.minecraft.server.v1_14_R1.MinecraftKey;
+import net.minecraft.server.v1_14_R1.PacketPlayOutAdvancements;
 
 public class AdvancementManager extends MiniPlugin {
 
-    public void broadcastToast(String text, FrameType frameType, org.bukkit.inventory.ItemStack icon) {
+    public void broadcastToast(String text, AdvancementType frameType, org.bukkit.inventory.ItemStack icon) {
         sendToastToPlayer(getPlugin().getServer().getOnlinePlayers(), text, frameType, icon);
     }
 
-    public void sendToastToPlayer(Player p, String text, FrameType frameType, org.bukkit.inventory.ItemStack icon) {
+    public void sendToastToPlayer(Player p, String text, AdvancementType frameType, org.bukkit.inventory.ItemStack icon) {
         sendToastToPlayer(Lists.newArrayList(p), text, frameType, icon);
     }
 
-    public void sendToastToPlayer(Collection<? extends Player> playerList, String text, FrameType frameType, org.bukkit.inventory.ItemStack icon) {
+    public void sendToastToPlayer(Collection<? extends Player> playerList, String text, AdvancementType frameType, org.bukkit.inventory.ItemStack icon) {
 
         List<Advancement> list = new ArrayList<>(1);
 
@@ -112,9 +109,9 @@ public class AdvancementManager extends MiniPlugin {
         });
     }
 
-    public net.minecraft.server.v1_13_R2.AdvancementDisplay getNMSDisplay(AdvancementDisplay display) {
+    public net.minecraft.server.v1_14_R1.AdvancementDisplay getNMSDisplay(AdvancementDisplay display) {
         
-        net.minecraft.server.v1_13_R2.AdvancementDisplay nmsDisplay = new net.minecraft.server.v1_13_R2.AdvancementDisplay(
+        net.minecraft.server.v1_14_R1.AdvancementDisplay nmsDisplay = new net.minecraft.server.v1_14_R1.AdvancementDisplay(
             CraftItemStack.asNMSCopy(display.getIcon()),
             new ChatComponentText(display.getTitle()),
             new ChatComponentText(display.getDescription()),
@@ -127,7 +124,7 @@ public class AdvancementManager extends MiniPlugin {
         return nmsDisplay;
     }
 
-    public AdvancementFrameType getNMSFrameType(FrameType type) {
+    public AdvancementFrameType getNMSFrameType(AdvancementType type) {
         if (type == null)
             return null;
 

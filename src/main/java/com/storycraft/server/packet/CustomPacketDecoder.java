@@ -3,7 +3,7 @@ package com.storycraft.server.packet;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
-import net.minecraft.server.v1_13_R2.*;
+import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class CustomPacketDecoder extends PacketDecoder {
             Channel channel = ctx.channel();
             PacketDataSerializer packetDataSerializer = new PacketDataSerializer(buf);
 
-            int id = packetDataSerializer.g();
+            int id = packetDataSerializer.i();
 
             Packet packet = ((EnumProtocol)channel.attr(NetworkManager.c).get()).a(direction, id);
 

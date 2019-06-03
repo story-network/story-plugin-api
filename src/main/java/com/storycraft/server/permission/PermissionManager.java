@@ -23,7 +23,7 @@ import com.storycraft.util.MessageUtil.MessageType;
 import com.storycraft.util.reflect.Reflect;
 import com.storycraft.util.reflect.Reflect.WrappedField;
 
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftHumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

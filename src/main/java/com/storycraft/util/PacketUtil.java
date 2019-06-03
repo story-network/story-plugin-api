@@ -9,12 +9,10 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
 
-import net.minecraft.server.v1_13_R2.*;
-import net.minecraft.server.v1_13_R2.PacketPlayOutMultiBlockChange.MultiBlockChangeInfo;
+import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_14_R1.PacketPlayOutMultiBlockChange.MultiBlockChangeInfo;
 
 public class PacketUtil {
-
-    private static Reflect.WrappedMethod<Packet, EntityTrackerEntry> entitySpawnMethod;
 
     private static Reflect.WrappedField<Integer, PacketPlayOutSpawnEntity> entityIdField;
     private static Reflect.WrappedField<Integer, PacketPlayOutSpawnEntityLiving> entityLivingIdField;
@@ -22,8 +20,6 @@ public class PacketUtil {
     private static Reflect.WrappedField<Integer, PacketPlayOutSpawnEntityPainting> entityPaintingIdField;
     private static Reflect.WrappedField<Integer, PacketPlayOutSpawnEntityWeather> entityWeatherIdField;
     private static Reflect.WrappedField<Integer, PacketPlayOutNamedEntitySpawn> entityPlayerIdField;
-
-    private static Reflect.WrappedField<IBlockData, PacketPlayOutBlockChange> blockUpdateBlockDataField;
 
     private static Reflect.WrappedField<ChunkCoordIntPair, PacketPlayOutMultiBlockChange> multiBlockUpdateChunkField;
     private static Reflect.WrappedField<MultiBlockChangeInfo[], PacketPlayOutMultiBlockChange> multiBlockUpdateInfoField;
@@ -33,12 +29,7 @@ public class PacketUtil {
     private static Reflect.WrappedField<int[], PacketPlayOutEntityDestroy> destroyedEntityEidList;
 
     public static Packet getEntitySpawnPacket(Entity entity) {
-        EntityTrackerEntry entry = new EntityTrackerEntry(entity, 0, 0, 0, true);
-
-        if (entitySpawnMethod == null)
-            entitySpawnMethod = Reflect.getMethod(EntityTrackerEntry.class, "e");
-
-        return entitySpawnMethod.invoke(entry);
+        return entity.N();
     }
 
     public static int[] getEntityDestroyList(PacketPlayOutEntityDestroy destroy) {
@@ -176,13 +167,9 @@ public class PacketUtil {
     }
 
     public static PacketPlayOutBlockChange getBlockUpdatePacket(Location loc, BlockData data) {
-        if (blockUpdateBlockDataField == null) {
-            blockUpdateBlockDataField = Reflect.getField(PacketPlayOutBlockChange.class, "a");
-        }
 
         PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(null, new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
-
-        blockUpdateBlockDataField.set(packet, BlockIdUtil.getNMSBlockData(data));
+        packet.block = BlockIdUtil.getNMSBlockData(data);
 
         return packet;
     }

@@ -2,7 +2,7 @@ package com.storycraft.server.entity.override;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.server.v1_13_R2.Entity;
+import net.minecraft.server.v1_14_R1.Entity;
 
 public interface IPlayerOverrideProfileHandler {
 

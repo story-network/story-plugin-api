@@ -32,7 +32,6 @@ import com.storycraft.core.punish.PunishManager;
 import com.storycraft.core.randomtp.RandomTP;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.saving.AutoSaveManager;
-import com.storycraft.core.server.RestartManager;
 import com.storycraft.core.skin.PlayerCustomSkin;
 import com.storycraft.core.spawn.ServerSpawnManager;
 import com.storycraft.core.teleport.TeleportAskCommand;
@@ -50,7 +49,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -58,12 +57,12 @@ import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.server.v1_13_R2.MinecraftKey;
-import net.minecraft.server.v1_13_R2.MinecraftServer;
-import net.minecraft.server.v1_13_R2.PacketDataSerializer;
-import net.minecraft.server.v1_13_R2.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_13_R2.World;
-import net.minecraft.server.v1_13_R2.WorldServer;
+import net.minecraft.server.v1_14_R1.MinecraftKey;
+import net.minecraft.server.v1_14_R1.MinecraftServer;
+import net.minecraft.server.v1_14_R1.PacketDataSerializer;
+import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_14_R1.World;
+import net.minecraft.server.v1_14_R1.WorldServer;
 
 import java.io.*;
 import java.lang.instrument.Instrumentation;
@@ -172,7 +171,6 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new WorldTeleporter());
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new TeleportAskCommand());
-        loader.addMiniPlugin(new RestartManager());
         loader.addMiniPlugin(new PlayerCustomSkin());
     }
 

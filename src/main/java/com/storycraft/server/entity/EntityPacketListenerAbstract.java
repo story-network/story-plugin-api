@@ -6,16 +6,16 @@ import com.storycraft.util.reflect.Reflect;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import net.minecraft.server.v1_13_R2.Packet;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntity;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_14_R1.Packet;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntity;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityTeleport;
 
 public abstract class EntityPacketListenerAbstract implements Listener {
 
@@ -23,9 +23,9 @@ public abstract class EntityPacketListenerAbstract implements Listener {
 
     private static Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityEidField;
 
-    private static Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelXField;
-    private static Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelYField;
-    private static Reflect.WrappedField<Integer, PacketPlayOutEntity> packetEntityRelZField;
+    private static Reflect.WrappedField<Short, PacketPlayOutEntity> packetEntityRelXField;
+    private static Reflect.WrappedField<Short, PacketPlayOutEntity> packetEntityRelYField;
+    private static Reflect.WrappedField<Short, PacketPlayOutEntity> packetEntityRelZField;
 
     private static Reflect.WrappedField<Integer, PacketPlayOutEntityTeleport> packetTeleportEidField;
 
@@ -44,7 +44,7 @@ public abstract class EntityPacketListenerAbstract implements Listener {
 
     public abstract IEntityHandler getHandler();
 
-    public net.minecraft.server.v1_13_R2.Entity getNMSEntity() {
+    public net.minecraft.server.v1_14_R1.Entity getNMSEntity() {
         return ((CraftEntity) getEntity()).getHandle();
     }
 

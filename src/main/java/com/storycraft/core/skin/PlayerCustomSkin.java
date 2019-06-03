@@ -31,18 +31,18 @@ import com.storycraft.util.reflect.Reflect.WrappedField;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import net.minecraft.server.v1_13_R2.DimensionManager;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
-import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_13_R2.PacketPlayOutPosition;
-import net.minecraft.server.v1_13_R2.PacketPlayOutRespawn;
-import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.*;
+import net.minecraft.server.v1_14_R1.DimensionManager;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_14_R1.PacketPlayOutPosition;
+import net.minecraft.server.v1_14_R1.PacketPlayOutRespawn;
+import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo.*;
 
 public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
@@ -65,12 +65,11 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         this.infodataList = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
         this.infoAction = Reflect.getField(PacketPlayOutPlayerInfo.class, "a");
         try {
-            this.gameProfileField = Reflect.getField(Class.forName("net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo$PlayerInfoData"), "d");
+            this.gameProfileField = Reflect.getField(Class.forName("net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo$PlayerInfoData"), "d");
+            gameProfileField.unlockFinal();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
-        gameProfileField.unlockFinal();
     }
 
     public void onEnable() {
@@ -212,7 +211,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
         PacketPlayOutPlayerInfo removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, ep);
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
-        PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.getWorld().worldProvider.getDimensionManager(), ep.getWorld().getDifficulty(), ep.getWorld().S(), ep.playerInteractManager.getGameMode());
+        PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.getWorld().worldProvider.getDimensionManager(), ep.getWorld().P(), ep.playerInteractManager.getGameMode());
 
 		Location location = p.getLocation();
 

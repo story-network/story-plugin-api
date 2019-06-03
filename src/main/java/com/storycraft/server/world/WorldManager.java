@@ -14,7 +14,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -205,7 +205,7 @@ public class WorldManager extends ServerExtension implements Listener {
             return;
 
         for (Chunk chunk : universe.getBukkitWorld().getLoadedChunks()){
-            chunk.unload(universe.canSave(), false);
+            chunk.unload(universe.canSave());
         }
 
         universe.unload();

@@ -11,7 +11,7 @@ import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.MessageUtil;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityStatus;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityStatus;
 
 import java.util.StringJoiner;
 

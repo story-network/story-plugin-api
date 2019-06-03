@@ -5,10 +5,10 @@ import com.storycraft.util.PacketUtil;
 
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.EntityArmorStand;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntity;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.EntityArmorStand;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntity;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityTeleport;
 
 public abstract class HoldedMorphEntity implements IMorphEntity {
 
@@ -43,10 +43,7 @@ public abstract class HoldedMorphEntity implements IMorphEntity {
 
         ConnectionUtil.sendPacket(p, PacketUtil.getEntitySpawnPacket(getHolderEntity()));
         ConnectionUtil.sendPacket(p, PacketUtil.getEntityMetadataPacket(getHolderEntity(), true));
-
-        getHolderEntity().getWorld().getMinecraftServer().postToMainThread(() -> {
-            ConnectionUtil.sendPacket(p, PacketUtil.getEntityMountPacket(getHolderEntity(), eid));
-        });
+        ConnectionUtil.sendPacket(p, PacketUtil.getEntityMountPacket(getHolderEntity(), eid));
 
         return false;
     }
@@ -64,7 +61,7 @@ public abstract class HoldedMorphEntity implements IMorphEntity {
     }
 
     @Override
-    public boolean onMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround) {
+    public boolean onMoveSend(Player p, short deltaX, short deltaY, short deltaZ, boolean onGround) {
         ConnectionUtil.sendPacket(p, new PacketPlayOutEntity.PacketPlayOutRelEntityMove(getHolderEntity().getId(), deltaX, deltaY, deltaZ, onGround));
         return true;
     }
@@ -76,7 +73,7 @@ public abstract class HoldedMorphEntity implements IMorphEntity {
     }
 
     @Override
-    public boolean onLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle, boolean onGround) {
+    public boolean onLookAndMove(Player p, short deltaX, short deltaY, short deltaZ, byte yawAngle, byte pitchAngle, boolean onGround) {
         ConnectionUtil.sendPacket(p, new PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook(getHolderEntity().getId(), deltaX, deltaY, deltaZ, yawAngle, pitchAngle, onGround));
         return true;
     }

@@ -15,26 +15,26 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import net.minecraft.server.v1_13_R2.Blocks;
-import net.minecraft.server.v1_13_R2.ChatComponentText;
-import net.minecraft.server.v1_13_R2.DataWatcher;
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.EntityHuman;
-import net.minecraft.server.v1_13_R2.EntityLiving;
-import net.minecraft.server.v1_13_R2.EntityMonster;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
-import net.minecraft.server.v1_13_R2.EntityTypes;
-import net.minecraft.server.v1_13_R2.EntityZombie;
-import net.minecraft.server.v1_13_R2.IRangedEntity;
-import net.minecraft.server.v1_13_R2.PathfinderGoalEatTile;
-import net.minecraft.server.v1_13_R2.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_13_R2.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_13_R2.PathfinderGoalMoveTowardsRestriction;
-import net.minecraft.server.v1_13_R2.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_13_R2.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_13_R2.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_13_R2.PathfinderGoalZombieAttack;
-import net.minecraft.server.v1_13_R2.World;
+import net.minecraft.server.v1_14_R1.Blocks;
+import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.DataWatcher;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.EntityHuman;
+import net.minecraft.server.v1_14_R1.EntityLiving;
+import net.minecraft.server.v1_14_R1.EntityMonster;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.EntityTypes;
+import net.minecraft.server.v1_14_R1.EntityZombie;
+import net.minecraft.server.v1_14_R1.IRangedEntity;
+import net.minecraft.server.v1_14_R1.PathfinderGoalEatTile;
+import net.minecraft.server.v1_14_R1.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_14_R1.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_14_R1.PathfinderGoalMoveTowardsRestriction;
+import net.minecraft.server.v1_14_R1.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_14_R1.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_14_R1.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_14_R1.PathfinderGoalZombieAttack;
+import net.minecraft.server.v1_14_R1.World;
 
 public class TestFunction implements Listener {
 
@@ -67,7 +67,7 @@ public class TestFunction implements Listener {
     public static class TestZombiePlayer extends EntityMonster {
 
         public TestZombiePlayer(World w) {
-            super(EntityTypes.a("server:player_zombie"), w);
+            super((EntityTypes<? extends EntityMonster>) EntityTypes.a("server:player_zombie").get(), w);
 
             setCustomNameVisible(true);
             setCustomName(new ChatComponentText("owo"));
@@ -87,14 +87,6 @@ public class TestFunction implements Listener {
         @Override
         public boolean isPersistent() {
             return true;
-        }
-
-        @Override
-        public void W() {
-            super.W();
-
-            if (!this.getFlag(7))
-                this.setFlag(7, true);
         }
 
     }

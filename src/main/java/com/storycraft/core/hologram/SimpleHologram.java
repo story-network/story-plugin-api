@@ -1,8 +1,8 @@
 package com.storycraft.core.hologram;
 
-import net.minecraft.server.v1_13_R2.*;
+import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_13_R2.*;
+import org.bukkit.craftbukkit.v1_14_R1.*;
 
 public class SimpleHologram extends Hologram {
     public SimpleHologram(Location location, String... texts) {

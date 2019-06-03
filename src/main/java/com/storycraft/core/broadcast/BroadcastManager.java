@@ -5,7 +5,7 @@ import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.advancement.AdvancementDisplay;
-import com.storycraft.core.advancement.Advancement.FrameType;
+import com.storycraft.core.advancement.AdvancementType;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.util.MessageUtil;
 

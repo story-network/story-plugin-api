@@ -4,8 +4,8 @@ import com.storycraft.server.entity.metadata.CustomNameDataWatcher;
 
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.v1_13_R2.DataWatcher;
-import net.minecraft.server.v1_13_R2.Entity;
+import net.minecraft.server.v1_14_R1.DataWatcher;
+import net.minecraft.server.v1_14_R1.Entity;
 
 public class NamedMorphEntity implements IMorphEntity {
 
@@ -39,7 +39,7 @@ public class NamedMorphEntity implements IMorphEntity {
 	}
 
 	@Override
-	public boolean onMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround) {
+	public boolean onMoveSend(Player p, short deltaX, short deltaY, short deltaZ, boolean onGround) {
 		return entity.onMoveSend(p, deltaX, deltaY, deltaZ, onGround);
 	}
 
@@ -49,7 +49,7 @@ public class NamedMorphEntity implements IMorphEntity {
 	}
 
 	@Override
-	public boolean onLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle,
+	public boolean onLookAndMove(Player p, short deltaX, short deltaY, short deltaZ, byte yawAngle, byte pitchAngle,
 			boolean onGround) {
 		return entity.onLookAndMove(p, deltaX, deltaY, deltaZ, yawAngle, pitchAngle, onGround);
 	}

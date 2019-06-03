@@ -3,7 +3,7 @@ package com.storycraft.core.broadcast;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.core.MiniPlugin;
-import com.storycraft.core.advancement.Advancement.FrameType;
+import com.storycraft.core.advancement.AdvancementType;
 import com.storycraft.util.MessageUtil;
 
 import org.bukkit.Material;
@@ -39,19 +39,19 @@ public class ToastCommand extends MiniPlugin implements ICommand {
             return;
         }
 
-        FrameType type;
+        AdvancementType type;
 
         switch (args[1]) {
             case "goal":
-                type = FrameType.GOAL;
+                type = AdvancementType.GOAL;
                 break;
 
             case "task":
-                type = FrameType.TASK;
+                type = AdvancementType.TASK;
                 break;
 
             case "challenge":
-                type = FrameType.CHALLENGE;
+                type = AdvancementType.CHALLENGE;
                 break;
 
             default:

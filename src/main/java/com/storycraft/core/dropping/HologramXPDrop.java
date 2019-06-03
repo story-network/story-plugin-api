@@ -5,14 +5,14 @@ import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.HologramManager;
 import com.storycraft.core.hologram.SimpleHologram;
 import com.storycraft.util.ConnectionUtil;
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.EntityExperienceOrb;
-import net.minecraft.server.v1_13_R2.Packet;
-import net.minecraft.server.v1_13_R2.PacketPlayOutCollect;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.EntityExperienceOrb;
+import net.minecraft.server.v1_14_R1.Packet;
+import net.minecraft.server.v1_14_R1.PacketPlayOutCollect;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,7 +46,7 @@ public class HologramXPDrop extends MiniPlugin implements Listener {
         HologramManager hologramManager = getPlugin().getDecorator().getHologramManager();
         hologramManager.addHologram(xpHologram);
 
-        new EntityExperienceOrb(((CraftWorld)expLocation.getWorld()).getHandle(), 0, 0, 0, amount).d(((CraftPlayer)player).getHandle());
+        new EntityExperienceOrb(((CraftWorld)expLocation.getWorld()).getHandle(), 0, 0, 0, amount).pickup(((CraftPlayer)player).getHandle());
     }
 
     private class XPHologram extends SimpleHologram {

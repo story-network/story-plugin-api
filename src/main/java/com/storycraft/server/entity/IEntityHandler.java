@@ -11,13 +11,13 @@ public interface IEntityHandler {
     public boolean onMetadataSend(Player p);
 
         /* isCancelled */
-    public boolean onMoveSend(Player p, int deltaX, int deltaY, int deltaZ, boolean onGround);
+    public boolean onMoveSend(Player p, short deltaX, short deltaY, short deltaZ, boolean onGround);
 
         /* isCancelled */
     public boolean onLookSend(Player p, byte yawAngle, byte pitchAngle, boolean onGround);
 
         /* isCancelled */
-    public boolean onLookAndMove(Player p, int deltaX, int deltaY, int deltaZ, byte yawAngle, byte pitchAngle, boolean onGround);
+    public boolean onLookAndMove(Player p, short deltaX, short deltaY, short deltaZ, byte yawAngle, byte pitchAngle, boolean onGround);
 
         /* isCancelled */
     public boolean onTeleportSend(Player p, double locX, double locY, double locZ, float yaw, float pitch, boolean onGround);

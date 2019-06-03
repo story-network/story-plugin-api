@@ -11,9 +11,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
-import net.minecraft.server.v1_13_R2.ChatComponentText;
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.PacketPlayInUseEntity;
+import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.PacketPlayInUseEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

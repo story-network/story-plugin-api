@@ -70,7 +70,7 @@ public class HeadDisguise extends MiniPlugin implements Listener {
             if (type != null && p.hasPermission("server.headdisguise." + type.getName())) {
 
                 if (type == EntityType.SHULKER) {
-                    getMorphManager().setMorph(new NamedMorphInfoWrapper(new SimpleBlockMorphInfo(p, Material.DIRT.createBlockData())));
+                    getMorphManager().setMorph(new NamedMorphInfoWrapper(new SimpleBlockMorphInfo(p, Material.SHULKER_BOX.createBlockData())));
                 }
                 else {
                     getMorphManager().setMorph(new NamedMorphInfoWrapper(new SimpleMorphInfo(p, type)));

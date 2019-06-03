@@ -8,7 +8,7 @@ public class AdvancementDisplay {
     private String title;
     private String description;
     private ItemStack icon;
-    private Advancement.FrameType frameType;
+    private AdvancementType frameType;
 
     private boolean announce;
     private boolean toast;
@@ -18,7 +18,7 @@ public class AdvancementDisplay {
         this.title = "";
         this.description = "";
         this.icon = new ItemStack(Material.STONE);
-        this.frameType = Advancement.FrameType.TASK;
+        this.frameType = AdvancementType.TASK;
 
         this.announce = true;
         this.toast = true;
@@ -33,7 +33,7 @@ public class AdvancementDisplay {
         return description;
     }
 
-    public Advancement.FrameType getFrameType() {
+    public AdvancementType getFrameType() {
         return frameType;
     }
 
@@ -73,7 +73,7 @@ public class AdvancementDisplay {
         this.toast = toast;
     }
 
-    public void setFrameType(Advancement.FrameType frameType) {
+    public void setFrameType(AdvancementType frameType) {
         this.frameType = frameType;
     }
 
@@ -119,7 +119,7 @@ public class AdvancementDisplay {
             return this;
         }
 
-        public Builder setFrameType(Advancement.FrameType frameType) {
+        public Builder setFrameType(AdvancementType frameType) {
             display.setFrameType(frameType);;
 
             return this;

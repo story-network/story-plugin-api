@@ -1,6 +1,6 @@
 package com.storycraft.core.hologram;
 
-import net.minecraft.server.v1_13_R2.Entity;
+import net.minecraft.server.v1_14_R1.Entity;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerInteractEvent;
 

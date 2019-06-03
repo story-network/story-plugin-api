@@ -11,23 +11,23 @@ import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.reflect.Reflect;
 
-import net.minecraft.server.v1_13_R2.ChatComponentText;
-import net.minecraft.server.v1_13_R2.DataWatcher;
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.EntityTypes;
-import net.minecraft.server.v1_13_R2.EnumGamemode;
-import net.minecraft.server.v1_13_R2.IChatBaseComponent;
-import net.minecraft.server.v1_13_R2.IRegistry;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_13_R2.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_13_R2.PacketPlayOutStatistic;
-import net.minecraft.server.v1_13_R2.Statistic;
-import net.minecraft.server.v1_13_R2.StatisticList;
-import net.minecraft.server.v1_13_R2.World;
-import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.DataWatcher;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.EntityTypes;
+import net.minecraft.server.v1_14_R1.EnumGamemode;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent;
+import net.minecraft.server.v1_14_R1.IRegistry;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_14_R1.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_14_R1.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_14_R1.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_14_R1.PacketPlayOutStatistic;
+import net.minecraft.server.v1_14_R1.Statistic;
+import net.minecraft.server.v1_14_R1.StatisticList;
+import net.minecraft.server.v1_14_R1.World;
+import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.bukkit.entity.Player;
@@ -102,7 +102,7 @@ public class CustomEntityConverter implements Listener {
 
         try {
             this.playerInfoDataClass = Class
-                    .forName("net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo$PlayerInfoData");
+                    .forName("net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo$PlayerInfoData");
 
             this.playerInfoDataConstructor = Reflect.getConstructor(playerInfoDataClass, PacketPlayOutPlayerInfo.class, GameProfile.class, int.class, EnumGamemode.class, IChatBaseComponent.class);
         } catch (ClassNotFoundException e) {
@@ -127,7 +127,7 @@ public class CustomEntityConverter implements Listener {
             EntityTypes clientType = info.getClientEntityTypes();
 
             if (!(info instanceof CustomPlayerInfo)) {
-                livingEntityTypeIdField.set(packet, net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(clientType));
+                livingEntityTypeIdField.set(packet, net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(clientType));
             }
             else {
                 e.setCancelled(true);

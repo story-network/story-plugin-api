@@ -10,7 +10,7 @@ import com.storycraft.server.registry.RegistryManager;
 import com.storycraft.util.reflect.Reflect;
 import com.storycraft.util.reflect.Reflect.WrappedField;
 
-import net.minecraft.server.v1_13_R2.*;
+import net.minecraft.server.v1_14_R1.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +35,12 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
         this.manager = manager;
     }
 
-    protected <T extends Entity>EntityTypes.a<T> createA(Class<? extends T> entityClass, Function<? super World, ? extends T> entityConstructor) {
-        return EntityTypes.a.a(entityClass, entityConstructor);
+    protected <T extends Entity>EntityTypes.a<T> createA(EnumCreatureType type, Function<? super World, ? extends T> entityConstructor) {
+        return EntityTypes.a.a(new EntityTypes.b<T>() {
+            public T create(EntityTypes<T> var1, World var2) {
+                return entityConstructor.apply(var2);
+            }
+        }, type);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
         if (contains(item.getName().getKey()) || containsId(id))
             throw new Exception("Entity with " + item.getName() + " already exists");
 
-        EntityTypes.a a = createA(item.getEntityClass(), item.getEntityConstructor());
+        EntityTypes.a a = createA(item.getCreatureType(), item.getEntityConstructor());
 
         //1.13.2
         Schema sch = DataConverterRegistry.a().getSchema(DataFixUtils.makeKey(1631));
@@ -77,11 +81,11 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
         types.put(key, value);
 
         EntityTypes entityTypes = a.a(key);
-        net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, item.getName(), entityTypes);
+        net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(id, item.getName(), entityTypes);
 
         customEntityMap.put(item.getName().getKey(), item);
         customEntityIdMap.put(id, item);
-        customEntityNetworkIdMap.put(net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(entityTypes), item);
+        customEntityNetworkIdMap.put(net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(entityTypes), item);
     }
 
     public void addDefaultOverride(EntityTypes defaultType, CustomEntityInfo item) throws Exception {
@@ -90,15 +94,15 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo> {
             String name = key.getKey();
             customEntityMap.put(name, item);
 
-            int id = net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(defaultType);
+            int id = net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(defaultType);
 
-            EntityTypes.a a = createA(item.getEntityClass(), item.getEntityConstructor());
+            EntityTypes.a a = createA(item.getCreatureType(), item.getEntityConstructor());
             EntityTypes entityTypes = a.a(name);
 
-            net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(id, key, entityTypes);
+            net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(id, key, entityTypes);
 
             customEntityIdMap.put(id, item);
-            customEntityNetworkIdMap.put(net.minecraft.server.v1_13_R2.IRegistry.ENTITY_TYPE.a(entityTypes), item);
+            customEntityNetworkIdMap.put(net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(entityTypes), item);
         }
     }
 
