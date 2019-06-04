@@ -22,6 +22,7 @@ import com.storycraft.util.MessageUtil.MessageType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -44,6 +45,14 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
     @Override
     public void onEnable() {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
+    }
+
+    @Override
+    public void onDisable(boolean reload) {
+        if (loaded && getWebHookURL().isEmpty())
+            return;
+
+        sendConsoleMessageAsync("서버가 중지되고 있습니다.").run();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -69,6 +78,12 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
         sendMessageAsync("Server", " - " + e.getPlayer().getName()).run();
     }
 
+    @EventHandler
+    public void onPlayerDied(PlayerDeathEvent e) {
+        if (e.getDeathMessage() != null)
+            sendConsoleMessageAsync(e.getDeathMessage());
+    }
+
     public JsonObject createWebHookObject(String name, String avatarURL, String message) {
         JsonObject object = createWebHookObject(name, message);
 
@@ -92,6 +107,11 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
 
     protected void onConfigLoaded(Void v, Throwable throwable) {
         loaded = true;
+
+        if (getWebHookURL().isEmpty())
+            return;
+
+        sendConsoleMessageAsync("서버가 시작되고 있습니다.").run();
     }
 
     public String getWebHookURL() {
@@ -166,6 +186,10 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
 
     public AsyncTask<Void> sendMessageAsync(String username, String avatarURL, String message) {
         return send(createWebHookObject(username, avatarURL, message));
+    }
+
+    public AsyncTask<Void> sendConsoleMessageAsync(String message) {
+        return sendMessageAsync("Console", "http://aux2.iconspalace.com/uploads/utilities-terminal-icon-256.png", message);
     }
 
 }

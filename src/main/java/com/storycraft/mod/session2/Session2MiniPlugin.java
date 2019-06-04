@@ -32,7 +32,7 @@ public class Session2MiniPlugin extends MiniPlugin implements Listener {
     @Override
     public void onLoad(StoryPlugin plugin) {
         spawnHologramList = new HashMap<>();
-        plugin.getConfigManager().addConfigFile("session2.json", configFile = new JsonConfigPrettyFile());
+        plugin.getConfigManager().addConfigFile("session2.json", configFile = new JsonConfigPrettyFile()).run();
     }
     
     @Override
@@ -101,7 +101,7 @@ public class Session2MiniPlugin extends MiniPlugin implements Listener {
             , Math.floor(7500 + Math.random() * 15000) * (Math.round(Math.random()) - 1)
             );
 
-            randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation();
+            randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);
 
             spawnManager.setSpawnEnabled(e.getPlayer().getUniqueId(), true);
             spawnManager.setSpawnLocation(e.getPlayer().getUniqueId(), randomSpawn);
