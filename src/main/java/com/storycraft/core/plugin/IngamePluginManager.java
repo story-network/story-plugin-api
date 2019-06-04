@@ -5,6 +5,7 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.rank.ServerRank;
+import com.storycraft.server.plugin.CorePluginUpdateEvent;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
@@ -171,6 +172,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                 else if (plugin == getPlugin()) {
                     getServerPluginManager().unloadPlugin(plugin);
                     getServerPluginManager().enablePlugin(getServerPluginManager().loadPlugin(getPlugin().getOriginalFile()));
+                    getPlugin().getServer().getPluginManager().callEvent(new CorePluginUpdateEvent());
                     getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "코어 플러그인이(가) 업데이트 되었습니다"));
                     return;
                 }

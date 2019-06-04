@@ -16,8 +16,8 @@ public class CustomNameDataWatcher extends DataWatcher {
     private static DataWatcherObject customNameObject;
 
     static {
-        customNameObject = (DataWatcherObject) Reflect.getField(Entity.class, "aE").get(null);
-        customNameVisibleObject = (DataWatcherObject) Reflect.getField(Entity.class, "aF").get(null);
+        customNameObject = (DataWatcherObject) Reflect.getField(Entity.class, "az").get(null);
+        customNameVisibleObject = (DataWatcherObject) Reflect.getField(Entity.class, "aA").get(null);
     }
 
     private DataWatcher watcher;

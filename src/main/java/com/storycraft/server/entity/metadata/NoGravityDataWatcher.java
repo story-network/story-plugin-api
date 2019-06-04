@@ -13,7 +13,7 @@ public class NoGravityDataWatcher extends DataWatcher {
     private static DataWatcherObject<Boolean> object;
 
     static {
-        object = (DataWatcherObject) Reflect.getField(Entity.class, "aH").get(null);
+        object = (DataWatcherObject) Reflect.getField(Entity.class, "aC").get(null);
     }
 
     private DataWatcher watcher;

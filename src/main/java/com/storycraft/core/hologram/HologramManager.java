@@ -24,13 +24,11 @@ public class HologramManager extends MiniPlugin implements Listener {
 
     private static final double HOLOGRAM_OFFSET = 0.75;
 
-    private ClientEntityManager manager;
     private Map<Hologram, List<Entity>> hologramListMap;
 
     private WrappedField<Integer, PacketPlayInUseEntity> idField;
 
     public HologramManager(){
-        this.manager = new ClientEntityManager();
         this.hologramListMap = new HashMap<>();
 
         this.idField = Reflect.getField(PacketPlayInUseEntity.class, "a");
@@ -38,7 +36,7 @@ public class HologramManager extends MiniPlugin implements Listener {
 
     @Override
     public void onLoad(StoryPlugin plugin){
-        plugin.getMiniPluginLoader().addMiniPlugin(manager);
+
     }
 
     @Override
@@ -53,6 +51,10 @@ public class HologramManager extends MiniPlugin implements Listener {
         }
 
         hologramListMap.clear();
+    }
+
+    public ClientEntityManager getClientEntityManager() {
+        return getPlugin().getServerManager().getClientSideManager().getClientEntityManager();
     }
 
     @EventHandler
@@ -106,14 +108,14 @@ public class HologramManager extends MiniPlugin implements Listener {
         if (listSize < textLineCount) {
             for (int i = listSize; i < textLineCount; i++){
                 Entity e = hologram.createHologramEntity(i);
-                manager.addClientEntity(e);
+                getClientEntityManager().addClientEntity(e);
                 textEntityList.add(e);
             }
         }
         else if (listSize > textLineCount){
             for (int i = listSize; i > textLineCount; i--){
                 Entity e = textEntityList.get(i - 1);
-                manager.removeClientEntity(e);
+                getClientEntityManager().removeClientEntity(e);
                 textEntityList.remove(e);
             }
         }
@@ -123,7 +125,7 @@ public class HologramManager extends MiniPlugin implements Listener {
 
             e.setCustomName(new ChatComponentText(textList[i]));
 
-            manager.update(e);
+            getClientEntityManager().update(e);
         }
     }
 
@@ -133,7 +135,7 @@ public class HologramManager extends MiniPlugin implements Listener {
 
         List<Entity> hologramList = hologramListMap.get(hologram);
         for (Entity e : hologramList) {
-            manager.removeClientEntity(e);
+            getClientEntityManager().removeClientEntity(e);
         }
 
         hologramListMap.remove(hologram);
