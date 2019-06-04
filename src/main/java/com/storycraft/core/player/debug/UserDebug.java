@@ -42,6 +42,7 @@ public class UserDebug extends MiniPlugin implements Listener {
 
             if (e.getTarget() != null && !e.getTarget().hasPermission("server.play.debug")) {
                 reducedDebugField.set(packet, !DEFAULT);
+				return;
             }
 
             reducedDebugField.set(packet, DEFAULT);
