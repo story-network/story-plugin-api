@@ -166,6 +166,15 @@ public class MorphManager extends MiniPlugin {
         public IEntityHandler getHandler() {
             return getInfo().getMorph();
         }
+
+        @Override
+        protected void onEntitySpawnPacket(AsyncPacketOutEvent e, int eid) {
+            Packet p = PacketUtil.getEntitySpawnPacket(getInfo().getMorph().getNMSEntity());
+            PacketUtil.setEntityIdPacket(p, eid);
+
+            e.setPacket(p);
+            super.onEntitySpawnPacket(e, eid);
+        }
         
         @Override
         protected void onEntityMetadataPacket(AsyncPacketOutEvent e) {
