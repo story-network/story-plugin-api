@@ -76,7 +76,7 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onCoreUpdate(CorePluginUpdateEvent e) {
-        sendConsoleMessageAsync("코어 플러그인 업데이트중..");
+        sendConsoleMessageAsync("코어 플러그인 업데이트중..").run();
     }
 
     public JsonObject createWebHookObject(String name, String avatarURL, String message) {

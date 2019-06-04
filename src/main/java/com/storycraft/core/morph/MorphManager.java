@@ -61,7 +61,7 @@ public class MorphManager extends MiniPlugin {
 
     public void setMorph(IMorphInfo info){
         removeMorph(info.getEntity());
-        setMorph(info);
+        setMorphInternal(info);
     }
 
     protected void setMorphInternal(IMorphInfo info){
