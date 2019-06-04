@@ -78,7 +78,7 @@ public class PlayerSpawnManager extends MiniPlugin implements Listener {
         JsonConfigEntry entry = getUUIDEntry(uuid).getObject("spawn");
 
         if (entry == null) {
-            configFile.set("spawn", entry = configFile.createEntry());
+            getUUIDEntry(uuid).set("spawn", entry = configFile.createEntry());
         }
 
         return entry;

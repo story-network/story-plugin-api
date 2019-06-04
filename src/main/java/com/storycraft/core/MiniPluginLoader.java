@@ -24,7 +24,7 @@ public class MiniPluginLoader {
     public void onEnable() {
         setEnabled(true);
 
-        getMiniPluginList().forEach(new Consumer<MiniPlugin>() {
+        new ArrayList<>(getMiniPluginList()).forEach(new Consumer<MiniPlugin>() {
             @Override
             public void accept(MiniPlugin miniPlugin) {
                 if (!miniPlugin.isEnabled()) {
@@ -38,7 +38,7 @@ public class MiniPluginLoader {
     public void onDisable(boolean reload) {
         setEnabled(false);
 
-        getMiniPluginList().forEach(new Consumer<MiniPlugin>() {
+        new ArrayList<>(getMiniPluginList()).forEach(new Consumer<MiniPlugin>() {
             @Override
             public void accept(MiniPlugin miniPlugin) {
                 if (miniPlugin.isEnabled()) {

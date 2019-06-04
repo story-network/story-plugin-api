@@ -28,6 +28,7 @@ public class PlayerManager extends MiniPlugin {
         loader.addMiniPlugin(new UserDebug());
         loader.addMiniPlugin(new CustomHat());
         loader.addMiniPlugin(new ServerKickMessage());
+        loader.addMiniPlugin(playerSpawnManager = new PlayerSpawnManager());
     }
 
     public HomeManager getHomeManager() {

@@ -99,18 +99,6 @@ public class WorldManager extends ServerExtension implements Listener {
         loadWorld(new BuildUniverse("build", 0));
     }
 
-    public DefaultUniverse getDefaultOverworld() {
-        return (DefaultUniverse) getByName("world");
-    }
-
-    public DefaultUniverse getDefaultNether() {
-        return (DefaultUniverse) getByName("world_nether");
-    }
-
-    public DefaultUniverse getDefaultTheEnd() {
-        return (DefaultUniverse) getByName("world_the_end");
-    }
-
     public IUniverse getByName(String name){
         return universeList.get(name);
     }

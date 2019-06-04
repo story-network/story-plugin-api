@@ -14,10 +14,15 @@ public class ModManager extends MiniPlugin {
     }
 
     @Override
-    public void onEnable() {
-        MiniPluginLoader loader = getMiniPluginLoader();
+    public void onLoad(StoryPlugin plugin) {
+        MiniPluginLoader loader = plugin.getMiniPluginLoader();
 
         loader.addMiniPlugin(new Session2MiniPlugin());
+    }
+
+    @Override
+    public void onEnable() {
+        
     }
 
     @Override

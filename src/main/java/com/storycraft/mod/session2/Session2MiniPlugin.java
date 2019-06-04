@@ -74,12 +74,14 @@ public class Session2MiniPlugin extends MiniPlugin implements Listener {
     }
 
     protected void addSpawnHologram(Player p) {
-        Hologram spawnHologram;
-
         spawnHologramList.remove(p.getName());
+
+        Location spawnLoc = getPlugin().getPlayerManager().getPlayerSpawnManager().getSpawnLocation(p.getUniqueId());
+
+        Hologram spawnHologram = new ShortHologram(spawnLoc.add(0, 1.5, 0),
+        ChatColor.GREEN + p.getName() + ChatColor.WHITE + " 의 스폰 위치", ChatColor.WHITE + "" + spawnLoc.getBlockX() + ", " + spawnLoc.getBlockY() + ", " + spawnLoc.getBlockZ());
         
-        getPlugin().getDecorator().getHologramManager().addHologram(spawnHologram = new ShortHologram(getPlugin().getPlayerManager().getPlayerSpawnManager().getSpawnLocation(p.getUniqueId()),
-         ChatColor.GREEN + p.getName() + ChatColor.WHITE + " 의 스폰 위치"));
+        getPlugin().getDecorator().getHologramManager().addHologram(spawnHologram);
 
         spawnHologramList.put(p.getName(), spawnHologram);
     }
@@ -94,20 +96,26 @@ public class Session2MiniPlugin extends MiniPlugin implements Listener {
         PlayerSpawnManager spawnManager = getPlugin().getPlayerManager().getPlayerSpawnManager();
 
         if (!hasJoined(e.getPlayer().getUniqueId())) {
-            World w = getPlugin().getServerManager().getWorldManager().getDefaultOverworld().getBukkitWorld();
+            World w = getPlugin().getServer().getWorld("world");
             Location randomSpawn = new Location(w
-            , Math.floor(7500 + Math.random() * 15000) * (Math.round(Math.random()) - 1)
+            , Math.floor(7500 + Math.random() * 15000) * (Math.round(Math.random()) > 0 ? 1 : -1)
             , 0
-            , Math.floor(7500 + Math.random() * 15000) * (Math.round(Math.random()) - 1)
+            , Math.floor(7500 + Math.random() * 15000) * (Math.round(Math.random()) > 0 ? 1 : -1)
             );
 
             randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);
 
             spawnManager.setSpawnEnabled(e.getPlayer().getUniqueId(), true);
             spawnManager.setSpawnLocation(e.getPlayer().getUniqueId(), randomSpawn);
+
+            e.getPlayer().teleport(randomSpawn);
+
+            getPlayerProfile(e.getPlayer().getUniqueId()).set("firstJoin", System.currentTimeMillis());
         }
 
-        addSpawnHologram(e.getPlayer());
+        getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getPlugin(), () -> {
+            addSpawnHologram(e.getPlayer());
+        }, 30);
     }
 
     @EventHandler

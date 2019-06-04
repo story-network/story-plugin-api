@@ -49,7 +49,7 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
 
     @Override
     public void onDisable(boolean reload) {
-        if (loaded && getWebHookURL().isEmpty())
+        if (!loaded && getWebHookURL().isEmpty())
             return;
 
         sendConsoleMessageAsync("서버가 중지되고 있습니다.").run();
@@ -60,12 +60,7 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
         if (e.isCancelled())
             return;
 
-        if (loaded) {
-            if (getWebHookURL().isEmpty())
-                return;
-
-            sendMessageAsync(e.getPlayer().getName(), "https://crafatar.com/avatars/" + e.getPlayer().getPlayerProfile().getId(), e.getMessage()).run();
-        }
+        sendMessageAsync(e.getPlayer().getName(), "https://crafatar.com/avatars/" + e.getPlayer().getPlayerProfile().getId(), e.getMessage()).run();
     }
 
     @EventHandler
@@ -107,9 +102,6 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
 
     protected void onConfigLoaded(Void v, Throwable throwable) {
         loaded = true;
-
-        if (getWebHookURL().isEmpty())
-            return;
 
         sendConsoleMessageAsync("서버가 시작되고 있습니다.").run();
     }
@@ -181,10 +173,28 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
     }
 
     public AsyncTask<Void> sendMessageAsync(String username, String message) {
+        if (!loaded || getWebHookURL().isEmpty()) {
+            return new AsyncTask<Void>(new AsyncCallable<Void>() {
+                @Override
+                public Void get() {
+                    return null;
+                }
+            });
+        }
+
         return send(createWebHookObject(username, message));
     }
 
     public AsyncTask<Void> sendMessageAsync(String username, String avatarURL, String message) {
+        if (!loaded || getWebHookURL().isEmpty()) {
+            return new AsyncTask<Void>(new AsyncCallable<Void>() {
+                @Override
+                public Void get() {
+                    return null;
+                }
+            });
+        }
+
         return send(createWebHookObject(username, avatarURL, message));
     }
 

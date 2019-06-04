@@ -36,12 +36,16 @@ import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import net.minecraft.server.v1_14_R1.DimensionManager;
 import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntity;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityTeleport;
 import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_14_R1.PacketPlayOutPosition;
 import net.minecraft.server.v1_14_R1.PacketPlayOutRespawn;
+import net.minecraft.server.v1_14_R1.WorldType;
 import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo.*;
 
 public class PlayerCustomSkin extends MiniPlugin implements Listener {
@@ -189,9 +193,14 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         try {
             object = MineSkinAPI.getSessionPlayerProperty(id);
         } catch (Exception e) {
+            try {
             getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "CustomSkin", "MineSkin API로 스킨을 가져올 수 없습니다. Mojang API를 사용합니다. " + e.getLocalizedMessage()));
 
             object = MojangAPI.getSessionPlayerProperty(id);
+            } catch (Exception e1) {
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "스킨을 가져올 수 없습니다. 서버 오류 일수도 있으니 잠시후 다시 시도해주세요. " + e1.getLocalizedMessage()));
+                return;
+            }
         }
         setPlayerSkinTexture(p, object.get("value").getAsString(), object.get("signature").getAsString());
     }
@@ -215,13 +224,11 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
 		Location location = p.getLocation();
 
-        ConnectionUtil.sendPacket(removePacket);
+        ConnectionUtil.sendPacket(removePacket, infoPacket);
         ConnectionUtil.sendPacket(p, respawnPacket);
 
-	    p.teleport(location);
+        p.teleport(location, TeleportCause.PLUGIN);
 	    p.updateInventory();
-
-        ConnectionUtil.sendPacket(infoPacket);
     }
 
     @EventHandler
