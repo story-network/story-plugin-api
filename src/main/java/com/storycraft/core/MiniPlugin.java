@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public abstract class MiniPlugin {
+    
     private StoryPlugin plugin;
     private boolean enabled = false;
 

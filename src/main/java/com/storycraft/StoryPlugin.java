@@ -37,6 +37,7 @@ import com.storycraft.core.spawn.ServerSpawnManager;
 import com.storycraft.core.teleport.TeleportAskCommand;
 import com.storycraft.core.uuid.UUIDRevealCommand;
 import com.storycraft.core.world.WorldTeleporter;
+import com.storycraft.mod.ModManager;
 import com.storycraft.server.ServerManager;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.server.plugin.ServerPluginManager;
@@ -96,6 +97,8 @@ public class StoryPlugin extends JavaPlugin implements Listener {
     private RankManager rankManager;
 
     private ServerDecorator decorator;
+
+    private ModManager modManager;
 
     private boolean initalized = false;
 
@@ -172,6 +175,14 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new TeleportAskCommand());
         loader.addMiniPlugin(new PlayerCustomSkin());
+
+        postInitMiniPlugin();
+    }
+
+    private void postInitMiniPlugin() {
+        MiniPluginLoader loader = getMiniPluginLoader();
+
+        loader.addMiniPlugin(modManager = new ModManager(this));
     }
 
     private void registerCommand() {
@@ -242,6 +253,10 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
             TestFunction.test(this, getServer().getWorld("world"));
         }
+    }
+
+    public ModManager getModManager() {
+        return modManager;
     }
 
     @Override

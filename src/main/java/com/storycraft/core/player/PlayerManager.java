@@ -10,10 +10,12 @@ import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.player.login.ServerKickMessage;
 import com.storycraft.core.player.movement.CrawlToggler;
 import com.storycraft.core.skin.PlayerCustomSkin;
+import com.storycraft.core.spawn.PlayerSpawnManager;
 
 public class PlayerManager extends MiniPlugin {
 
     private HomeManager homeManager;
+    private PlayerSpawnManager playerSpawnManager;
 
     @Override
     public void onLoad(StoryPlugin plugin) {
@@ -30,6 +32,10 @@ public class PlayerManager extends MiniPlugin {
 
     public HomeManager getHomeManager() {
         return homeManager;
+    }
+    
+    public PlayerSpawnManager getPlayerSpawnManager() {
+        return playerSpawnManager;
     }
 
 }

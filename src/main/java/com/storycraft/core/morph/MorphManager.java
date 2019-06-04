@@ -123,7 +123,7 @@ public class MorphManager extends MiniPlugin {
     }
 
     public void removeMorph(Entity e) {
-        removeMorph(e, !e.isDead());
+        removeMorph(e, e.isValid());
     }
 
     public void removeMorph(Entity e, boolean needRespawn) {
