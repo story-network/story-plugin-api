@@ -98,9 +98,9 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
         if (!hasJoined(e.getPlayer().getUniqueId())) {
             World w = getPlugin().getServer().getWorld("world");
             Location randomSpawn = new Location(w
-            , Math.floor(7500 + Math.random() * 15000) * (Math.round(Math.random()) > 0 ? 1 : -1)
+            , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
             , 0
-            , Math.floor(7500 + Math.random() * 15000) * (Math.round(Math.random()) > 0 ? 1 : -1)
+            , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
             );
 
             randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);

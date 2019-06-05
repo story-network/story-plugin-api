@@ -162,19 +162,15 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
     }
 
     private void injectChannelInternal(Channel channel, boolean update) {
-        try {
-            if (update || !getInjectChannelList().contains(channel)) {
-                CustomPacketEncoder encoder = new CustomPacketEncoder(this);
-                CustomPacketDecoder decoder = new CustomPacketDecoder(this);
+        if (update || !getInjectChannelList().contains(channel)) {
+            CustomPacketEncoder encoder = new CustomPacketEncoder(this);
+            CustomPacketDecoder decoder = new CustomPacketDecoder(this);
 
-                channel.pipeline().replace("decoder", "decoder", decoder);
-                channel.pipeline().replace("encoder", "encoder", encoder);
+            channel.pipeline().replace("decoder", "decoder", decoder);
+            channel.pipeline().replace("encoder", "encoder", encoder);
 
-                getInjectChannelList().add(channel);
+            getInjectChannelList().add(channel);
 
-            }
-        } catch (Exception e) {
-            getPlugin().getLogger().warning("Failed to inject channel " + e.getLocalizedMessage());
         }
     }
 
@@ -238,10 +234,14 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
             return false;
         }
 
-        injectChannelInternal(channel, true);
+        try {
+            injectChannelInternal(channel, true);
 
-        ((CustomPacketEncoder) channel.pipeline().get("encoder")).player = p;
-        ((CustomPacketDecoder) channel.pipeline().get("decoder")).player = p;
+            ((CustomPacketEncoder) channel.pipeline().get("encoder")).player = p;
+            ((CustomPacketDecoder) channel.pipeline().get("decoder")).player = p;
+        } catch (Exception e) {
+            getPlugin().getLogger().warning("플레이어 " + p.getName() + " 채널에 핸들러를 삽입할 수 없습니다.");
+        }
 
         return true;
     }
