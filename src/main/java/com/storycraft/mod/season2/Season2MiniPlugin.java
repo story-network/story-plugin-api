@@ -111,6 +111,8 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
             e.getPlayer().teleport(randomSpawn);
 
             getPlayerProfile(e.getPlayer().getUniqueId()).set("firstJoin", System.currentTimeMillis());
+			
+			e.getPlayer().sendTitle(ChatColor.YELLOW + " 스폰 지역 생성중...", ChatColor.WHITE + "잠시만 기다려주세요", 10, 30, 10);
         }
 
         getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getPlugin(), () -> {
