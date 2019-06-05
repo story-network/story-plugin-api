@@ -131,6 +131,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         for (Entity entity : new ArrayList<>(getWorldList(((CraftWorld) e.getWorld()).getHandle()))) {
             Chunk chunk = entity.getBukkitEntity().getLocation().getChunk();
             if (e.getChunk().equals(chunk)) {
+				sendDestroyPacket(e.getPlayer(), entity);
                 sendSpawnPacket(e.getPlayer(), entity);
                 sendUpdatePacket(e.getPlayer(), entity, true);
             }
@@ -141,6 +142,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     public void onPlayerRespawn(PlayerPostRespawnEvent e) {
         for (Entity entity : new ArrayList<>(getWorldList(((CraftWorld) e.getRespawnedLocation().getWorld()).getHandle()))) {
             if (entity.getBukkitEntity().getLocation().distanceSquared(e.getRespawnedLocation()) < 65535) {
+				sendDestroyPacket(e.getPlayer(), entity);
                 sendSpawnPacket(e.getPlayer(), entity);
                 sendUpdatePacket(e.getPlayer(), entity, true);
             }

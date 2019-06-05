@@ -115,7 +115,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
 			e.getPlayer().sendTitle(ChatColor.YELLOW + " 스폰 지역 생성중...", ChatColor.WHITE + "잠시만 기다려주세요", 10, 30, 10);
         }
 
-        getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getPlugin(), () -> {
+        getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), () -> {
             addSpawnHologram(e.getPlayer());
         }, 30);
     }
