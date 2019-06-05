@@ -7,10 +7,6 @@ public class CorePluginUpdateEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    public CorePluginUpdateEvent() {
-        super(true);
-    }
-
     @Override
     public HandlerList getHandlers() {
         return handlers;
