@@ -170,6 +170,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                     return;
                 }
                 else if (plugin == getPlugin()) {
+					getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "PluginManager", "코어 플러그인 업데이트중..."));
                     getServerPluginManager().unloadPlugin(plugin);
                     getServerPluginManager().enablePlugin(getServerPluginManager().loadPlugin(getPlugin().getOriginalFile()));
                     getPlugin().getServer().getPluginManager().callEvent(new CorePluginUpdateEvent());

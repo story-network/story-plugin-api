@@ -1,4 +1,4 @@
-package com.storycraft.mod.session2;
+package com.storycraft.mod.season2;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class Session2MiniPlugin extends MiniPlugin implements Listener {
+public class Season2MiniPlugin extends MiniPlugin implements Listener {
 
     private JsonConfigFile configFile;
 
