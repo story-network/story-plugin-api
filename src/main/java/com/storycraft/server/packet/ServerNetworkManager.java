@@ -238,7 +238,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
         }
 
         try {
-            injectChannelInternal(channel, true);
+            injectChannelInternal(channel, false);
 
             ((CustomPacketEncoder) channel.pipeline().get("encoder")).player = p;
             ((CustomPacketDecoder) channel.pipeline().get("decoder")).player = p;
