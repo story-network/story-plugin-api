@@ -1,5 +1,6 @@
 package com.storycraft.server.world.addon;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.server.world.IWorldAddon;
 import com.storycraft.util.BlockIdUtil;
 
@@ -17,14 +18,14 @@ import org.bukkit.inventory.ItemStack;
 public class SnowPickAddon implements IWorldAddon {
 
     @Override
-    public AddonHandler createHandler(World world) {
-		return new SnowPickAddonHandler(this, world);
+    public AddonHandler createHandler(StoryPlugin plugin, World world) {
+		return new SnowPickAddonHandler(plugin, this, world);
     }
     
     public class SnowPickAddonHandler extends AddonHandler {
 
-        protected SnowPickAddonHandler(IWorldAddon addon, World world) {
-            super(addon, world);
+        protected SnowPickAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world) {
+            super(plugin, addon, world);
         }
         
         @EventHandler

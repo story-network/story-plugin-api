@@ -1,5 +1,6 @@
 package com.storycraft.server.world.addon;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.server.world.IWorldAddon;
 
@@ -14,29 +15,29 @@ import org.bukkit.event.EventHandler;
 public class SnowStackAddon implements IWorldAddon {
 
     @Override
-    public AddonHandler createHandler(World world) {
-		return new SnowStackAddonHandler(this, world);
+    public AddonHandler createHandler(StoryPlugin plugin, World world) {
+		return new SnowStackAddonHandler(plugin, this, world);
     }
 
     public class SnowStackAddonHandler extends AddonHandler {
 
-        protected SnowStackAddonHandler(IWorldAddon addon, World world) {
-            super(addon, world);
+        protected SnowStackAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world) {
+            super(plugin, addon, world);
         }
         
         @EventHandler
         public void onUpdate(ServerUpdateEvent e) {
-            if (getWorld().isThundering()) {
-                getNMSWorld().getMinecraftServer().executeSync(() -> {
+            if (getWorld().hasStorm()) {
+                getPlugin().getServer().getScheduler().runTask(getPlugin(), () -> {
                     for (Chunk c : getWorld().getLoadedChunks()) {
                         for (int i = 0; i < 3; i++) {
                             Block b = c.getBlock((int) (Math.random() * 15.9), (int) (Math.random() * 255), (int) (Math.random() * 15.9));
     
                             if (b.getTemperature() < 0.15 && b.getType() == Material.SNOW && b.getY() == getWorld().getHighestBlockYAt(b.getX(), b.getZ())) {
-                                Snow snowBlock = (Snow) b.getState();
+                                Snow snowBlock = (Snow) b.getBlockData();
 
                                 Location loc = b.getLocation();
-                                if (loc.getBlockY() > 2 && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW)
+                                if (loc.getBlockY() < 2 || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW)
                                     continue;
 
                                 if (snowBlock.getLayers() >= snowBlock.getMaximumLayers()) {
@@ -44,6 +45,7 @@ public class SnowStackAddon implements IWorldAddon {
                                 }
                                 else {
                                     snowBlock.setLayers(snowBlock.getLayers() + 1);
+                                    b.setBlockData(snowBlock);
                                 }
                             }
                         }

@@ -1,5 +1,6 @@
 package com.storycraft.server.world.addon;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.server.world.IWorldAddon;
 
 import org.bukkit.World;
@@ -14,14 +15,14 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 public class FixedMobAddon implements IWorldAddon {
 
     @Override
-    public AddonHandler createHandler(World world) {
-		return new FixedMobAddonHandler(this, world);
+    public AddonHandler createHandler(StoryPlugin plugin, World world) {
+		return new FixedMobAddonHandler(plugin, this, world);
     }
     
     public class FixedMobAddonHandler extends AddonHandler {
 
-        protected FixedMobAddonHandler(IWorldAddon addon, World world) {
-            super(addon, world);
+        protected FixedMobAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world) {
+            super(plugin, addon, world);
         }
         
         @EventHandler

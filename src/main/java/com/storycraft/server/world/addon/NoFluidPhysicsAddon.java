@@ -1,5 +1,6 @@
 package com.storycraft.server.world.addon;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.server.world.IWorldAddon;
 
 import org.bukkit.World;
@@ -9,14 +10,14 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 public class NoFluidPhysicsAddon implements IWorldAddon {
 
     @Override
-    public AddonHandler createHandler(World world) {
-		return new NoFluidPhysicsAddonHandler(this, world);
+    public AddonHandler createHandler(StoryPlugin plugin, World world) {
+		return new NoFluidPhysicsAddonHandler(plugin, this, world);
     }
     
     public class NoFluidPhysicsAddonHandler extends AddonHandler {
 
-        protected NoFluidPhysicsAddonHandler(IWorldAddon addon, World world) {
-            super(addon, world);
+        protected NoFluidPhysicsAddonHandler(StoryPlugin plugin,IWorldAddon addon, World world) {
+            super(plugin, addon, world);
         }
         
         @EventHandler

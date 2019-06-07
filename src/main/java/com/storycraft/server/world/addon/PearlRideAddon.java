@@ -1,5 +1,6 @@
 package com.storycraft.server.world.addon;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.server.world.IWorldAddon;
 import com.storycraft.util.BlockIdUtil;
 
@@ -20,14 +21,14 @@ import org.bukkit.inventory.ItemStack;
 public class PearlRideAddon implements IWorldAddon {
 
     @Override
-    public AddonHandler createHandler(World world) {
-		return new PearlRideAddonHandler(this, world);
+    public AddonHandler createHandler(StoryPlugin plugin, World world) {
+		return new PearlRideAddonHandler(plugin, this, world);
     }
     
     public class PearlRideAddonHandler extends AddonHandler {
 
-        protected PearlRideAddonHandler(IWorldAddon addon, World world) {
-            super(addon, world);
+        protected PearlRideAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world) {
+            super(plugin, addon, world);
         }
         
         @EventHandler

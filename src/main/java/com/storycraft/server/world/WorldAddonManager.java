@@ -124,7 +124,7 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
         if (hasAddonToWorld(w, addon))
             return;
 
-        IWorldAddon.AddonHandler handler = addon.createHandler(w);
+        IWorldAddon.AddonHandler handler = addon.createHandler(getPlugin(), w);
 
         getAddonHandlerList(w).add(handler);
 
