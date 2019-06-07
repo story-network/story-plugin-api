@@ -4,6 +4,7 @@ import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.server.world.IWorldAddon;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -33,6 +34,11 @@ public class SnowStackAddon implements IWorldAddon {
     
                             if (b.getTemperature() < 0.15 && b.getType() == Material.SNOW && b.getY() == getWorld().getHighestBlockYAt(b.getX(), b.getY())) {
                                 Snow snowBlock = (Snow) b.getState();
+
+                                Location loc = b.getLocation();
+                                if (loc.getBlockY() > 2 && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW)
+                                    continue;
+
                                 if (snowBlock.getLayers() >= snowBlock.getMaximumLayers()) {
                                     b.getLocation().add(0, 1, 0).getBlock().setType(Material.SNOW);
                                 }
