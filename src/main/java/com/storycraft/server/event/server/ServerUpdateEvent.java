@@ -10,7 +10,7 @@ public class ServerUpdateEvent extends Event {
     private long currentTick;
 
     public ServerUpdateEvent(long currentTick){
-        super();
+        super(true);
         this.currentTick = currentTick;
     }
 
