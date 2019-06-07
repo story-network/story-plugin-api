@@ -173,7 +173,6 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
             channel.pipeline().replace("encoder", "encoder", encoder);
 
             getInjectChannelList().add(channel);
-            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "Network Manager", "Network Hook injected to " + channel.remoteAddress()));
         }
     }
 
@@ -242,6 +241,8 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
             ((CustomPacketEncoder) channel.pipeline().get("encoder")).player = p;
             ((CustomPacketDecoder) channel.pipeline().get("decoder")).player = p;
+
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "NetworkManager", "Player Network Hook injected to " + channel.remoteAddress()));
         } catch (Exception e) {
             getPlugin().getLogger().warning("플레이어 " + p.getName() + " 채널에 핸들러를 삽입할 수 없습니다.");
         }
