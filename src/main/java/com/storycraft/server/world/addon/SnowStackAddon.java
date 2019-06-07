@@ -30,7 +30,9 @@ public class SnowStackAddon implements IWorldAddon {
             if (getWorld().hasStorm()) {
                 getPlugin().getServer().getScheduler().runTask(getPlugin(), () -> {
                     Chunk cList[] = getWorld().getLoadedChunks();
-                    for (int a = 0; a < 3; a++) {
+                    int limit = getPlugin().getServer().getOnlinePlayers().size();
+                    
+                    for (int a = 0; a < limit; a++) {
                         Chunk c = cList[(int) (Math.random() * cList.length)];
                         for (int i = 0; i < 3; i++) {
                             Block b = c.getBlock((int) (Math.random() * 15.9), (int) (Math.random() * 255), (int) (Math.random() * 15.9));
