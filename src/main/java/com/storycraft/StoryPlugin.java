@@ -288,7 +288,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
             MinecraftKey key = payloadChannel.get(packet);
 
-            if (PacketPlayOutCustomPayload.b.equals(key)) {
+            if (PacketPlayOutCustomPayload.a.equals(key)) {
                 PacketDataSerializer serializer = new PacketDataSerializer(Unpooled.buffer());
 
                 serializer.a(getServerName());
