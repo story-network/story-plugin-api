@@ -100,6 +100,8 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     private ModManager modManager;
 
+    private DiscordChatHook discordChat;
+
     private boolean initalized = false;
 
     private TempStorage tempStorage;
@@ -160,7 +162,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new EntityBlood());
         loader.addMiniPlugin(new DropCounter());
         loader.addMiniPlugin(new RandomTP());
-        loader.addMiniPlugin(new DiscordChatHook());
+        loader.addMiniPlugin(discordChat = new DiscordChatHook());
         loader.addMiniPlugin(new DamageHologram());
         loader.addMiniPlugin(new JukeboxPlay());
         loader.addMiniPlugin(new BroadcastManager());
@@ -257,6 +259,10 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     public ModManager getModManager() {
         return modManager;
+    }
+
+    public DiscordChatHook getDiscordChat() {
+        return discordChat;
     }
 
     @Override

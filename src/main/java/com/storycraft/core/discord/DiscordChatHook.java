@@ -14,7 +14,6 @@ import com.google.gson.JsonObject;
 import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.core.MiniPlugin;
-import com.storycraft.server.plugin.CorePluginUpdateEvent;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.AsyncTask.AsyncCallable;
@@ -73,12 +72,7 @@ public class DiscordChatHook extends MiniPlugin implements Listener {
     public void onPlayerQuit(PlayerQuitEvent e) {
         sendConsoleMessageAsync(" - " + e.getPlayer().getName()).run();
     }
-
-    @EventHandler
-    public void onCoreUpdate(CorePluginUpdateEvent e) {
-        sendConsoleMessageAsync("코어 플러그인 업데이트중..").run();
-    }
-
+    
     public JsonObject createWebHookObject(String name, String avatarURL, String message) {
         JsonObject object = createWebHookObject(name, message);
 

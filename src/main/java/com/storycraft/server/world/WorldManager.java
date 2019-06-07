@@ -62,13 +62,17 @@ public class WorldManager extends ServerExtension implements Listener {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
         getPlugin().getServer().getPluginManager().registerEvents(addonManager, getPlugin());
 
-        for (World w : getPlugin().getServer().getWorlds()) {
-            if (contains(w.getName())) {
-                return;
+        getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable(){
+            public void run(){
+                for (World w : getPlugin().getServer().getWorlds()) {
+                    if (contains(w.getName())) {
+                        return;
+                    }
+            
+                    loadDefaultWorld(new DefaultUniverse(w));
+                }
             }
-    
-            loadDefaultWorld(new DefaultUniverse(w));
-        }
+        });
 
         //worlds load after server init
         getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), this::loadUniverse, 0);

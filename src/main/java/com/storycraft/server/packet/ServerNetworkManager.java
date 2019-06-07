@@ -3,6 +3,9 @@ package com.storycraft.server.packet;
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.ServerManager;
+import com.storycraft.util.MessageUtil;
+import com.storycraft.util.MessageUtil.MessageTemplate;
+import com.storycraft.util.MessageUtil.MessageType;
 import com.storycraft.util.reflect.Reflect;
 import io.netty.channel.*;
 import net.minecraft.server.v1_14_R1.*;
@@ -170,7 +173,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
             channel.pipeline().replace("encoder", "encoder", encoder);
 
             getInjectChannelList().add(channel);
-
+            getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "Network Manager", "Network Hook injected to " + channel.remoteAddress()));
         }
     }
 

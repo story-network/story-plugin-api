@@ -136,6 +136,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
                 sendUpdatePacket(e.getPlayer(), entity, true);
             }
         }
+
     }
 
     @EventHandler
