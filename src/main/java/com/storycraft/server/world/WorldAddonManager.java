@@ -44,6 +44,7 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
         addAddon("NoFluidPhysics", new NoFluidPhysicsAddon());
         addAddon("SnowPick", new SnowPickAddon());
         addAddon("PearlRide", new PearlRideAddon());
+        addAddon("SnowStack", new SnowStackAddon());
     }
 
     public WorldManager getWorldManager() {
