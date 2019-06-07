@@ -13,6 +13,7 @@ import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.ShortHologram;
 import com.storycraft.core.spawn.PlayerSpawnManager;
+import com.storycraft.util.AsyncTask;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -90,29 +91,36 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
         if (spawnHologramList.containsKey(p.getName()))
             getPlugin().getDecorator().getHologramManager().removeHologram(spawnHologramList.remove(p.getName()));
     }
+    
+    protected void firstJoinHandler(Player p) {
+        PlayerSpawnManager spawnManager = getPlugin().getPlayerManager().getPlayerSpawnManager();
+
+        World w = getPlugin().getServer().getWorld("world");
+        Location randomSpawn = new Location(w
+        , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
+        , 0
+        , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
+        );
+
+        randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);
+
+        spawnManager.setSpawnEnabled(p.getUniqueId(), true);
+        spawnManager.setSpawnLocation(p.getUniqueId(), randomSpawn);
+
+        p.teleportAsync(randomSpawn).thenApply((Boolean b) -> {
+            return null;
+        });
+
+        getPlayerProfile(p.getUniqueId()).set("firstJoin", System.currentTimeMillis());
+        
+        p.sendTitle(ChatColor.YELLOW + " 스폰 지역 생성중...", ChatColor.WHITE + "잠시만 기다려주세요", 10, 30, 10);
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        PlayerSpawnManager spawnManager = getPlugin().getPlayerManager().getPlayerSpawnManager();
 
         if (!hasJoined(e.getPlayer().getUniqueId())) {
-            World w = getPlugin().getServer().getWorld("world");
-            Location randomSpawn = new Location(w
-            , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
-            , 0
-            , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
-            );
-
-            randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);
-
-            spawnManager.setSpawnEnabled(e.getPlayer().getUniqueId(), true);
-            spawnManager.setSpawnLocation(e.getPlayer().getUniqueId(), randomSpawn);
-
-            e.getPlayer().teleport(randomSpawn);
-
-            getPlayerProfile(e.getPlayer().getUniqueId()).set("firstJoin", System.currentTimeMillis());
-			
-			e.getPlayer().sendTitle(ChatColor.YELLOW + " 스폰 지역 생성중...", ChatColor.WHITE + "잠시만 기다려주세요", 10, 30, 10);
+            firstJoinHandler(e.getPlayer());
         }
 
         getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), () -> {

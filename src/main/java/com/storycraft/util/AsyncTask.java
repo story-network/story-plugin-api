@@ -12,7 +12,7 @@ public class AsyncTask<T> {
 
     private AsyncCallable<T> supplier;
     private CompletableFuture<T> task;
-    private AsyncNext<T> onComplete;
+    private volatile AsyncNext<T> onComplete;
 
     public AsyncTask(AsyncCallable<T> asyncCallable) {
         this.supplier = asyncCallable;
@@ -54,9 +54,10 @@ public class AsyncTask<T> {
         return supplier.get();
     }
 
-    public static abstract class AsyncCallable<T> implements AsyncSupplier<T> {
+    @FunctionalInterface
+    public static interface AsyncCallable<T> extends AsyncSupplier<T> {
 
-        public <A>A await(AsyncTask<A> task) throws Throwable {
+        public default <A>A await(AsyncTask<A> task) throws Throwable {
             if (task.task != null)
                 return task.task.join();
             else

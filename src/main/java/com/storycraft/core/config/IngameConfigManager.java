@@ -120,7 +120,7 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
 
             case "merge": {
                 if (args.length < 3) {
-                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config set <config 이름> <값>"));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ConfigManager", "사용법 /config merge <config 이름> <값>"));
                     return;
                 }
 
@@ -203,6 +203,8 @@ public class IngameConfigManager extends MiniPlugin implements ICommand {
                     getPlugin().getServer().getPluginManager().callEvent(new ConfigUpdateEvent(name, getPlugin().getConfigManager().getConfigFile(name)));
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", "콘픽 " + name + " 을(를) 저장소에서 리로드 했습니다"));
                 }).run();
+
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ConfigManager", "콘픽 " + name + " 을(를) 저장소에서 리로드 했습니다"));
                 break;
             }
 

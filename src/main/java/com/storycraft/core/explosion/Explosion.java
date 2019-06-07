@@ -235,11 +235,8 @@ public class Explosion extends MiniPlugin {
                 }
             }
             else {
-                Parallel.forEach(blockList, new Parallel.Operation<Block>() {
-                    @Override
-                    public void run(Block b) {
-                        handle.apply(b);
-                    }
+                Parallel.forEach(blockList, (Block b) -> {
+                    handle.apply(b);
                 });
             }
         }
