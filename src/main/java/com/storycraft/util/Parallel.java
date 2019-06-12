@@ -23,6 +23,14 @@ public class Parallel {
         }
     }
 
+    public static <T> void forEach(Iterable<T> elements, Operation<T> operation) {
+        try {
+            forPool.invokeAll(createCallable(elements, operation));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static <T, U> void forEachBi(Iterable<Map.Entry<T, U>> elements, BiFunction<T, U, Void> operation) {
         try {
             forPool.invokeAll(createBiCallable(elements, operation));
@@ -60,4 +68,15 @@ public class Parallel {
 
         return callables;
     }
+
+    @FunctionalInterface
+    public interface Operation<T> extends Function<T, Void> {
+        void run(T param);
+
+        default Void apply(T param) {
+            run(param);
+            return null;
+        }
+    }
+
 }
