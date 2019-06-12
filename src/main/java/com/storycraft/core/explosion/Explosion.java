@@ -25,8 +25,11 @@ import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Explosion extends MiniPlugin {
@@ -184,16 +187,14 @@ public class Explosion extends MiniPlugin {
             Random rnd = new Random();
             
             World w = center.getWorld();
-    
-            Function<Block, Void> handle = b -> {
+
+            for (Block b : blockList) {
                 if (b == null || b.getType() == Material.AIR || isExplosive(b.getType()))
-                    return null;
+                    continue;
 
                 BlockData data = b.getBlockData();
 
                 if (type == ExplosionType.FLYING_BLOCKS_RESTORE_RANDOM) {
-                    b.setType(Material.AIR);
-
                     Location loc = b.getLocation();
 
                     Runnable task = () -> {
@@ -213,31 +214,15 @@ public class Explosion extends MiniPlugin {
                     if (vec.getY() < 0)
                         vec.setY(vec.getY() * -1);
 
-                    getExplosion().runSync(() -> {
-                        FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), data);
+                    FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), data);
     
-                        fb.setHurtEntities(true);
-                        fb.setDropItem(false);
+                    fb.setHurtEntities(true);
+                    fb.setDropItem(false);
     
-                        fb.setVelocity(vec.normalize());
+                    fb.setVelocity(vec.normalize());
     
-                        setExplosionBlock(fb, true);
-    
-                        return null;
-                    });
+                    setExplosionBlock(fb, true);
                 }
-                return null;
-            };
-    
-            if (blockList.size() <= 250) {
-                for (Block b : blockList) {
-                    handle.apply(b);
-                }
-            }
-            else {
-                Parallel.forEach(blockList, (Block b) -> {
-                    handle.apply(b);
-                });
             }
         }
     
