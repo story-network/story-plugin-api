@@ -1,6 +1,7 @@
 package com.storycraft.server;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.server.chunk.AsyncChunkLoader;
 import com.storycraft.server.clientside.ClientSideManager;
 import com.storycraft.server.event.client.ClientEventManager;
 import com.storycraft.server.forge.ForgeServerManager;
@@ -31,6 +32,8 @@ public class ServerManager {
     private ClientEventManager clientEventManager;
     private PermissionManager permissionManager;
 
+    private AsyncChunkLoader asyncChunkLoader;
+
     private CorePluginUpdater corePluginUpdater;
 
     private List<ServerExtension> extensionList;
@@ -53,6 +56,7 @@ public class ServerManager {
         addServerExtension(clientEventManager = new ClientEventManager());
         addServerExtension(corePluginUpdater = new CorePluginUpdater());
         addServerExtension(permissionManager = new PermissionManager());
+        addServerExtension(asyncChunkLoader = new AsyncChunkLoader());
     }
 
     protected List<ServerExtension> getExtensionList() {
