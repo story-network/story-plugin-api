@@ -11,6 +11,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldType;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Snow;
 import org.bukkit.entity.Player;
@@ -34,7 +35,8 @@ public class SnowStackAddon implements IWorldAddon {
             if (getWorld().hasStorm()) {
                 getPlugin().getServer().getScheduler().runTask(getPlugin(), () -> {
                     
-                    for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+                    for (Player p : getWorld().getPlayers()) {
+
                         List<Chunk> nearbyChunks = getNearbyChunk(p, 128);
                         for (Chunk c : nearbyChunks) {
                             int section = (int) (Math.random() * 15.9);
@@ -71,7 +73,7 @@ public class SnowStackAddon implements IWorldAddon {
 
             for (int oX = -chunkDistance; oX <= chunkDistance; oX++) {
                 for (int oZ = -chunkDistance; oZ <= chunkDistance; oZ++) {
-                    Location loc = center.add(oX * 16, 0, oZ * 16);
+                    Location loc = center.clone().add(oX * 16, 0, oZ * 16);
 
                     if (loc.distanceSquared(center) <= distanceSq)
                         list.add(loc.getChunk());
