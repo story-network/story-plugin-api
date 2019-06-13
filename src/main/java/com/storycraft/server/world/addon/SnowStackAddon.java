@@ -1,5 +1,8 @@
 package com.storycraft.server.world.addon;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.storycraft.StoryPlugin;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.server.world.IWorldAddon;
@@ -10,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Snow;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 public class SnowStackAddon implements IWorldAddon {
@@ -29,15 +33,13 @@ public class SnowStackAddon implements IWorldAddon {
         public void onUpdate(ServerUpdateEvent e) {
             if (getWorld().hasStorm()) {
                 getPlugin().getServer().getScheduler().runTask(getPlugin(), () -> {
-                    Chunk cList[] = getWorld().getLoadedChunks();
-                    int limit = getPlugin().getServer().getOnlinePlayers().size();
                     
-                    for (int a = 0; a < limit; a++) {
-                        Chunk c = cList[(int) (Math.random() * cList.length)];
+                    for (Player p : getPlugin().getServer().getOnlinePlayers()) {
+                        List<Chunk> nearbyChunks = getNearbyChunk(p, 128);
+                        for (Chunk c : nearbyChunks) {
                         int section = (int) (Math.random() * 15.9);
 
-                        for (int i = 0; i < 3; i++) {
-                            Block b = c.getBlock((int) (Math.random() * 15.9), (int) (section * 16 + Math.random() * 15.9), (int) (Math.random() * 15.9));
+                        Block b = c.getBlock((int) (Math.random() * 15.9), (int) (section * 16 + Math.random() * 15.9), (int) (Math.random() * 15.9));
     
                             if (b.getTemperature() < 0.15 && b.getType() == Material.SNOW && b.getY() == getWorld().getHighestBlockYAt(b.getX(), b.getZ())) {
                                 Snow snowBlock = (Snow) b.getBlockData();
@@ -58,6 +60,25 @@ public class SnowStackAddon implements IWorldAddon {
                     }
                 });
             }
+        }
+
+        protected List<Chunk> getNearbyChunk(Player p, double distance) {
+            List<Chunk> list = new ArrayList<>();
+
+            Location center = p.getLocation();
+            int chunkDistance = (int) distance / 16;
+            double distanceSq = Math.pow(distance, 2);
+
+            for (int oX = -chunkDistance; oX <= chunkDistance; oX++) {
+                for (int oZ = -chunkDistance; oZ <= chunkDistance; oZ++) {
+                    Location loc = center.add(oX * 16, 0, oZ * 16);
+
+                    if (loc.distanceSquared(center) <= distanceSq)
+                        list.add(loc.getChunk());
+                }
+            }
+
+            return list;
         }
     }
 }
