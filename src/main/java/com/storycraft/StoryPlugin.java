@@ -297,7 +297,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
             if (PacketPlayOutCustomPayload.a.equals(key)) {
                 PacketDataSerializer serializer = new PacketDataSerializer(Unpooled.buffer());
 
-                serializer.a(getServerName());
+                serializer.a(getServerName() + ChatColor.RESET);
 
                 dataSerializer.set(packet, serializer);
             }
