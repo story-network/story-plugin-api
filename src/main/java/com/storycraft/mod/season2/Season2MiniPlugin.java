@@ -84,7 +84,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
     }
 
     protected void addSpawnHologram(Player p) {
-        spawnHologramList.remove(p.getName());
+        removeSpawnHologram(p);
 
         Location spawnLoc = getPlugin().getPlayerManager().getPlayerSpawnManager().getSpawnLocation(p.getUniqueId());
 

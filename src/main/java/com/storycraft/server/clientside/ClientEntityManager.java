@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class ClientEntityManager extends ServerExtension implements Listener {
 
-    private Map<World, List<Entity>> entityMap;
+    private Map<String, List<Entity>> entityMap;
 
     public ClientEntityManager(){
         this.entityMap = new HashMap<>();
@@ -28,9 +28,16 @@ public class ClientEntityManager extends ServerExtension implements Listener {
 
     @Override
     public void onDisable(boolean reload){
-        for (World w : entityMap.keySet()){
+        for (String name : entityMap.keySet()){
+            org.bukkit.World w = getPlugin().getServer().getWorld(name);
+
+            if (w == null) {
+                continue;
+            }
+
             for (Entity e : entityMap.get(w)){
-                sendDestroyPacket(e);
+                if (e != null)
+                    sendDestroyPacket(e);
             }
         }
 
@@ -47,10 +54,10 @@ public class ClientEntityManager extends ServerExtension implements Listener {
             return;
 
         if (!hasWorld(e.getWorld())) {
-            entityMap.put(e.getWorld(), new ArrayList<>());
+            entityMap.put(e.getWorld().getWorld().getName(), new ArrayList<>());
         }
 
-        entityMap.get(e.getWorld()).add(e);
+        entityMap.get(e.getWorld().getWorld().getName()).add(e);
         sendSpawnPacket(e);
         sendUpdatePacket(e);
     }
@@ -59,26 +66,26 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         if (!contains(e))
             return;
 
-        entityMap.get(e.getWorld()).remove(e);
+        entityMap.get(e.getWorld().getWorld().getName()).remove(e);
         sendDestroyPacket(e);
     }
 
     public boolean contains(Entity e){
-        return hasWorld(e.getWorld()) && entityMap.get(e.getWorld()).contains(e);
+        return hasWorld(e.getWorld()) && entityMap.get(e.getWorld().getWorld().getName()).contains(e);
     }
 
     protected boolean hasWorld(World w){
-        return entityMap.containsKey(w);
+        return entityMap.containsKey(w.getWorld().getName());
     }
 
     protected List<Entity> getWorldList(World w) {
         List<Entity> list;
 
         if (!entityMap.containsKey(w)) {
-            entityMap.put(w, list = new ArrayList<>());
+            entityMap.put(w.getWorld().getName(), list = new ArrayList<>());
         }
         else {
-            list = entityMap.get(w);
+            list = entityMap.get(w.getWorld().getName());
         }
 
         return list;
