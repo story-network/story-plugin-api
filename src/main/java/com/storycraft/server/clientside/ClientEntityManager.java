@@ -53,7 +53,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         if (contains(e))
             return;
 
-        if (!hasWorld(e.getWorld()))) {
+        if (!hasWorld(e.getWorld())) {
             entityMap.put(e.getWorld().getWorld().getName(), new ArrayList<>());
         }
 
