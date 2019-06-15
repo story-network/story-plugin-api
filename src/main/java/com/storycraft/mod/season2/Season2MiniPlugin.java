@@ -6,23 +6,30 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.advancement.AdvancementType;
 import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.ShortHologram;
 import com.storycraft.core.spawn.PlayerSpawnManager;
 import com.storycraft.util.AsyncTask;
+import com.storycraft.util.MessageUtil;
+import com.storycraft.util.MessageUtil.MessageType;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class Season2MiniPlugin extends MiniPlugin implements Listener {
 
@@ -35,10 +42,12 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
         spawnHologramList = new HashMap<>();
         plugin.getConfigManager().addConfigFile("session2.json", configFile = new JsonConfigPrettyFile()).run();
     }
-    
+
     @Override
     public void onEnable() {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
+
+        getPlugin().getCommandManager().addCommand(new CommandReset());
 
         for (Player p : getPlugin().getServer().getOnlinePlayers())
             addSpawnHologram(p);
@@ -80,8 +89,9 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
         Location spawnLoc = getPlugin().getPlayerManager().getPlayerSpawnManager().getSpawnLocation(p.getUniqueId());
 
         Hologram spawnHologram = new ShortHologram(spawnLoc.add(0, 1.5, 0),
-        ChatColor.GREEN + p.getName() + ChatColor.WHITE + " 의 스폰 위치", ChatColor.WHITE + "" + spawnLoc.getBlockX() + ", " + spawnLoc.getBlockY() + ", " + spawnLoc.getBlockZ());
-        
+                ChatColor.GREEN + p.getName() + ChatColor.WHITE + " 의 스폰 위치", ChatColor.WHITE + ""
+                        + spawnLoc.getBlockX() + ", " + spawnLoc.getBlockY() + ", " + spawnLoc.getBlockZ());
+
         getPlugin().getDecorator().getHologramManager().addHologram(spawnHologram);
 
         spawnHologramList.put(p.getName(), spawnHologram);
@@ -91,29 +101,37 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
         if (spawnHologramList.containsKey(p.getName()))
             getPlugin().getDecorator().getHologramManager().removeHologram(spawnHologramList.remove(p.getName()));
     }
-    
+
     protected void firstJoinHandler(Player p) {
-        PlayerSpawnManager spawnManager = getPlugin().getPlayerManager().getPlayerSpawnManager();
+        Location spawnLoc = setRandomSpawn(p.getUniqueId());
 
-        World w = getPlugin().getServer().getWorld("world");
-        Location randomSpawn = new Location(w
-        , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
-        , 0
-        , Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1)
-        );
-
-        randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);
-
-        spawnManager.setSpawnEnabled(p.getUniqueId(), true);
-        spawnManager.setSpawnLocation(p.getUniqueId(), randomSpawn);
-
-        p.teleportAsync(randomSpawn).thenApply((Boolean b) -> {
+        p.teleportAsync(spawnLoc).thenApply((Boolean b) -> {
             return null;
         });
 
         getPlayerProfile(p.getUniqueId()).set("firstJoin", System.currentTimeMillis());
-        
+        getPlugin().getDecorator().getAdvancementManager().sendToastToPlayer(p, "StoryServer 플레이어 프로필 생성 완료", AdvancementType.TASK, new ItemStack(Material.ENCHANTED_GOLDEN_APPLE));
         p.sendTitle(ChatColor.YELLOW + " 스폰 지역 생성중...", ChatColor.WHITE + "잠시만 기다려주세요", 10, 30, 10);
+    }
+
+    protected Location setRandomSpawn(UUID id, int minRange, int maxRange) {
+        PlayerSpawnManager spawnManager = getPlugin().getPlayerManager().getPlayerSpawnManager();
+
+        World w = getPlugin().getServer().getWorld("world");
+        Location randomSpawn = new Location(w,
+                Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1), 0,
+                Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1));
+
+        randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);
+
+        spawnManager.setSpawnEnabled(id, true);
+        spawnManager.setSpawnLocation(id, randomSpawn);
+
+        return randomSpawn;
+    }
+
+    protected Location setRandomSpawn(UUID id) {
+        return setRandomSpawn(id, 8000, 18000);
     }
 
     @EventHandler
@@ -131,5 +149,50 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         removeSpawnHologram(e.getPlayer());
+    }
+
+    public class CommandReset implements ICommand {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "reset" };
+        }
+
+        @Override
+        public void onCommand(CommandSender sender, String[] args) {
+            Player p = (Player) sender;
+
+            if (System.currentTimeMillis() - getFirstJoin(p.getUniqueId()) > 1000 * 60 * 12 && !p.hasPermission("server.season2.reset.bypass")) {
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "Reset", "최초 접속후 12시간이 지나 더 이상 초기화를 할 수 없습니다"));
+                return;
+            }
+
+            if (args.length < 1) {
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Reset", "스폰 위치가 초기화되고 모든 인벤 내 아이템이 소멸됩니다. 계속하려면 해당 커맨드를 입력하세요. " + ChatColor.WHITE + "/reset confirm"));
+            } else if ("confirm".equals(args[0])) {
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Reset", "스폰 위치 초기화중..."));
+
+                p.teleportAsync(setRandomSpawn(p.getUniqueId())).thenApply((Boolean b) -> {
+                    p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "Reset", "초기화가 완료 되었습니다"));
+                    return null;
+                });
+            }
+        }
+
+        @Override
+        public boolean availableOnConsole() {
+            return false;
+        }
+
+        @Override
+        public boolean availableOnCommandBlock() {
+            return false;
+        }
+
+        @Override
+        public boolean isPermissionRequired() {
+            return false;
+        }
+
     }
 }

@@ -174,7 +174,7 @@ public class PacketUtil {
         return packet;
     }
 
-    public static PacketPlayOutMultiBlockChange getMultiBlockUpdatePacket(Chunk chunk, Map<Location, BlockData> dataMap) {
+    public static PacketPlayOutMultiBlockChange getMultiBlockUpdatePacket(org.bukkit.World world, int chunkX, int chunkZ, Map<Location, BlockData> dataMap) {
         if (multiBlockUpdateChunkField == null) {
             multiBlockUpdateChunkField = Reflect.getField(PacketPlayOutMultiBlockChange.class, "a");
         }
@@ -190,13 +190,16 @@ public class PacketUtil {
         int i = 0;
 
         for (Location loc : dataMap.keySet()) {
-            if (loc.getChunk().equals(chunk)) {
+            int locChunkX = loc.getBlockX() >> 4;
+            int locChunkZ = loc.getBlockZ() >> 4;
+
+            if (loc.getWorld() != null && loc.getWorld().equals(world) && locChunkX == chunkX && locChunkZ == chunkZ) {
                 IBlockData data = BlockIdUtil.getNMSBlockData(dataMap.get(loc));
 
                 short relPos = 0;
-                relPos = (short) ((loc.getBlockX() - chunk.getX() * 16) << 12); //X
+                relPos = (short) ((loc.getBlockX() - chunkX * 16) << 12); //X
                 relPos = (short) loc.getBlockY();                               //Y
-                relPos = (short) ((loc.getBlockZ() - chunk.getZ() * 16) << 8);  //Z
+                relPos = (short) ((loc.getBlockZ() - chunkZ * 16) << 8);  //Z
 
                 infoList[i++] = packet.new MultiBlockChangeInfo(relPos, data);
             }
@@ -208,7 +211,7 @@ public class PacketUtil {
             list[j] = infoList[j];
         }
 
-        multiBlockUpdateChunkField.set(packet, new ChunkCoordIntPair(chunk.getX(), chunk.getZ()));
+        multiBlockUpdateChunkField.set(packet, new ChunkCoordIntPair(chunkX, chunkZ));
         multiBlockUpdateInfoField.set(packet, list);
 
         return packet;

@@ -1,23 +1,28 @@
 package com.storycraft.server.event.client;
 
-import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
 public abstract class AsyncPlayerChunkEvent extends Event implements Cancellable {
 
     private Player player;
-    private Chunk chunk;
+
+    private World world;
+    private int chunkX, chunkZ;
+
     private boolean cancelled;
 
-    public AsyncPlayerChunkEvent(Player player, Chunk chunk) {
+    public AsyncPlayerChunkEvent(Player player, World world, int chunkX, int chunkZ) {
         super(true);
         this.player = player;
-        this.chunk = chunk;
+        
+        this.world = world;
+
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
+
         this.cancelled = false;
     }
 
@@ -36,10 +41,14 @@ public abstract class AsyncPlayerChunkEvent extends Event implements Cancellable
     }
 
     public World getWorld(){
-        return getPlayer().getWorld();
+        return world;
     }
 
-    public Chunk getChunk(){
-        return chunk;
+    public int getChunkX(){
+        return chunkX;
+    }
+
+    public int getChunkZ(){
+        return chunkZ;
     }
 }

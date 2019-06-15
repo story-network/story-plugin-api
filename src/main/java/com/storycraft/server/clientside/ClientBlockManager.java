@@ -101,11 +101,13 @@ public class ClientBlockManager extends ServerExtension implements Listener {
         return blockMap.containsKey(loc);
     }
 
-    protected Map<Location, BlockData> getBlockListInChunk(Chunk chunk){
+    protected Map<Location, BlockData> getBlockListInChunk(org.bukkit.World world, int chunkX, int chunkZ){
         Map<Location, BlockData> map = new HashMap<>();
 
         for (Location loc : new ArrayList<>(blockMap.keySet())) {
-            if (loc.getChunk().equals(chunk)) {
+            int locChunkX = loc.getBlockX() << 4;
+            int locChunkZ = loc.getBlockZ() << 4;
+            if (loc.getWorld() != null && loc.getWorld().equals(world) && locChunkX == chunkX && locChunkZ == chunkZ) {
                 map.put(loc, blockMap.get(loc));
             }
         }
@@ -117,21 +119,21 @@ public class ClientBlockManager extends ServerExtension implements Listener {
         ConnectionUtil.sendPacketNearby(loc, PacketUtil.getBlockUpdatePacket(loc, data));
     }
 
-    protected void sendMultiBlockUpdateNearby(Chunk chunk, Map<Location, BlockData> dataMap) {
-        ConnectionUtil.sendPacketNearby(new Location(chunk.getWorld(), chunk.getX() * 16, 128, chunk.getZ() * 16), PacketUtil.getMultiBlockUpdatePacket(chunk, dataMap));
+    protected void sendMultiBlockUpdateNearby(org.bukkit.World world, int chunkX, int chunkZ, Map<Location, BlockData> dataMap) {
+        ConnectionUtil.sendPacketNearby(new Location(world, chunkX * 16, 128, chunkZ * 16), PacketUtil.getMultiBlockUpdatePacket(world, chunkX, chunkZ, dataMap));
     }
 
     protected void sendBlockUpdate(Player p, Location loc, BlockData data) {
         ConnectionUtil.sendPacket(p, PacketUtil.getBlockUpdatePacket(loc, data));
     }
 
-    protected void sendMultiBlockUpdate(Player p, Chunk chunk, Map<Location, BlockData> dataMap) {
-        ConnectionUtil.sendPacket(p, PacketUtil.getMultiBlockUpdatePacket(chunk, dataMap));
+    protected void sendMultiBlockUpdate(Player p, int chunkX, int chunkZ, Map<Location, BlockData> dataMap) {
+        ConnectionUtil.sendPacket(p, PacketUtil.getMultiBlockUpdatePacket(p.getWorld(), chunkX, chunkZ, dataMap));
     }
 
     @EventHandler
     public void onPlayerChunkLoad(AsyncPlayerLoadChunkEvent e) {
-        Map<Location, BlockData> dataMap = getBlockListInChunk(e.getChunk());
+        Map<Location, BlockData> dataMap = getBlockListInChunk(e.getWorld(), e.getChunkX(), e.getChunkZ());
 
         int size = dataMap.size();
 
@@ -146,7 +148,7 @@ public class ClientBlockManager extends ServerExtension implements Listener {
             }
         }
         else {
-            sendMultiBlockUpdate(e.getPlayer(), e.getChunk(), dataMap);
+            sendMultiBlockUpdate(e.getPlayer(), e.getChunkX(), e.getChunkZ(), dataMap);
         }
     }
 

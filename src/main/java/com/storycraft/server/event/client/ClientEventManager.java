@@ -41,7 +41,7 @@ public class ClientEventManager extends ServerExtension implements Listener {
             int locX = chunkLoadPacketX.get(packet);
             int locZ = chunkLoadPacketZ.get(packet);
 
-            AsyncPlayerLoadChunkEvent event = new AsyncPlayerLoadChunkEvent(p, w.getChunkAt(locX, locZ));
+            AsyncPlayerLoadChunkEvent event = new AsyncPlayerLoadChunkEvent(p, w, locX, locZ);
             getPlugin().getServer().getPluginManager().callEvent(event);
 
             if (event.isCancelled())
@@ -60,7 +60,7 @@ public class ClientEventManager extends ServerExtension implements Listener {
             int locX = chunkUnloadPacketX.get(packet);
             int locZ = chunkUnloadPacketZ.get(packet);
 
-            AsyncPlayerUnloadChunkEvent event = new AsyncPlayerUnloadChunkEvent(p, w.getChunkAt(locX, locZ));
+            AsyncPlayerUnloadChunkEvent event = new AsyncPlayerUnloadChunkEvent(p, w, locX, locZ);
             getPlugin().getServer().getPluginManager().callEvent(event);
 
             if (event.isCancelled())
