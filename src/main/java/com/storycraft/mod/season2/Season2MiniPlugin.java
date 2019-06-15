@@ -169,12 +169,17 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
             }
 
             if (args.length < 1) {
-                p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Reset", "스폰 위치가 초기화되고 모든 인벤 내 아이템이 소멸됩니다. 계속하려면 해당 커맨드를 입력하세요. " + ChatColor.WHITE + "/reset confirm"));
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Reset", "스폰 위치가 초기화되고 인벤 내 모든 아이템이 소멸됩니다. 계속하려면 해당 커맨드를 입력하세요. " + ChatColor.WHITE + "/reset confirm"));
             } else if ("confirm".equals(args[0])) {
                 p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Reset", "스폰 위치 초기화중..."));
 
                 p.teleportAsync(setRandomSpawn(p.getUniqueId())).thenApply((Boolean b) -> {
                     p.getInventory().clear();
+                    
+                    removeSpawnHologram(p);
+                    addSpawnHologram(p);
+
+                    removeSpawnHologram
                     p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "Reset", "초기화가 완료 되었습니다"));
                     return null;
                 });
