@@ -106,6 +106,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
         Location spawnLoc = setRandomSpawn(p.getUniqueId());
 
         p.teleportAsync(spawnLoc).thenApply((Boolean b) -> {
+            p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Reset", "스폰 위치는 최초 접속후 12시간 내 무제한 리셋 할 수 있습니다. 커맨드: " + ChatColor.WHITE + "/reset"));
             return null;
         });
 
