@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 public class ConnectionUtil {
 
     public static final int VIEW_DISTANCE = 256;
+	public static Object s;
 
     public static void sendPacket(Player p, Packet... packets){
         PlayerConnection connection = ((CraftPlayer)p).getHandle().playerConnection;

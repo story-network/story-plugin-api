@@ -11,6 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Parallel {
+    
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
 
     private static final ExecutorService forPool = Executors.newFixedThreadPool(NUM_CORES * 2);

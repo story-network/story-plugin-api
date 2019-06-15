@@ -20,6 +20,7 @@ import com.storycraft.core.player.PlayerManager;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
 import com.storycraft.core.jukebox.JukeboxPlay;
+import com.storycraft.core.map.ImageMap;
 import com.storycraft.core.entity.EntityBlood;
 import com.storycraft.core.entity.EntityManager;
 import com.storycraft.core.explosion.Explosion;
@@ -122,8 +123,8 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         this.originalFile = originalFile;
         this.originalDataFolder = originalDataFolder;
 
-        this.payloadChannel = Reflect.getField(PacketPlayOutCustomPayload.class, "i");
-        this.dataSerializer = Reflect.getField(PacketPlayOutCustomPayload.class, "j");
+        this.payloadChannel = Reflect.getField(PacketPlayOutCustomPayload.class, "n");
+        this.dataSerializer = Reflect.getField(PacketPlayOutCustomPayload.class, "o");
         
         this.pluginDataStorage = new PluginDataStorage(this);
         this.miniPluginLoader = new MiniPluginLoader(this);
@@ -177,6 +178,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new TeleportAskCommand());
         loader.addMiniPlugin(new PlayerCustomSkin());
+        loader.addMiniPlugin(new ImageMap());
 
         postInitMiniPlugin();
     }
@@ -263,6 +265,10 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     public DiscordChatHook getDiscordChat() {
         return discordChat;
+    }
+
+    public org.bukkit.World getDefaultWorld() {
+        return getServer().getWorld("world");
     }
 
     @Override
