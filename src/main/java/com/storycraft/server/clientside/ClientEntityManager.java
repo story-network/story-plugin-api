@@ -35,7 +35,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
                 continue;
             }
 
-            for (Entity e : entityMap.get(w)){
+            for (Entity e : entityMap.get(w.getName())){
                 if (e != null)
                     sendDestroyPacket(e);
             }
@@ -53,7 +53,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         if (contains(e))
             return;
 
-        if (!hasWorld(e.getWorld())) {
+        if (!hasWorld(e.getWorld()))) {
             entityMap.put(e.getWorld().getWorld().getName(), new ArrayList<>());
         }
 
@@ -81,7 +81,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     protected List<Entity> getWorldList(World w) {
         List<Entity> list;
 
-        if (!entityMap.containsKey(w)) {
+        if (!entityMap.containsKey(w.getWorld().getName())) {
             entityMap.put(w.getWorld().getName(), list = new ArrayList<>());
         }
         else {
