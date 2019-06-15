@@ -174,6 +174,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
                 p.sendMessage(MessageUtil.getPluginMessage(MessageType.ALERT, "Reset", "스폰 위치 초기화중..."));
 
                 p.teleportAsync(setRandomSpawn(p.getUniqueId())).thenApply((Boolean b) -> {
+                    p.getInventory().clear();
                     p.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "Reset", "초기화가 완료 되었습니다"));
                     return null;
                 });
