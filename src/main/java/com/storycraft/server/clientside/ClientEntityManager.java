@@ -135,6 +135,9 @@ public class ClientEntityManager extends ServerExtension implements Listener {
 
     @EventHandler
     public void onPlayerChunkLoad(AsyncPlayerLoadChunkEvent e) {
+        if (!e.isFullChunk() || e.isCancelled())
+            return;
+
         for (Entity entity : new ArrayList<>(getWorldList(((CraftWorld) e.getWorld()).getHandle()))) {
             if (e.getChunkX() == ((int) Math.floor(entity.locX) >> 4) && e.getChunkZ() == (int)Math.floor(entity.locZ) >> 4) {
 				sendDestroyPacket(e.getPlayer(), entity);

@@ -15,6 +15,7 @@ public class ClientEventManager extends ServerExtension implements Listener {
 
     private Reflect.WrappedField<Integer, PacketPlayOutMapChunk> chunkLoadPacketX;
     private Reflect.WrappedField<Integer, PacketPlayOutMapChunk> chunkLoadPacketZ;
+    private Reflect.WrappedField<Boolean, PacketPlayOutMapChunk> isFullChunkField;
 
     private Reflect.WrappedField<Integer, PacketPlayOutUnloadChunk> chunkUnloadPacketX;
     private Reflect.WrappedField<Integer, PacketPlayOutUnloadChunk> chunkUnloadPacketZ;
@@ -23,6 +24,7 @@ public class ClientEventManager extends ServerExtension implements Listener {
     public void onEnable(){
         this.chunkLoadPacketX = Reflect.getField(PacketPlayOutMapChunk.class, "a");
         this.chunkLoadPacketZ = Reflect.getField(PacketPlayOutMapChunk.class, "b");
+        this.isFullChunkField = Reflect.getField(PacketPlayOutMapChunk.class, "g");
 
         this.chunkUnloadPacketX = Reflect.getField(PacketPlayOutUnloadChunk.class, "a");
         this.chunkUnloadPacketZ = Reflect.getField(PacketPlayOutUnloadChunk.class, "b");
@@ -33,6 +35,7 @@ public class ClientEventManager extends ServerExtension implements Listener {
     @EventHandler
     public void invokePlayerLoadChunkEvent(AsyncPacketOutEvent e){
         if (e.getPacket() instanceof PacketPlayOutMapChunk){
+            try {
             PacketPlayOutMapChunk packet = (PacketPlayOutMapChunk) e.getPacket();
             Player p = e.getTarget();
 
@@ -41,11 +44,16 @@ public class ClientEventManager extends ServerExtension implements Listener {
             int locX = chunkLoadPacketX.get(packet);
             int locZ = chunkLoadPacketZ.get(packet);
 
-            AsyncPlayerLoadChunkEvent event = new AsyncPlayerLoadChunkEvent(p, w, locX, locZ);
+            boolean isFullChunk = isFullChunkField.get(packet);
+
+            AsyncPlayerLoadChunkEvent event = new AsyncPlayerLoadChunkEvent(p, w, locX, locZ, isFullChunk);
             getPlugin().getServer().getPluginManager().callEvent(event);
 
             if (event.isCancelled())
                 e.setCancelled(true);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

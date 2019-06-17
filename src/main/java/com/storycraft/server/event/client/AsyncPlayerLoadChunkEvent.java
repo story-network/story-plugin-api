@@ -9,13 +9,20 @@ public class AsyncPlayerLoadChunkEvent extends AsyncPlayerChunkEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
-    public AsyncPlayerLoadChunkEvent(Player who, World world, int chunkX, int chunkZ) {
+    private boolean isFullChunk;
+
+    public AsyncPlayerLoadChunkEvent(Player who, World world, int chunkX, int chunkZ, boolean isFullChunk) {
         super(who, world, chunkX, chunkZ);
+        this.isFullChunk = isFullChunk;
     }
 
     @Override
     public HandlerList getHandlers() {
         return handlers;
+    }
+
+    public boolean isFullChunk() {
+        return isFullChunk;
     }
 
     public static HandlerList getHandlerList() {
