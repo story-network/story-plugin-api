@@ -120,8 +120,8 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
 
         World w = getPlugin().getServer().getWorld("world");
         Location randomSpawn = new Location(w,
-                Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1), 0,
-                Math.floor(8000 + Math.random() * 18000) * (Math.round(Math.random()) > 0 ? 1 : -1));
+                Math.floor(minRange + Math.random() * maxRange) * (Math.round(Math.random()) > 0 ? 1 : -1), 0,
+                Math.floor(minRange + Math.random() * maxRange) * (Math.round(Math.random()) > 0 ? 1 : -1));
 
         randomSpawn = w.getHighestBlockAt(randomSpawn).getLocation().add(0, 2, 0);
 
@@ -164,7 +164,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
             Player p = (Player) sender;
 
             if (System.currentTimeMillis() - getFirstJoin(p.getUniqueId()) > 1000 * 60 * 30 && !p.hasPermission("server.season2.reset.bypass")) {
-                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "Reset", "최초 접속후 12시간이 지나 더 이상 초기화를 할 수 없습니다"));
+                p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "Reset", "최초 접속후 30분이 지나 더 이상 초기화를 할 수 없습니다"));
                 return;
             }
 
