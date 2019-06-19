@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 public class ClientEntityManager extends ServerExtension implements Listener {
 
@@ -139,8 +140,13 @@ public class ClientEntityManager extends ServerExtension implements Listener {
             return;
 
         for (Entity entity : new ArrayList<>(getWorldList(((CraftWorld) e.getWorld()).getHandle()))) {
+	    if (entity == null) {
+	        list.removeAll(Collections.singleton(null)); //TEMP-CODE
+		continue;
+	    }
+	    
             if (e.getChunkX() == ((int) Math.floor(entity.locX) >> 4) && e.getChunkZ() == (int)Math.floor(entity.locZ) >> 4) {
-				sendDestroyPacket(e.getPlayer(), entity);
+		sendDestroyPacket(e.getPlayer(), entity);
                 sendSpawnPacket(e.getPlayer(), entity);
                 sendUpdatePacket(e.getPlayer(), entity, true);
             }
@@ -151,8 +157,14 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerPostRespawnEvent e) {
         for (Entity entity : new ArrayList<>(getWorldList(((CraftWorld) e.getRespawnedLocation().getWorld()).getHandle()))) {
+	    
+	    if (entity == null) {
+	        list.removeAll(Collections.singleton(null)); //TEMP-CODE
+		continue;
+	    }
+	    
             if (entity.getBukkitEntity().getLocation().distanceSquared(e.getRespawnedLocation()) < 65535) {
-				sendDestroyPacket(e.getPlayer(), entity);
+		sendDestroyPacket(e.getPlayer(), entity);
                 sendSpawnPacket(e.getPlayer(), entity);
                 sendUpdatePacket(e.getPlayer(), entity, true);
             }
