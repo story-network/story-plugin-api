@@ -141,7 +141,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
 
 	List<Entity> list = getWorldList(((CraftWorld) e.getWorld()).getHandle()); 
 	
-        for (Entity entity : new ArrayList<>()) {
+        for (Entity entity : new ArrayList<>(list)) {
 	    if (entity == null) {
 	        list.removeAll(Collections.singleton(null)); //TEMP-CODE
 		continue;
@@ -159,7 +159,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerPostRespawnEvent e) {
 	
-	List<Entity> list = getWorldList(((CraftWorld) e.getWorld()).getHandle()); 
+	List<Entity> list = getWorldList(((CraftWorld) e.getRespawnedLocation().getWorld()).getHandle()); 
 	
         for (Entity entity : new ArrayList<>(list)) {
 	    
