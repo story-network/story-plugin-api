@@ -120,13 +120,13 @@ public class AdvancementDisplay {
         }
 
         public Builder setFrameType(AdvancementType frameType) {
-            display.setFrameType(frameType);;
+            display.setFrameType(frameType);
 
             return this;
         }
     
         public Builder setIcon(ItemStack icon) {
-            display.setIcon(icon);;
+            display.setIcon(icon);
 
             return this;
         }
