@@ -139,16 +139,16 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         if (!e.isFullChunk() || e.isCancelled())
             return;
 
-	List<Entity> list = getWorldList(((CraftWorld) e.getWorld()).getHandle()); 
+        List<Entity> list = getWorldList(((CraftWorld) e.getWorld()).getHandle());
+        list.removeAll(Collections.singleton(null));
 	
         for (Entity entity : new ArrayList<>(list)) {
-	    if (entity == null) {
-	        list.removeAll(Collections.singleton(null)); //TEMP-CODE
-		continue;
-	    }
+	        if (entity == null) {
+		        continue;
+	        }
 	    
             if (e.getChunkX() == ((int) Math.floor(entity.locX) >> 4) && e.getChunkZ() == (int)Math.floor(entity.locZ) >> 4) {
-		sendDestroyPacket(e.getPlayer(), entity);
+		        sendDestroyPacket(e.getPlayer(), entity);
                 sendSpawnPacket(e.getPlayer(), entity);
                 sendUpdatePacket(e.getPlayer(), entity, true);
             }
@@ -159,17 +159,16 @@ public class ClientEntityManager extends ServerExtension implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerPostRespawnEvent e) {
 	
-	List<Entity> list = getWorldList(((CraftWorld) e.getRespawnedLocation().getWorld()).getHandle()); 
+        List<Entity> list = getWorldList(((CraftWorld) e.getRespawnedLocation().getWorld()).getHandle()); 
+        list.removeAll(Collections.singleton(null));
 	
         for (Entity entity : new ArrayList<>(list)) {
-	    
-	    if (entity == null) {
-	        list.removeAll(Collections.singleton(null)); //TEMP-CODE
-		continue;
-	    }
+	        if (entity == null) {
+		        continue;
+	        }
 	    
             if (entity.getBukkitEntity().getLocation().distanceSquared(e.getRespawnedLocation()) < 65535) {
-		sendDestroyPacket(e.getPlayer(), entity);
+		        sendDestroyPacket(e.getPlayer(), entity);
                 sendSpawnPacket(e.getPlayer(), entity);
                 sendUpdatePacket(e.getPlayer(), entity, true);
             }

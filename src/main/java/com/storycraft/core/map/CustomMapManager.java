@@ -15,6 +15,8 @@ import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.reflect.Reflect;
 import com.storycraft.util.reflect.Reflect.WrappedField;
 
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -56,6 +58,14 @@ public class CustomMapManager extends MiniPlugin implements Listener {
 
     public boolean containsId(int id) {
         return idMap.containsKey(id);
+    }
+
+    public World getDefaultWorld() {
+        return getPlugin().getDefaultWorld();
+    }
+
+    public int getLatestMapId() {
+        return ((CraftWorld) getDefaultWorld()).getHandle().getWorldMapCount();
     }
 
     public boolean addCustomMap(int id, CustomMapData data) {

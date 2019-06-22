@@ -3,7 +3,7 @@ package com.storycraft.core.jukebox;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.ShortHologram;
-import com.storycraft.server.event.server.ServerUpdateEvent;
+import com.storycraft.server.event.server.ServerSyncUpdateEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class JukeboxPlay extends MiniPlugin implements Listener {
     }
 
     @EventHandler
-    public void onUpdate(ServerUpdateEvent e){
+    public void onUpdate(ServerSyncUpdateEvent e){
         for (Block block : new ArrayList<>(jukeBoxHologramMap.keySet())){
             Hologram hologram = jukeBoxHologramMap.get(block);
 
@@ -80,6 +81,18 @@ public class JukeboxPlay extends MiniPlugin implements Listener {
                 }
             }
             else{
+                remove(block);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onUpdate(ChunkUnloadEvent e){
+        if (e.getChunk() == null)
+            return;
+
+        for (Block block : new ArrayList<>(jukeBoxHologramMap.keySet())){
+            if (e.getChunk().equals(block.getChunk())) {
                 remove(block);
             }
         }

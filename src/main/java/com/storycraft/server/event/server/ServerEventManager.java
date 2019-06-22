@@ -25,5 +25,12 @@ public class ServerEventManager extends ServerExtension {
                 getPlugin().getServer().getPluginManager().callEvent(new ServerUpdateEvent(getCurrentTick()));
             }
         }, 0, 1);
+
+        getPlugin().getServer().getScheduler().runTaskTimer(getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                getPlugin().getServer().getPluginManager().callEvent(new ServerSyncUpdateEvent(getCurrentTick()));
+            }
+        }, 0, 1);
     }
 }
