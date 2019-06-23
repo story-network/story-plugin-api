@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.server.event.server.ServerSyncUpdateEvent;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.server.world.IWorldAddon;
 
@@ -31,37 +32,34 @@ public class SnowStackAddon implements IWorldAddon {
         }
         
         @EventHandler
-        public void onUpdate(ServerUpdateEvent e) {
+        public void onUpdate(ServerSyncUpdateEvent e) {
             if (getWorld().hasStorm()) {
-                getPlugin().getServer().getScheduler().runTask(getPlugin(), () -> {
-                    
-                    for (Player p : getWorld().getPlayers()) {
+                for (Player p : getWorld().getPlayers()) {
 
-                        List<Chunk> nearbyChunks = getNearbyChunk(p, 128);
-                        for (Chunk c : nearbyChunks) {
-                            int section = (int) (Math.random() * 15.9);
+                    List<Chunk> nearbyChunks = getNearbyChunk(p, 128);
+                    for (Chunk c : nearbyChunks) {
+                        int section = (int) (Math.random() * 15.9);
 
-                            Block b = c.getBlock((int) (Math.random() * 15.9), (int) (section * 16 + Math.random() * 15.9), (int) (Math.random() * 15.9));
-        
-                            if (b.getTemperature() < 0.15 && b.getType() == Material.SNOW && b.getY() >= getWorld().getHighestBlockYAt(b.getX(), b.getZ())) {
-                                Snow snowBlock = (Snow) b.getBlockData();
+                        Block b = c.getBlock((int) (Math.random() * 15.9), (int) (section * 16 + Math.random() * 15.9), (int) (Math.random() * 15.9));
     
-                                Location loc = b.getLocation();
-                                if (loc.getBlockY() < 2 || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK)
-                                    continue;
-    
-                                if (snowBlock.getLayers() >= snowBlock.getMaximumLayers()) {
-                                    b.setType(Material.SNOW_BLOCK);
-                                    b.getLocation().add(0, 1, 0).getBlock().setType(Material.SNOW);
-                                }
-                                else {
-                                    snowBlock.setLayers(snowBlock.getLayers() + 1);
-                                    b.setBlockData(snowBlock);
-                                }
+                        if (b.getTemperature() < 0.15 && b.getType() == Material.SNOW && b.getY() >= getWorld().getHighestBlockYAt(b.getX(), b.getZ())) {
+                            Snow snowBlock = (Snow) b.getBlockData();
+
+                            Location loc = b.getLocation();
+                            if (loc.getBlockY() < 2 || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK)
+                                continue;
+
+                            if (snowBlock.getLayers() >= snowBlock.getMaximumLayers()) {
+                                b.setType(Material.SNOW_BLOCK);
+                                b.getLocation().add(0, 1, 0).getBlock().setType(Material.SNOW);
+                            }
+                            else {
+                                snowBlock.setLayers(snowBlock.getLayers() + 1);
+                                b.setBlockData(snowBlock);
                             }
                         }
                     }
-                });
+                }
             }
         }
 
