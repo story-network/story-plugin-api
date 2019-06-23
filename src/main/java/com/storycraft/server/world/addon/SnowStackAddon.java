@@ -43,14 +43,15 @@ public class SnowStackAddon implements IWorldAddon {
 
                             Block b = c.getBlock((int) (Math.random() * 15.9), (int) (section * 16 + Math.random() * 15.9), (int) (Math.random() * 15.9));
         
-                            if (b.getTemperature() < 0.15 && b.getType() == Material.SNOW && b.getY() == getWorld().getHighestBlockYAt(b.getX(), b.getZ())) {
+                            if (b.getTemperature() < 0.15 && b.getType() == Material.SNOW && b.getY() >= getWorld().getHighestBlockYAt(b.getX(), b.getZ())) {
                                 Snow snowBlock = (Snow) b.getBlockData();
     
                                 Location loc = b.getLocation();
-                                if (loc.getBlockY() < 2 || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW)
+                                if (loc.getBlockY() < 2 || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK)
                                     continue;
     
                                 if (snowBlock.getLayers() >= snowBlock.getMaximumLayers()) {
+                                    b.setType(Material.SNOW_BLOCK);
                                     b.getLocation().add(0, 1, 0).getBlock().setType(Material.SNOW);
                                 }
                                 else {
