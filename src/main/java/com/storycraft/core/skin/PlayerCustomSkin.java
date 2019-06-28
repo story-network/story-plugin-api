@@ -222,13 +222,10 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
         PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.getWorld().worldProvider.getDimensionManager(), ep.getWorld().P(), ep.playerInteractManager.getGameMode());
 
-		Location location = p.getLocation();
+        PacketPlayOutEntityTeleport refreshPacket = new PacketPlayOutEntityTeleport(ep);
 
         ConnectionUtil.sendPacket(removePacket, infoPacket);
-        ConnectionUtil.sendPacket(p, respawnPacket);
-
-        p.teleport(location, TeleportCause.PLUGIN);
-	    p.updateInventory();
+        ConnectionUtil.sendPacket(p, respawnPacket, refreshPacket);
     }
 
     @EventHandler
@@ -302,7 +299,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
                 }).then((Void v, Throwable t) -> {
                     if (t != null) {
-                        p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "플레이어 " + skinPlayer + " 스킨 적용이 실패 했습니다. 약 1분후 재시도 해주세요"));
+                        p.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "CustomSkin", "플레이어 " + skinPlayer + " 스킨 적용이 실패 했습니다. 약 1분후 재시도 해주세요. " + t.getMessage()));
                         return;
                     }
 
