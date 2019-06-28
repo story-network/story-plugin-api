@@ -224,7 +224,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
         PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.getWorld().worldProvider.getDimensionManager(), ep.getWorld().P(), ep.playerInteractManager.getGameMode());
 
-        PacketPlayOutPosition refreshPacket = new PacketPlayOutPosition(ep.locX, ep.locY, ep.locZ, ep.pitch, ep.yaw, Sets.newHashSet(), -12);
+        PacketPlayOutPosition refreshPacket = new PacketPlayOutPosition(ep.locX, ep.locY, ep.locZ, ep.yaw, ep.pitch, Sets.newHashSet(), -12);
 
         ConnectionUtil.sendPacket(removePacket, infoPacket);
         ConnectionUtil.sendPacket(p, respawnPacket, refreshPacket);
