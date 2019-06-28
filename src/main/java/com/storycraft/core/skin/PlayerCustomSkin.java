@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
@@ -40,6 +41,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import net.minecraft.server.v1_14_R1.DimensionManager;
 import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.Packet;
 import net.minecraft.server.v1_14_R1.PacketPlayOutEntity;
 import net.minecraft.server.v1_14_R1.PacketPlayOutEntityTeleport;
 import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo;
@@ -222,7 +224,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
         PacketPlayOutPlayerInfo infoPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
         PacketPlayOutRespawn respawnPacket = new PacketPlayOutRespawn(ep.getWorld().worldProvider.getDimensionManager(), ep.getWorld().P(), ep.playerInteractManager.getGameMode());
 
-        PacketPlayOutEntityTeleport refreshPacket = new PacketPlayOutEntityTeleport(ep);
+        PacketPlayOutPosition refreshPacket = new PacketPlayOutPosition(ep.locX, ep.locY, ep.locZ, ep.pitch, ep.yaw, Sets.newHashSet(), -12);
 
         ConnectionUtil.sendPacket(removePacket, infoPacket);
         ConnectionUtil.sendPacket(p, respawnPacket, refreshPacket);

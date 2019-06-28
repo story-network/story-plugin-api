@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -13,7 +14,7 @@ public class MojangAPI {
         URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + nickname);
         InputStreamReader reader = new InputStreamReader(url.openStream());
 
-        String uuid = new JsonParser().parse(reader).getAsJsonObject().get("id").getAsString();
+        String uuid = new Gson().fromJson(reader, JsonObject.class).get("id").getAsString();
 
         return uuid;
     }
@@ -22,7 +23,7 @@ public class MojangAPI {
         URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + rawId + "?unsigned=false");
         InputStreamReader reader = new InputStreamReader(url.openStream());
 
-        JsonObject rawProperty = new JsonParser().parse(reader).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
+        JsonObject rawProperty = new Gson().fromJson(reader, JsonObject.class).getAsJsonArray("properties").get(0).getAsJsonObject();
         JsonObject textureProperty = new JsonObject();
 
         textureProperty.addProperty("value", rawProperty.get("value").getAsString());
