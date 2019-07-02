@@ -34,7 +34,7 @@ public class ImageMap extends MiniPlugin {
     }
 
     public short genIdOffset() {
-        return idOffset;
+        return idOffset++;
     }
 
 
