@@ -3,6 +3,8 @@ package com.storycraft.core.map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.bukkit.Material;
 import org.bukkit.entity.ItemFrame;
@@ -16,10 +18,28 @@ public class CustomMapTracker {
 
     private List<Player> playerList;
 
+    private BiFunction<CustomMapTracker, Player, Void> onAdded;
+    private BiFunction<CustomMapTracker, Player, Void> onRemoved;
+
     public CustomMapTracker(int mapId) {
+        this(mapId, null, null);
+    }
+
+    public CustomMapTracker(int mapId,BiFunction<CustomMapTracker, Player, Void> onAdded ,BiFunction<CustomMapTracker, Player, Void> onRemoved) {
         this.mapId = mapId;
 
+        this.onAdded = onAdded;
+        this.onRemoved = onRemoved;
+
         this.playerList = new ArrayList<>();
+    }
+
+    public void setOnAdded(BiFunction<CustomMapTracker, Player, Void> onAdded) {
+        this.onAdded = onAdded;
+    }
+
+    public void setOnRemoved(BiFunction<CustomMapTracker, Player, Void> onRemoved) {
+        this.onRemoved = onRemoved;
     }
 
     public int getMapId() {
@@ -35,11 +55,22 @@ public class CustomMapTracker {
     }
 
     protected void addTracked(Player p) {
-        if (!contains(p))
-            playerList.add(p);
+        if (contains(p))
+            return;
+
+        if (onAdded != null)
+            onAdded.apply(this, p);
+        
+        playerList.add(p);
     }
 
     protected void removeTracked(Player p) {
+        if (!contains(p))
+            return;
+
+        if (onRemoved != null)
+            onRemoved.apply(this, p);
+
         playerList.remove(p);
     }
 

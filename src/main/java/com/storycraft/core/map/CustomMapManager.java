@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.google.common.collect.Lists;
 import com.storycraft.StoryPlugin;
@@ -101,20 +103,10 @@ public class CustomMapManager extends MiniPlugin implements Listener {
         trackerMap.remove(id);
     }
 
-    public void update(int id) {
-        if (!containsId(id))
-            return;
-
-        updateInternal(getCustomMap(id));
-    }
-
-    protected void updateInternal(CustomMapData data) {
-        if (!data.getRenderer().needRender())
-            return;
-
-        getRenderpool().execute(() -> {
+    protected CompletableFuture updateInternal(CustomMapData data) {
+        return CompletableFuture.runAsync(() -> {
             renderProcessTask(data, data.getRenderer().getDirtyArea());
-        });
+        }, getRenderpool());
     }
 
     protected void renderProcessTask(CustomMapData data, Collection<OffsetArea> dirtyArea) {
@@ -175,8 +167,22 @@ public class CustomMapManager extends MiniPlugin implements Listener {
 
             tracker.update(playerList);
 
-            updateInternal(data);
+            if (data.getRenderer().needRender()) {
+                updateInternal(data).thenRun(() -> {
+                    for (Player p : tracker.getPlayerList()) {
+                        sendDirtyMapPacket(p, id);
+                    }
+    
+                    data.getRenderer().clearDirtyArea();
+                });
+            }
         }
+    }
+
+    protected Void onTrackerAdded(CustomMapTracker tracker, Player p) {
+        sendEntireMapPacket(p, tracker.getMapId());
+
+        return null;
     }
 
 }

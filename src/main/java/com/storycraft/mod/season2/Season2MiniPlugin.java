@@ -89,7 +89,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
         Location spawnLoc = getPlugin().getPlayerManager().getPlayerSpawnManager().getSpawnLocation(p.getUniqueId());
 
         Hologram spawnHologram = new ShortHologram(spawnLoc.add(0, 1.5, 0),
-                ChatColor.GREEN + p.getName() + " 의 스폰 위치", ChatColor.GOLD + "(0, 0) 까지 거리: ", ChatColor.WHITE + ""
+                ChatColor.GREEN + p.getName() + " 의 스폰 위치", ChatColor.GOLD + "(0, 0) 까지 거리: " + ChatColor.WHITE + ""
                         + Math.sqrt(Math.pow(spawnLoc.getBlockX(), 2) + Math.pow(spawnLoc.getBlockZ(), 2)) + " 블록");
 
         getPlugin().getDecorator().getHologramManager().addHologram(spawnHologram);
