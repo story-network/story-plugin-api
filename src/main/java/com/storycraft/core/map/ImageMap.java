@@ -58,7 +58,7 @@ public class ImageMap extends MiniPlugin {
 
                     BufferedImage image = ImageIO.read(url.openStream());
 
-                    int id = genIdOffset();
+                    short id = genIdOffset();
 
                     CustomMapData data = new CustomMapData(new ImageRenderer(image, Color.BLACK));
 
