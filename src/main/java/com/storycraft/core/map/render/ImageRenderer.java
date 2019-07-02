@@ -81,15 +81,15 @@ public class ImageRenderer implements IMapRenderer {
 
         int scaleX = width / scaledWidth;
         int scaleY = height / scaledHeight;
+        
+        int spaceX = (128 - scaledWidth) / 2;
+        int spaceY = (128 - scaledHeight) / 2;
 
-        int imgOffsetX = offsetX * scaleX;
-        int imgOffsetY = offsetY * scaleY;
+        int imgOffsetX = (offsetX + spaceX) * scaleX;
+        int imgOffsetY = (offsetY + spaceY) * scaleY;
 
         int imgSizeX = area.getSizeX() * scaleX;
         int imgSizeY = area.getSizeY() * scaleY;
-
-        int spaceX = (128 - scaledWidth) / 2;
-        int spaceY = (128 - scaledHeight) / 2;
 
         Graphics2D g2d = result.createGraphics();
         g2d.drawImage(image, 0, 0, area.getSizeX(), area.getSizeY(), imgOffsetX, imgOffsetY, imgOffsetX + imgSizeX, imgOffsetY + imgSizeY, getBackgroundColor(), null);
