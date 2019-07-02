@@ -22,7 +22,7 @@ import org.bukkit.inventory.meta.MapMeta;
 
 public class ImageMap extends MiniPlugin {
 
-    private int idOffset;
+    private short idOffset;
 
     public ImageMap() {
         this.idOffset = 10000;
