@@ -68,8 +68,8 @@ public class ImageRenderer implements IMapRenderer {
         int width = image.getWidth();
         int height = image.getHeight();
 
-        int scaledWidth = 0;
-        int scaledHeight = 0;
+        double scaledWidth = 0;
+        double scaledHeight = 0;
 
         if (width >= height) {
             scaledWidth = 128;
@@ -79,17 +79,17 @@ public class ImageRenderer implements IMapRenderer {
             scaledHeight = 128;
         }
 
-        int scaleX = width / scaledWidth;
-        int scaleY = height / scaledHeight;
+        double scaleX = width / scaledWidth;
+        double scaleY = height / scaledHeight;
         
-        int spaceX = (128 - scaledWidth) / 2;
-        int spaceY = (128 - scaledHeight) / 2;
+        double spaceX = (128 - scaledWidth) / 2;
+        double spaceY = (128 - scaledHeight) / 2;
 
-        int imgOffsetX = (offsetX + spaceX) * scaleX;
-        int imgOffsetY = (offsetY - spaceY) * scaleY;
+        int imgOffsetX = (int) ((offsetX + spaceX) * scaleX);
+        int imgOffsetY = (int) ((offsetY - spaceY) * scaleY);
 
-        int imgSizeX = area.getSizeX() * scaleX;
-        int imgSizeY = area.getSizeY() * scaleY;
+        int imgSizeX = (int) (area.getSizeX() * scaleX);
+        int imgSizeY = (int) (area.getSizeY() * scaleY);
 
         Graphics2D g2d = result.createGraphics();
         g2d.drawImage(image, 0, 0, area.getSizeX(), area.getSizeY(), imgOffsetX, imgOffsetY, imgOffsetX + imgSizeX, imgOffsetY + imgSizeY, getBackgroundColor(), null);
