@@ -46,6 +46,9 @@ public class DropCounter extends MiniPlugin implements Listener {
         ItemStack itemStack = item.getItemStack();
         String name = "";
 
+        if (itemStack == null)
+            return;
+
         if (itemStack.getItemMeta().getDisplayName() != null)
             name += itemStack.getItemMeta().getDisplayName() + " ";
 
