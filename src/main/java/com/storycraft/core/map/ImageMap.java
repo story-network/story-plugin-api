@@ -34,7 +34,7 @@ public class ImageMap extends MiniPlugin {
     }
 
     public short genIdOffset() {
-        return idOffset++;
+        return idOffset;
     }
 
 
@@ -64,9 +64,13 @@ public class ImageMap extends MiniPlugin {
 
                     Player p = (Player) sender;
 
-                    ItemStack mapItem = new ItemStack(Material.FILLED_MAP);
+                    ItemStack mapItem = new ItemStack(Material.FILLED_MAP, 1);
 
-                    mapItem.setDurability(id);
+                    MapMeta mapMeta = (MapMeta) mapItem.getItemMeta();
+
+                    mapMeta.setMapId(id);
+
+                    mapItem.setItemMeta(mapMeta);
 
                     p.getInventory().addItem(mapItem);
 

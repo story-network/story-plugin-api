@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_14_R1.map.CraftMapView;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -81,7 +82,7 @@ public class CustomMapTracker {
                 if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
                     MapMeta meta = (MapMeta) item.getItemMeta();
     
-                    if (meta.hasMapView() && meta.getMapView().getId() == getMapId())
+                    if (meta.hasMapId() && meta.getMapId() == getMapId())
                         return true;
                 }
             }
@@ -95,7 +96,7 @@ public class CustomMapTracker {
             if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
                 MapMeta meta = (MapMeta) item.getItemMeta();
 
-                if (meta.hasMapView() && meta.getMapView().getId() == getMapId())
+                if (meta.hasMapId() && meta.getMapId() == getMapId())
                     return true;
             }
         }
