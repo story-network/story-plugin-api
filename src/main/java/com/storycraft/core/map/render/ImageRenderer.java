@@ -86,7 +86,7 @@ public class ImageRenderer implements IMapRenderer {
         double spaceY = (128 - scaledHeight) / 2;
 
         int imgOffsetX = (int) ((offsetX + spaceX) * scaleX);
-        int imgOffsetY = (int) ((offsetY - spaceY) * scaleY);
+        int imgOffsetY = (int) ((offsetY + spaceY) * scaleY);
 
         int imgSizeX = (int) (area.getSizeX() * scaleX);
         int imgSizeY = (int) (area.getSizeY() * scaleY);
