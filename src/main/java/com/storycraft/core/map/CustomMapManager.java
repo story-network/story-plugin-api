@@ -115,12 +115,7 @@ public class CustomMapManager extends MiniPlugin implements Listener {
         }
     }
 
-    protected void sendEntireMapPacket(Player p, int id) {
-        if (!containsId(id))
-            return;
-
-        CustomMapData data = getCustomMap(id);
-
+    protected void sendEntireMapPacket(Player p, int id, CustomMapData data) {
         Collection<MapIcon> iconCollection = getIconCollection(data);
 
         PacketPlayOutMap mapPacket = new PacketPlayOutMap(id, data.getScale().getByteSize(), data.getShouldTrack(), data.isLocked(), iconCollection
@@ -129,12 +124,7 @@ public class CustomMapManager extends MiniPlugin implements Listener {
         ConnectionUtil.sendPacket(p, mapPacket);
     }
 
-    protected void sendDirtyMapPacket(Player p, int id) {
-        if (!containsId(id))
-            return;
-
-        CustomMapData data = getCustomMap(id);
-
+    protected void sendDirtyMapPacket(Player p, int id, CustomMapData data) {
         Collection<MapIcon> iconCollection = getIconCollection(data);
 
         for (OffsetArea area : data.getRenderer().getDirtyArea()){
@@ -170,7 +160,7 @@ public class CustomMapManager extends MiniPlugin implements Listener {
             if (data.getRenderer().needRender()) {
                 updateInternal(data).thenRun(() -> {
                     for (Player p : tracker.getPlayerList()) {
-                        sendDirtyMapPacket(p, id);
+                        sendDirtyMapPacket(p, id, data);
                     }
     
                     data.getRenderer().clearDirtyArea();
@@ -180,7 +170,7 @@ public class CustomMapManager extends MiniPlugin implements Listener {
     }
 
     protected Void onTrackerAdded(CustomMapTracker tracker, Player p) {
-        sendEntireMapPacket(p, tracker.getMapId());
+        sendEntireMapPacket(p, tracker.getMapId(), getCustomMap(tracker.getMapId()));
 
         return null;
     }

@@ -88,14 +88,14 @@ public class ImageRenderer implements IMapRenderer {
 
         byte[] data = new byte[width * height];
 
-        for (int y = 0; y < height; y++) {
+        /*for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int color = result.getRGB(x, y);
                 data[y * width + x] = MapPalette.matchColor((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff);
             }
-        }
+        }*/
 
-        return data;
+        return MapPalette.imageToBytes(image);
     }
 
 }
