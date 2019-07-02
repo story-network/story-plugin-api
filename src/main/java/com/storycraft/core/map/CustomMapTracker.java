@@ -79,7 +79,7 @@ public class CustomMapTracker {
         for (ItemFrame e : p.getWorld().getEntitiesByClass(ItemFrame.class)) {
             ItemStack item = e.getItem();
             if (e.getLocation().distanceSquared(p.getLocation()) < 16384) {
-                if (item != null && item.getType() == Material.FILLED_MAP)) {
+                if (item != null && item.getType() == Material.FILLED_MAP) {
                     MapMeta meta = (MapMeta) item.getItemMeta();
     
                     if (meta.hasMapId() && meta.getMapId() == getMapId())
