@@ -103,7 +103,7 @@ public class CustomMapManager extends MiniPlugin implements Listener {
         trackerMap.remove(id);
     }
 
-    protected CompletableFuture updateInternal(CustomMapData data) {
+    protected CompletableFuture<Void> updateInternal(CustomMapData data) {
         return CompletableFuture.runAsync(() -> {
             renderProcessTask(data, data.getRenderer().getDirtyArea());
         }, getRenderpool());

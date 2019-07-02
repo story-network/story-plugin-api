@@ -82,7 +82,7 @@ public class CustomMapData {
     }
 
     public void renderToBuffer(OffsetArea area) {
-        System.arraycopy(getRenderer().render(area), 0, buffer, area.getSizeX() + area.getSizeY() * 128, area.getSizeX() * area.getSizeY());
+        System.arraycopy(getRenderer().render(area), 0, buffer, area.getX() + area.getY() * 128, area.getSizeX() * area.getSizeY());
     }
 
     public enum MapScale {
