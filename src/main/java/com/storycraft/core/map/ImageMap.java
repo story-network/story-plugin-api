@@ -66,11 +66,7 @@ public class ImageMap extends MiniPlugin {
 
                     ItemStack mapItem = new ItemStack(Material.FILLED_MAP);
 
-                    MapMeta mapMeta = (MapMeta) mapItem.getItemMeta();
-
-                    mapMeta.setMapId(id);
-
-                    mapItem.setItemMeta(mapMeta);
+                    mapItem.setDurability(id);
 
                     p.getInventory().addItem(mapItem);
 
