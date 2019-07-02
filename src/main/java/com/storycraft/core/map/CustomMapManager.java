@@ -83,7 +83,7 @@ public class CustomMapManager extends MiniPlugin implements Listener {
         if (containsId(id))
             return false;
 
-        CustomMapTracker tracker = new CustomMapTracker(id);
+        CustomMapTracker tracker = new CustomMapTracker(id, this::onTrackerAdded, this::onTrackerRemoved);
 
         idMap.put(id, data);
         trackerMap.put(id, tracker);
@@ -181,6 +181,11 @@ public class CustomMapManager extends MiniPlugin implements Listener {
 
     protected Void onTrackerAdded(CustomMapTracker tracker, Player p) {
         sendEntireMapPacket(p, tracker.getMapId());
+
+        return null;
+    }
+
+    protected Void onTrackerRemoved(CustomMapTracker tracker, Player p) {
 
         return null;
     }

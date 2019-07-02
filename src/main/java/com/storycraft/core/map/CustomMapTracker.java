@@ -26,7 +26,7 @@ public class CustomMapTracker {
         this(mapId, null, null);
     }
 
-    public CustomMapTracker(int mapId,BiFunction<CustomMapTracker, Player, Void> onAdded ,BiFunction<CustomMapTracker, Player, Void> onRemoved) {
+    public CustomMapTracker(int mapId, BiFunction<CustomMapTracker, Player, Void> onAdded ,BiFunction<CustomMapTracker, Player, Void> onRemoved) {
         this.mapId = mapId;
 
         this.onAdded = onAdded;
