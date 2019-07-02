@@ -6,6 +6,7 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.core.MiniPlugin;
 import com.storycraft.core.map.render.ImageRenderer;
@@ -25,6 +26,11 @@ public class ImageMap extends MiniPlugin {
 
     public ImageMap() {
         this.idOffset = 0;
+    }
+
+    @Override
+    public void onLoad(StoryPlugin plugin) {
+        plugin.getCommandManager().addCommand(new ImageMapCommand());
     }
 
     public int genIdOffset() {
