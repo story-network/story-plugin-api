@@ -1,6 +1,7 @@
 package com.storycraft.core.map;
 
 import com.storycraft.core.map.render.IMapRenderer;
+import com.storycraft.core.map.render.OffsetArea;
 
 import org.bukkit.map.MapCursorCollection;
 
@@ -15,6 +16,8 @@ public class CustomMapData {
     private boolean shouldTrack;
     private boolean locked;
 
+    private byte[] buffer;
+
     public CustomMapData(IMapRenderer renderer) {
         this(MapScale.ORIGINAL, false, false, renderer);
     }
@@ -28,6 +31,7 @@ public class CustomMapData {
     }
 
     public CustomMapData(MapScale scale, boolean shouldTrack, boolean locked, IMapRenderer renderer) {
+        this.buffer = new byte[16384];
         this.scale = scale;
         this.shouldTrack = shouldTrack;
         this.locked = locked;
@@ -43,6 +47,10 @@ public class CustomMapData {
 
     public IMapRenderer getRenderer() {
         return renderer;
+    }
+    
+    public byte[] getBuffer() {
+        return buffer;
     }
 
     public MapCursorCollection getCursorCollection() {
@@ -73,6 +81,10 @@ public class CustomMapData {
         this.locked = locked;
     }
 
+    public void renderToBuffer(OffsetArea area) {
+        System.arraycopy(getRenderer().render(area), 0, buffer, area.getSizeX() + area.getSizeY() * 128, area.getSizeX() * area.getSizeY());
+    }
+
     public enum MapScale {
         MINI((byte) 0x0),
         SMALL((byte) 0x1),
@@ -87,14 +99,6 @@ public class CustomMapData {
 
         public byte getByteSize() {
             return byteSize;
-        }
-
-        public int getSizeX() {
-            return 256;
-        }
-
-        public int getSizeY() {
-            return 256;
         }
 
     }

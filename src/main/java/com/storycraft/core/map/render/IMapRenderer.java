@@ -8,6 +8,8 @@ public interface IMapRenderer {
 
     Collection<OffsetArea> getDirtyArea();
 
+    void clearDirtyArea();
+
     byte[] render(OffsetArea area);
 
 }
