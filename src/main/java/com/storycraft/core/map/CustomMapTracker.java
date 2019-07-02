@@ -78,7 +78,7 @@ public class CustomMapTracker {
         for (ItemFrame e : p.getWorld().getEntitiesByClass(ItemFrame.class)) {
             ItemStack item = e.getItem();
             if (e.getLocation().distanceSquared(p.getLocation()) < 16384) {
-                if (item != null && item.getType() == Material.FILLED_MAP) {
+                if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
                     MapMeta meta = (MapMeta) item.getItemMeta();
     
                     if (meta.hasMapView() && meta.getMapView().getId() == getMapId())
@@ -92,7 +92,7 @@ public class CustomMapTracker {
 
     public boolean canSeeItem(Player p) {
         for (ItemStack item : p.getInventory().getContents()) {
-            if (item != null && item.getType() == Material.FILLED_MAP) {
+            if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
                 MapMeta meta = (MapMeta) item.getItemMeta();
 
                 if (meta.hasMapView() && meta.getMapView().getId() == getMapId())

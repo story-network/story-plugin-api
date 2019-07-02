@@ -25,7 +25,7 @@ public class ImageMap extends MiniPlugin {
     private int idOffset;
 
     public ImageMap() {
-        this.idOffset = 0;
+        this.idOffset = 10000;
     }
 
     @Override
@@ -33,8 +33,8 @@ public class ImageMap extends MiniPlugin {
         plugin.getCommandManager().addCommand(new ImageMapCommand());
     }
 
-    public int genIdOffset() {
-        return --idOffset;
+    public short genIdOffset() {
+        return idOffset++;
     }
 
 
