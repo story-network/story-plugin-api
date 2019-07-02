@@ -79,23 +79,32 @@ public class ImageRenderer implements IMapRenderer {
             scaledHeight = 128;
         }
 
+        int scaleX = width / scaledWidth;
+        int scaleY = height / scaledHeight;
+
+        int imgOffsetX = offsetX * scaleX;
+        int imgOffsetY = offsetY * scaleY;
+
+        int imgSizeX = area.getSizeX() * scaleX;
+        int imgSizeY = area.getSizeY() * scaleY;
+
         int spaceX = (128 - scaledWidth) / 2;
         int spaceY = (128 - scaledHeight) / 2;
 
         Graphics2D g2d = result.createGraphics();
-        g2d.drawImage(image, spaceX, spaceY, spaceX + scaledWidth, spaceY + scaledHeight, offsetX, offsetY, offsetX + area.getSizeX(), offsetY + area.getSizeY(), getBackgroundColor(), null);
+        g2d.drawImage(image, 0, 0, area.getSizeX(), area.getSizeY(), imgOffsetX, imgOffsetY, imgOffsetX + imgSizeX, imgOffsetY + imgSizeY, getBackgroundColor(), null);
         g2d.dispose();
 
-        byte[] data = new byte[width * height];
+        byte[] data = new byte[area.getSizeX() * area.getSizeY()];
 
-        /*for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < area.getSizeY(); y++) {
+            for (int x = 0; x < area.getSizeX(); x++) {
                 int color = result.getRGB(x, y);
-                data[y * width + x] = MapPalette.matchColor((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff);
+                data[y * area.getSizeY() + x] = MapPalette.matchColor((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff);
             }
-        }*/
+        }
 
-        return MapPalette.imageToBytes(image);
+        return data;
     }
 
 }
