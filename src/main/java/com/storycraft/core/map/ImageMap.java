@@ -25,7 +25,7 @@ public class ImageMap extends MiniPlugin {
     private short idOffset;
 
     public ImageMap() {
-        this.idOffset = 10000;
+        this.idOffset = 240;
     }
 
     @Override
