@@ -219,7 +219,7 @@ public class ImageMap extends MiniPlugin {
         @Override
         public void onCommand(CommandSender sender, String[] args) {
             if (args.length < 2) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ImageMap", "사용법: /imagemap <맵 id> <주소>"));
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ImageMap", "사용법: /imagemap <주소>"));
                 return;
             }
 
