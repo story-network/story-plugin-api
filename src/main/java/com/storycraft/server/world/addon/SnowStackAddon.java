@@ -46,11 +46,10 @@ public class SnowStackAddon implements IWorldAddon {
                             Snow snowBlock = (Snow) b.getBlockData();
 
                             Location loc = b.getLocation();
-                            if (loc.getBlockY() < 2 || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK && loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK)
+                            if (loc.getBlockY() < 1 || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW || loc.add(0, -1, 0).getBlock().getType() == Material.SNOW_BLOCK)
                                 continue;
 
                             if (snowBlock.getLayers() >= snowBlock.getMaximumLayers()) {
-                                b.setType(Material.SNOW_BLOCK);
                                 b.getLocation().add(0, 1, 0).getBlock().setType(Material.SNOW);
                             }
                             else {
