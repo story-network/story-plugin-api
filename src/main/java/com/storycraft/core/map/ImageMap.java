@@ -185,7 +185,7 @@ public class ImageMap extends MiniPlugin {
 
         String hash = DigestUtils.sha1Hex(data);
 
-        setStorageImage(hash, Base64Util.encode(new ByteArrayInputStream(data)));
+        setStorageImage(hash, Base64Util.encode(data));
         setIdInfo(id, System.currentTimeMillis(), hash);
     }
 
