@@ -76,13 +76,11 @@ public class CustomMapTracker {
     public boolean canSeeItemFrame(Player p) {
         for (ItemFrame e : p.getWorld().getNearbyEntitiesByType(ItemFrame.class, p.getEyeLocation(), 32)) {
             ItemStack item = e.getItem();
-            if (e.getLocation().distanceSquared(p.getLocation()) < 1024) {
-                if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
-                    MapMeta meta = (MapMeta) item.getItemMeta();
-    
-                    if (meta.hasMapView() && meta.getMapView().getId() == getMapId())
-                        return true;
-                }
+            if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
+                MapMeta meta = (MapMeta) item.getItemMeta();
+
+                if (meta.hasMapView() && meta.getMapView().getId() == getMapId())
+                    return true;
             }
         }
 
