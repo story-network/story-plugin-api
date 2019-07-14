@@ -169,7 +169,7 @@ public class ImageMap extends MiniPlugin {
             return null;
 
         try {
-            return ImageIO.read(new ByteArrayInputStream(Base64Util.decode(encoded).toByteArray()));
+            return ImageIO.read(new ByteArrayInputStream(Base64Util.decode(encoded)));
         } catch (Exception e) {
             e.printStackTrace();
 
