@@ -90,7 +90,7 @@ public class CustomMapTracker {
     }
 
     public boolean canSeeItem(Player p) {
-        return isTargetMapItem(p.getInventory().getItemInMainHand()) || isTargetMapItem(p.getInventory().getItemInOffHand());
+        return isTargetMapItem(p.getInventory().getItemInMainHand()) || isTargetMapItem(p.getInventory().getItemInOffHand()) || isTargetMapItem(p.getItemOnCursor());
     }
 
     public boolean isTargetMapItem(ItemStack item) {
