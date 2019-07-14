@@ -121,7 +121,7 @@ public class CustomMapTracker {
     }
     
     public void onItemHeld(Player p, ItemStack item) {
-        if (item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
+        if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
             MapMeta meta = (MapMeta) item.getItemMeta();
 
             if (meta.hasMapView() && meta.getMapView().getId() == mapId && !contains(p)) {
