@@ -179,7 +179,7 @@ public class ImageMap extends MiniPlugin {
 
     public void setImage(int id, BufferedImage image) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", output);
+        ImageIO.write(image, "jpg", output);
 
         byte[] data = output.toByteArray();
 
