@@ -78,9 +78,9 @@ public class ImageMap extends MiniPlugin {
     }
 
     private JsonConfigEntry getEntry(JsonConfigEntry parent, String name) {
-        JsonConfigEntry entry = parent.getObject("storage");
+        JsonConfigEntry entry = parent.getObject(name);
         if (entry == null) {
-            parent.set("storage", entry = parent.createEntry());
+            parent.set(name, entry = parent.createEntry());
         }
 
         return entry;
@@ -194,7 +194,7 @@ public class ImageMap extends MiniPlugin {
     }
 
     protected void setIdInfo(int id, long created, String hash) {
-        JsonConfigEntry entry = getEntry(getIdStorage(), id + "");
+        JsonConfigEntry entry = getImageInfo(id);
 
         entry.set("image", hash);
         entry.set("created", created);
