@@ -39,10 +39,15 @@ import org.bukkit.map.MapView;
 
 public class ImageMap extends MiniPlugin {
 
+<<<<<<< HEAD
     private JsonConfigFile configFile;
 
     public ImageMap() {
 
+=======
+    public ImageMap() {
+        
+>>>>>>> d7826166dd1584c41c62b8fe92d045f77e4acf0a
     }
 
     @Override
@@ -102,6 +107,7 @@ public class ImageMap extends MiniPlugin {
         return getImageInfo(id).contains("image");
     }
 
+<<<<<<< HEAD
     public String getImageHash(int id) {
         JsonConfigEntry entry = getImageInfo(id);
 
@@ -200,6 +206,8 @@ public class ImageMap extends MiniPlugin {
         entry.set("created", created);
     }
 
+=======
+>>>>>>> d7826166dd1584c41c62b8fe92d045f77e4acf0a
     public class ImageMapCommand implements ICommand {
 
         @Override
@@ -218,11 +226,12 @@ public class ImageMap extends MiniPlugin {
     
         @Override
         public void onCommand(CommandSender sender, String[] args) {
-            if (args.length < 1) {
-                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ImageMap", "사용법: /imagemap <주소>"));
+            if (args.length < 2) {
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ImageMap", "사용법: /imagemap <맵 id> <주소>"));
                 return;
             }
 
+<<<<<<< HEAD
             new AsyncTask<Void>(() -> {
                 try {
                     String urlStr = String.join("%20", args);
@@ -275,16 +284,43 @@ public class ImageMap extends MiniPlugin {
 
                 return null;
             }).run();
+=======
+            try {
+                final int id = Integer.parseInt(args[0]);
+                final String urlStr = String.join("%20", args).substring(args[0].length() + 3);
+                
+                new AsyncTask<Void>(() -> {
+                    try {
+                        URL url = new URL(urlStr);
+
+                        BufferedImage image = ImageIO.read(url.openStream());
+
+                        CustomMapData data = new CustomMapData(new ImageRenderer(image, Color.BLACK));
+
+                        getPlugin().getDecorator().getCustomMapManager().addCustomMap(id, data);
+                        sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ImageMap", "이미지 렌더링 완료 (영구 저장 되지 않습니다)"));
+
+                    } catch (Exception e) {
+                        sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ImageMap", "이미지를 가져올 수 없습니다. " + e.getLocalizedMessage()));
+                    }
+                    
+                    return null;
+                }).run();
+            } catch (Exception e) {
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ImageMap", "맵 id는 숫자여야 합니다"));
+                return;
+            }
+>>>>>>> d7826166dd1584c41c62b8fe92d045f77e4acf0a
         }
     
         @Override
         public boolean availableOnConsole() {
-            return false;
+            return true;
         }
     
         @Override
         public boolean availableOnCommandBlock() {
-            return false;
+            return true;
         }
     
         @Override
