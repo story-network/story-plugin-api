@@ -29,6 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCursor;
@@ -167,6 +168,15 @@ public class CustomMapManager extends MiniPlugin implements Listener {
                     data.getRenderer().clearDirtyArea();
                 });
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        for (int id : idMap.keySet()) {
+            CustomMapTracker tracker = trackerMap.get(id);
+
+            tracker.removeTracked(e.getPlayer());
         }
     }
 
