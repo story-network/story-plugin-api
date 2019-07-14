@@ -170,27 +170,6 @@ public class CustomMapManager extends MiniPlugin implements Listener {
         }
     }
 
-    @EventHandler
-    public void onItemHeld(PlayerItemHeldEvent e) {
-        Player p = e.getPlayer();
-        ItemStack item = e.getPlayer().getInventory().getItem(e.getNewSlot());
-
-        for (int id : idMap.keySet()) {
-            CustomMapData data = idMap.get(id);
-            CustomMapTracker tracker = trackerMap.get(id);
-
-            tracker.onItemHeld(p, item);
-
-            if (data.getRenderer().needRender()) {
-                updateInternal(data).thenRun(() -> {
-                    sendDirtyMapPacket(p, id, data);
-    
-                    data.getRenderer().clearDirtyArea();
-                });
-            }
-        }
-    }
-
     protected Void onTrackerAdded(CustomMapTracker tracker, Player p) {
         sendEntireMapPacket(p, tracker.getMapId(), getCustomMap(tracker.getMapId()));
 

@@ -90,13 +90,15 @@ public class CustomMapTracker {
     }
 
     public boolean canSeeItem(Player p) {
-        for (ItemStack item : p.getInventory().getContents()) {
-            if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
-                MapMeta meta = (MapMeta) item.getItemMeta();
+        return isTargetMapItem(p.getInventory().getItemInMainHand()) || isTargetMapItem(p.getInventory().getItemInOffHand());
+    }
 
-                if (meta.hasMapView() && meta.getMapView().getId() == getMapId())
-                    return true;
-            }
+    public boolean isTargetMapItem(ItemStack item) {
+        if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
+            MapMeta meta = (MapMeta) item.getItemMeta();
+
+            if (meta.hasMapView() && meta.getMapView().getId() == getMapId())
+                return true;
         }
 
         return false;
@@ -108,7 +110,7 @@ public class CustomMapTracker {
 
     public void update(Collection<Player> playerList) {
         for (Player p : playerList) {
-            boolean canSee = canSeeItemFrame(p);
+            boolean canSee = canSee(p);
 
             boolean flag = contains(p);
             if (flag && !canSee) {
@@ -117,18 +119,6 @@ public class CustomMapTracker {
             else if(!flag && canSee) {
                 addTracked(p);
             }
-        }
-    }
-    
-    public void onItemHeld(Player p, ItemStack item) {
-        if (item != null && item.getType() == Material.FILLED_MAP && item.hasItemMeta()) {
-            MapMeta meta = (MapMeta) item.getItemMeta();
-
-            if (meta.hasMapView() && meta.getMapView().getId() == mapId && !contains(p)) {
-                addTracked(p);
-            }
-        } else if (contains(p)) {
-            removeTracked(p);
         }
     }
 
