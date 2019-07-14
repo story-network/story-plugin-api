@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCursor;
@@ -162,6 +163,27 @@ public class CustomMapManager extends MiniPlugin implements Listener {
                     for (Player p : tracker.getPlayerList()) {
                         sendDirtyMapPacket(p, id, data);
                     }
+    
+                    data.getRenderer().clearDirtyArea();
+                });
+            }
+        }
+    }
+
+    @EventHandler
+    public void onItemHeld(PlayerItemHeldEvent e) {
+        Player p = e.getPlayer();
+        ItemStack item = e.getPlayer().getInventory().getItem(e.getNewSlot());
+
+        for (int id : idMap.keySet()) {
+            CustomMapData data = idMap.get(id);
+            CustomMapTracker tracker = trackerMap.get(id);
+
+            tracker.onItemHeld(p, item);
+
+            if (data.getRenderer().needRender()) {
+                updateInternal(data).thenRun(() -> {
+                    sendDirtyMapPacket(p, id, data);
     
                     data.getRenderer().clearDirtyArea();
                 });
