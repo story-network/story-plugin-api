@@ -223,6 +223,14 @@ public class ImageMap extends MiniPlugin {
                 return;
             }
 
+            Player player = (Player) sender;
+            ItemStack handItem = player.getInventory().getItemInMainHand();
+
+            if (handItem == null || handItem.getType() != Material.MAP) {
+                sender.sendMessage(MessageUtil.getPluginMessage(MessageType.FAIL, "ImageMap", "이미지를 채울 빈 지도를 들고 있어야 합니다"));
+                return;
+            }
+
             new AsyncTask<Void>(() -> {
                 try {
                     String urlStr = String.join("%20", args);
@@ -258,13 +266,11 @@ public class ImageMap extends MiniPlugin {
 
                     Player p = (Player) sender;
 
-                    ItemStack mapItem = new ItemStack(Material.FILLED_MAP, 1);
+                    handItem.setType(Material.FILLED_MAP);
 
-                    MapMeta mapMeta = (MapMeta) mapItem.getItemMeta();
+                    MapMeta mapMeta = (MapMeta) handItem.getItemMeta();
                     mapMeta.setMapId(id);
-                    mapItem.setItemMeta(mapMeta);
-
-                    p.getInventory().addItem(mapItem);
+                    handItem.setItemMeta(mapMeta);
 
                     getPlugin().getDecorator().getCustomMapManager().addCustomMap(id, data);
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "ImageMap", "이미지 렌더링 완료 (id = " + id + ")"));
