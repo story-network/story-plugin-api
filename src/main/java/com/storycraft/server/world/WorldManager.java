@@ -61,8 +61,6 @@ public class WorldManager extends ServerExtension implements Listener {
             
                     loadDefaultWorld(new DefaultUniverse(w));
                 }
-
-                loadUniverse();
             }
         });
     }
@@ -75,11 +73,6 @@ public class WorldManager extends ServerExtension implements Listener {
 
     public WorldAddonManager getAddonManager() {
         return addonManager;
-    }
-
-    private void loadUniverse() {
-        loadWorld(new TestUniverse("test", 0));
-        loadWorld(new BuildUniverse("build", 0));
     }
 
     public IUniverse getByName(String name){
