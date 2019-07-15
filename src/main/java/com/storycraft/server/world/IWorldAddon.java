@@ -1,6 +1,8 @@
 package com.storycraft.server.world;
 
+import com.google.gson.JsonObject;
 import com.storycraft.StoryPlugin;
+import com.storycraft.config.json.JsonConfigEntry;
 
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
@@ -10,18 +12,20 @@ import net.minecraft.server.v1_14_R1.WorldServer;
 
 public interface IWorldAddon {
 
-    AddonHandler createHandler(StoryPlugin plugin, World world);
+    AddonHandler createHandler(StoryPlugin plugin, World world, JsonConfigEntry config);
 
     public class AddonHandler implements Listener {
 
+        private JsonConfigEntry config;
         private StoryPlugin plugin;
         private IWorldAddon addon;
         private World world;
 
-        protected AddonHandler(StoryPlugin plugin, IWorldAddon addon, World world) {
+        protected AddonHandler(StoryPlugin plugin, IWorldAddon addon, World world, JsonConfigEntry config) {
             this.plugin = plugin;
             this.addon = addon;
             this.world = world;
+            this.config = config;
         }
 
         public IWorldAddon getAddon() {
@@ -38,6 +42,10 @@ public interface IWorldAddon {
 
         public StoryPlugin getPlugin() {
             return plugin;
+        }
+        
+        public JsonConfigEntry getConfig() {
+            return config;
         }
 
         protected WorldServer getNMSWorld() {

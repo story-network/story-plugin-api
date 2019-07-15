@@ -18,7 +18,6 @@ import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.WorldInitEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +32,6 @@ public class WorldManager extends ServerExtension implements Listener {
 
     private WorldAddonManager addonManager;
 
-    private JsonConfigFile worldCustomAddonConfig;
-
     public WorldManager(){
         this.universeList = new HashMap<>();
         this.addonManager = new WorldAddonManager(this);
@@ -46,12 +43,6 @@ public class WorldManager extends ServerExtension implements Listener {
         this.isLoaded = true;
 
         plugin.getMiniPluginLoader().addMiniPlugin(addonManager);
-
-        try {
-            plugin.getConfigManager().addConfigFile("world_addons.json", worldCustomAddonConfig = new JsonConfigPrettyFile()).getSync();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
         
         //pre set plugin
         setPlugin(plugin);
@@ -74,8 +65,7 @@ public class WorldManager extends ServerExtension implements Listener {
             }
         });
 
-        //worlds load after server init
-        getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), this::loadUniverse, 0);
+        loadUniverse();
     }
 
     @Override
@@ -86,16 +76,6 @@ public class WorldManager extends ServerExtension implements Listener {
 
     public WorldAddonManager getAddonManager() {
         return addonManager;
-    }
-
-    @EventHandler
-    public void onConfigReload(ConfigUpdateEvent e) {
-        if (worldCustomAddonConfig.equals(e.getConfig())) {
-            for (IUniverse universe : universeList.values()) {
-                unloadWorldAddon(universe);
-                loadWorldAddon(universe);
-            }
-        }
     }
 
     private void loadUniverse() {
@@ -120,47 +100,6 @@ public class WorldManager extends ServerExtension implements Listener {
             return;
         
         universeList.putIfAbsent(universe.getName(), universe);
-
-        loadWorldAddon(universe);
-    }
-
-    public List<String> getWorldCustomAddonList(IUniverse universe) {
-        List<String> addonList;
-
-        try {
-            JsonArray array = worldCustomAddonConfig.get(universe.getName()).getAsJsonArray();
-            String[] list = new String[array.size()];
-
-            for (int i = 0; i < list.length; i++) {
-                list[i] = array.get(i).getAsString();
-            }
-
-            addonList = Lists.newArrayList(list);
-        } catch (Exception e) {
-            addonList = new ArrayList<>();
-            setWorldCustomAddon(universe, addonList);
-        }
-
-        return addonList;
-    }
-
-    public void setWorldCustomAddon(IUniverse universe, List<String> list) {
-        worldCustomAddonConfig.set(universe.getName(), list);
-    }
-
-    protected void loadWorldAddon(IUniverse universe) {
-        if (!universe.isLoaded())
-            return;
-
-        World w = universe.getBukkitWorld();
-        
-        List<IWorldAddon> addonList = new ArrayList<>();
-
-        List<String> requiredAddonList = getWorldCustomAddonList(universe);
-        requiredAddonList.addAll(Lists.newArrayList(universe.getRequiredAddonList()));
-
-        for (String name : requiredAddonList)
-            getAddonManager().addAddonToWorld(w, name);
     }
 
     protected void unloadWorldAddon(IUniverse universe) {
@@ -188,8 +127,6 @@ public class WorldManager extends ServerExtension implements Listener {
 
         universeList.putIfAbsent(universe.getName(), universe);
         universe.load(w);
-
-        loadWorldAddon(universe);
     }
 
     public void unloadWorld(CustomUniverse universe){

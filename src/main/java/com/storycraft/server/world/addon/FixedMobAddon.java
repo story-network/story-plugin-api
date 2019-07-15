@@ -1,13 +1,13 @@
 package com.storycraft.server.world.addon;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.server.world.IWorldAddon;
 
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
@@ -15,14 +15,14 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 public class FixedMobAddon implements IWorldAddon {
 
     @Override
-    public AddonHandler createHandler(StoryPlugin plugin, World world) {
-		return new FixedMobAddonHandler(plugin, this, world);
+    public AddonHandler createHandler(StoryPlugin plugin, World world, JsonConfigEntry entry) {
+		return new FixedMobAddonHandler(plugin, this, world, entry);
     }
     
     public class FixedMobAddonHandler extends AddonHandler {
 
-        protected FixedMobAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world) {
-            super(plugin, addon, world);
+        protected FixedMobAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world, JsonConfigEntry entry) {
+            super(plugin, addon, world, entry);
         }
         
         @EventHandler

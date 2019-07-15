@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.server.event.server.ServerSyncUpdateEvent;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.server.world.IWorldAddon;
@@ -21,14 +22,14 @@ import org.bukkit.event.EventHandler;
 public class SnowStackAddon implements IWorldAddon {
 
     @Override
-    public AddonHandler createHandler(StoryPlugin plugin, World world) {
-		return new SnowStackAddonHandler(plugin, this, world);
+    public AddonHandler createHandler(StoryPlugin plugin, World world, JsonConfigEntry entry) {
+		return new SnowStackAddonHandler(plugin, this, world, entry);
     }
 
     public class SnowStackAddonHandler extends AddonHandler {
 
-        protected SnowStackAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world) {
-            super(plugin, addon, world);
+        protected SnowStackAddonHandler(StoryPlugin plugin, IWorldAddon addon, World world, JsonConfigEntry entry) {
+            super(plugin, addon, world, entry);
         }
         
         @EventHandler

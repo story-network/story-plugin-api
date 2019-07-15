@@ -5,16 +5,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.storycraft.StoryPlugin;
+import com.storycraft.config.json.JsonConfigEntry;
+import com.storycraft.config.json.JsonConfigFile;
+import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.core.MiniPlugin;
+import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.server.world.addon.*;
 
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 
 public class WorldAddonManager extends MiniPlugin implements Listener {
     
     private WorldManager manager;
+
+    private JsonConfigFile worldAddonConfig;
 
     private Map<String, IWorldAddon> addonMap;
 
@@ -26,6 +38,15 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
         this.manager = manager;
 
         initDefaultAddon();
+    }
+
+    @Override
+    public void onLoad(StoryPlugin plugin){
+        try {
+            plugin.getConfigManager().addConfigFile("world_addons.json", worldAddonConfig = new JsonConfigPrettyFile()).getSync();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -99,6 +120,60 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
         addonMap.remove(name);
     }
 
+    protected JsonArray getWorldAddonArray(World w) {
+        try {
+            return worldAddonConfig.get(w.getName()).getAsJsonArray();
+        } catch (Exception e) {
+            JsonArray array;
+            setWorldAddonList(w, array = new JsonArray());
+            return array;
+        }
+    }
+
+    protected List<ConfigAddonInfo> getWorldAddonList(World w) {
+        JsonArray array = getWorldAddonArray(w);
+        JsonArray newArray = new JsonArray();
+
+        List<ConfigAddonInfo> addonInfo = new ArrayList<>();
+
+        array.forEach((JsonElement element) -> {
+            ConfigAddonInfo info = null;
+            if (element.isJsonPrimitive()) {
+                element = convertOldConfigElement(element.getAsString());
+            }
+
+            if (element.isJsonObject()) {
+                try {
+                    JsonObject obj = element.getAsJsonObject();
+                    newArray.add(obj);
+                    info = new ConfigAddonInfo(obj.get("name").getAsString(), new JsonConfigEntry(obj.get("config").getAsJsonObject()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (info != null)
+                addonInfo.add(info);
+        });
+
+        setWorldAddonList(w, newArray);
+
+        return addonInfo;
+    }
+
+    private JsonObject convertOldConfigElement(String name) {
+        JsonObject obj = new JsonObject();
+
+        obj.addProperty("name", name);
+        obj.add("config", new JsonObject());
+
+        return obj;
+    }
+
+    private void setWorldAddonList(World w, JsonArray array) {
+        worldAddonConfig.set(w.getName(), array);
+    }
+
     protected List<IWorldAddon.AddonHandler> getAddonHandlerList(World w) {
         List<IWorldAddon.AddonHandler> list;
 
@@ -113,18 +188,21 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
         return list;
     }
 
-    public void addAddonToWorld(World w, String name) {
+    public void addAddonToWorld(World w, String name, JsonConfigEntry config) {
         if (!contains(name))
             return;
         
-        addAddonToWorld(w, getByName(name));
+        addAddonToWorld(w, getByName(name), config);
     }
 
-    public void addAddonToWorld(World w, IWorldAddon addon) {
-        if (hasAddonToWorld(w, addon))
-            return;
+    public void addAllAddonInConfig(World w) {
+        for (ConfigAddonInfo info : getWorldAddonList(w)) {
+            addAddonToWorld(w, info.getName(), info.getAddonConfigEntry());
+        }
+    }
 
-        IWorldAddon.AddonHandler handler = addon.createHandler(getPlugin(), w);
+    public void addAddonToWorld(World w, IWorldAddon addon, JsonConfigEntry config) {
+        IWorldAddon.AddonHandler handler = addon.createHandler(getPlugin(), w, config);
 
         getAddonHandlerList(w).add(handler);
 
@@ -180,6 +258,52 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
         }
 
         handlerList.clear();
+    }
+
+    @EventHandler
+    public void onConfigReload(ConfigUpdateEvent e) {
+        if (worldAddonConfig.equals(e.getConfig())) {
+            for (IUniverse universe : getWorldManager().universeList.values()) {
+                removeAllAddonToWorld(universe.getBukkitWorld());
+                addAllAddonInConfig(universe.getBukkitWorld());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent e) {
+        if (e.getWorld() == null) {
+            return;
+        }
+        
+        removeAllAddonToWorld(e.getWorld());
+        addAllAddonInConfig(e.getWorld());
+    }
+
+    class ConfigAddonInfo {
+
+        private JsonConfigEntry addonConfigEntry;
+        private String name;
+
+        public ConfigAddonInfo(String name, JsonConfigEntry entry) {
+            this.name = name;
+            this.addonConfigEntry = entry;
+        }
+
+        /**
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * @return the addonConfigEntry
+         */
+        public JsonConfigEntry getAddonConfigEntry() {
+            return addonConfigEntry;
+        }
+
     }
 
 }
