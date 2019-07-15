@@ -1,6 +1,6 @@
 package com.storycraft.core.player.head;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;

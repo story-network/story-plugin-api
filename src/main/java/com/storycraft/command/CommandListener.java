@@ -1,6 +1,6 @@
 package com.storycraft.command;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.util.MessageUtil;
 
 import org.bukkit.command.BlockCommandSender;

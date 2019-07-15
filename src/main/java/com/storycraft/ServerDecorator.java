@@ -1,10 +1,9 @@
-package com.storycraft.core;
+package com.storycraft;
 
-import com.storycraft.StoryPlugin;
 import com.storycraft.core.advancement.AdvancementManager;
 import com.storycraft.core.dropping.HologramXPDrop;
 import com.storycraft.core.hologram.HologramManager;
-import com.storycraft.core.map.CustomMapManager;
+import com.storycraft.server.map.CustomMapManager;
 import com.storycraft.core.morph.MorphManager;
 import com.storycraft.core.playerlist.ServerPlayerList;
 

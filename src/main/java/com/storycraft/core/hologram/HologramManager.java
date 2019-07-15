@@ -1,7 +1,7 @@
 package com.storycraft.core.hologram;
 
 import com.storycraft.StoryPlugin;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.server.clientside.ClientEntityManager;
 import com.storycraft.server.packet.AsyncPacketInEvent;
 import com.storycraft.util.reflect.Reflect;

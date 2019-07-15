@@ -15,7 +15,7 @@ import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.punish.punishment.*;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.MessageUtil;

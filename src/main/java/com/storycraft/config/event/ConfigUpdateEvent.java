@@ -1,4 +1,4 @@
-package com.storycraft.core.config;
+package com.storycraft.config.event;
 
 import com.storycraft.config.IConfigFile;
 

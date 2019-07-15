@@ -1,6 +1,5 @@
-package com.storycraft.core;
+package com.storycraft;
 
-import com.storycraft.StoryPlugin;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.Parallel;
 import com.storycraft.util.MessageUtil.MessageType;

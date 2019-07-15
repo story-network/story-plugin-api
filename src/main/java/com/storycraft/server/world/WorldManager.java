@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
-import com.storycraft.core.config.ConfigUpdateEvent;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.world.universe.BuildUniverse;
 import com.storycraft.server.world.universe.TestUniverse;

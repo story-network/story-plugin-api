@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigFile;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.AsyncTask.AsyncCallable;

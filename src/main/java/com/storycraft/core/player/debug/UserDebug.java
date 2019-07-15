@@ -1,7 +1,7 @@
 package com.storycraft.core.player.debug;
 
 import com.storycraft.StoryPlugin;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.rank.RankUpdateEvent;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.server.packet.AsyncPacketOutEvent;

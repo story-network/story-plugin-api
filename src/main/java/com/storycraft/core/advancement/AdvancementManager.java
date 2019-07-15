@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.util.ConnectionUtil;
 
 import org.bukkit.craftbukkit.v1_14_R1.*;

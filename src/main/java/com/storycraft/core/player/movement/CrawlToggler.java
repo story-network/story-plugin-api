@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;

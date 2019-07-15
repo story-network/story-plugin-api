@@ -2,7 +2,7 @@ package com.storycraft.core.player.login;
 
 import java.util.UUID;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;

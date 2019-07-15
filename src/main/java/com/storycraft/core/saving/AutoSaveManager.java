@@ -1,6 +1,6 @@
 package com.storycraft.core.saving;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.AsyncTask.AsyncCallable;

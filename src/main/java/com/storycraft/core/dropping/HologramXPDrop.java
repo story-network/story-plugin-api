@@ -1,6 +1,6 @@
 package com.storycraft.core.dropping;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.HologramManager;
 import com.storycraft.core.hologram.SimpleHologram;

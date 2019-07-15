@@ -1,6 +1,6 @@
 package com.storycraft.core.chat;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.rank.ServerRank;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;

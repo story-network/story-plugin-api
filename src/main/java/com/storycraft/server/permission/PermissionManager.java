@@ -13,7 +13,7 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
-import com.storycraft.core.config.ConfigUpdateEvent;
+import com.storycraft.config.event.ConfigUpdateEvent;
 import com.storycraft.core.rank.RankManager;
 import com.storycraft.core.rank.RankUpdateEvent;
 import com.storycraft.core.rank.ServerRank;

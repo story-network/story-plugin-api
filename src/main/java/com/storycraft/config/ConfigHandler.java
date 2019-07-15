@@ -1,6 +1,6 @@
 package com.storycraft.config;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 
 public class ConfigHandler extends MiniPlugin {
 

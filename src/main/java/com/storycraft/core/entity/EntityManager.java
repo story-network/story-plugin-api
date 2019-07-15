@@ -1,8 +1,8 @@
 package com.storycraft.core.entity;
 
 import com.storycraft.StoryPlugin;
-import com.storycraft.core.MiniPlugin;
-import com.storycraft.core.MiniPluginLoader;
+import com.storycraft.MiniPlugin;
+import com.storycraft.MiniPluginLoader;
 import com.storycraft.core.entity.movement.CrawlMovement;
 
 public class EntityManager extends MiniPlugin {

@@ -2,7 +2,7 @@ package com.storycraft.core.motd;
 
 import com.storycraft.StoryPlugin;
 import com.storycraft.config.json.JsonConfigFile;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -1,4 +1,4 @@
-package com.storycraft.core.map.render;
+package com.storycraft.server.map.render;
 
 import java.util.Collection;
 

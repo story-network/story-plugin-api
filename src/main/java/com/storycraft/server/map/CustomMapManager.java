@@ -1,4 +1,4 @@
-package com.storycraft.core.map;
+package com.storycraft.server.map;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,8 +12,8 @@ import java.util.concurrent.Future;
 
 import com.google.common.collect.Lists;
 import com.storycraft.StoryPlugin;
-import com.storycraft.core.MiniPlugin;
-import com.storycraft.core.map.render.OffsetArea;
+import com.storycraft.MiniPlugin;
+import com.storycraft.server.map.render.OffsetArea;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.reflect.Reflect;

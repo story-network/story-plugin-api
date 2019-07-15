@@ -1,8 +1,8 @@
 package com.storycraft.mod;
 
 import com.storycraft.StoryPlugin;
-import com.storycraft.core.MiniPlugin;
-import com.storycraft.core.MiniPluginLoader;
+import com.storycraft.MiniPlugin;
+import com.storycraft.MiniPluginLoader;
 import com.storycraft.mod.season2.Season2MiniPlugin;
 
 public class ModManager extends MiniPlugin {

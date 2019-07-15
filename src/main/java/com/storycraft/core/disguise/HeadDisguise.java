@@ -1,6 +1,6 @@
 package com.storycraft.core.disguise;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.morph.MorphManager;
 import com.storycraft.core.morph.NamedMorphInfoWrapper;
 import com.storycraft.core.morph.SimpleBlockMorphInfo;

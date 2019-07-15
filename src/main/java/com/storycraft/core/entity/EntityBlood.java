@@ -1,6 +1,6 @@
 package com.storycraft.core.entity;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.util.BlockIdUtil;
 import org.bukkit.Effect;
 import org.bukkit.Material;

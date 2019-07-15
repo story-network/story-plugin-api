@@ -1,7 +1,7 @@
-package com.storycraft.core.map;
+package com.storycraft.server.map;
 
-import com.storycraft.core.map.render.IMapRenderer;
-import com.storycraft.core.map.render.OffsetArea;
+import com.storycraft.server.map.render.IMapRenderer;
+import com.storycraft.server.map.render.OffsetArea;
 
 import org.bukkit.map.MapCursorCollection;
 

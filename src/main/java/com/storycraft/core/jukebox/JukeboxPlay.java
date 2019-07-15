@@ -1,6 +1,6 @@
 package com.storycraft.core.jukebox;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.ShortHologram;
 import com.storycraft.server.event.server.ServerSyncUpdateEvent;

@@ -3,7 +3,7 @@ package com.storycraft.core.plugin;
 import com.mojang.brigadier.ParseResults;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.util.AsyncTask;

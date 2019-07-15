@@ -18,7 +18,7 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.ConnectionUtil;

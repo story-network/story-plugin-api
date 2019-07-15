@@ -1,4 +1,4 @@
-package com.storycraft.core.map;
+package com.storycraft.server.map;
 
 import java.util.ArrayList;
 import java.util.Collection;

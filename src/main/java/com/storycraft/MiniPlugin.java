@@ -1,6 +1,5 @@
-package com.storycraft.core;
+package com.storycraft;
 
-import com.storycraft.StoryPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.Callable;

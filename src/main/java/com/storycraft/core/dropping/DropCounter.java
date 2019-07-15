@@ -1,6 +1,6 @@
 package com.storycraft.core.dropping;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;

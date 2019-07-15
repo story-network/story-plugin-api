@@ -1,8 +1,8 @@
 package com.storycraft.core.player;
 
 import com.storycraft.StoryPlugin;
-import com.storycraft.core.MiniPlugin;
-import com.storycraft.core.MiniPluginLoader;
+import com.storycraft.MiniPlugin;
+import com.storycraft.MiniPluginLoader;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.head.CustomHat;

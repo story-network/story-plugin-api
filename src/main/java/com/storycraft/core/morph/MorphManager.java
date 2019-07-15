@@ -1,6 +1,6 @@
 package com.storycraft.core.morph;
 
-import com.storycraft.core.MiniPlugin;
+import com.storycraft.MiniPlugin;
 import com.storycraft.core.morph.entity.IMorphEntity;
 import com.storycraft.server.entity.EntityPacketListener;
 import com.storycraft.server.entity.EntityPacketListenerAbstract;
