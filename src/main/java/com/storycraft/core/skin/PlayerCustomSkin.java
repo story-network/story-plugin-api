@@ -228,6 +228,7 @@ public class PlayerCustomSkin extends MiniPlugin implements Listener {
 
         ConnectionUtil.sendPacket(removePacket, infoPacket);
         ConnectionUtil.sendPacket(p, respawnPacket, refreshPacket);
+        p.updateInventory();
     }
 
     @EventHandler
