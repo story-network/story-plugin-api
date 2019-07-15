@@ -28,6 +28,7 @@ import com.storycraft.core.faq.FAQCommand;
 import com.storycraft.core.fly.FlyCommand;
 import com.storycraft.core.dropping.DropCounter;
 import com.storycraft.core.motd.ServerMotd;
+import com.storycraft.core.permission.PermissionManager;
 import com.storycraft.core.plugin.IngamePluginManager;
 import com.storycraft.core.punish.PunishManager;
 import com.storycraft.core.randomtp.RandomTP;
@@ -156,6 +157,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     private void initMiniPlugin() {
         MiniPluginLoader loader = getMiniPluginLoader();
+        loader.addMiniPlugin(new PermissionManager());
         loader.addMiniPlugin(new Explosion());
         loader.addMiniPlugin(new ServerSpawnManager());
         loader.addMiniPlugin(new IngameConfigManager());
@@ -179,6 +181,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new TeleportAskCommand());
         loader.addMiniPlugin(new PlayerCustomSkin());
         loader.addMiniPlugin(new ImageMap());
+        
 
         postInitMiniPlugin();
     }

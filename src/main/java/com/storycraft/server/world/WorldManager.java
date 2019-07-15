@@ -61,10 +61,10 @@ public class WorldManager extends ServerExtension implements Listener {
             
                     loadDefaultWorld(new DefaultUniverse(w));
                 }
+
+                loadUniverse();
             }
         });
-
-        loadUniverse();
     }
 
     @Override

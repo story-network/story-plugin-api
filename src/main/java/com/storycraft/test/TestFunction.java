@@ -48,7 +48,7 @@ public class TestFunction implements Listener {
         plugin.getServer().getPluginManager().registerEvents(new TestFunction(plugin), plugin);
 
         /*try {
-            plugin.getServerManager().getRegistryManager().getEntityRegistry().add(220, new CustomPlayerInfo("player_zombie", TestZombiePlayer.class, TestZombiePlayer::new, new ZombieProfileHandler()));
+            plugin.getServerManager().getRegistryManager().getEntityRegistry().add(256, new CustomPlayerInfo<TestZombiePlayer>("player_zombie", TestZombiePlayer::new, new ZombieProfileHandler()));
         } catch (Exception e) {
             e.printStackTrace();
         }*/
@@ -66,7 +66,7 @@ public class TestFunction implements Listener {
 
     public static class TestZombiePlayer extends EntityMonster {
 
-        public TestZombiePlayer(World w) {
+        public TestZombiePlayer(EntityTypes<? extends EntityMonster> entitytypes, World w) {
             super((EntityTypes<? extends EntityMonster>) EntityTypes.a("server:player_zombie").get(), w);
 
             setCustomNameVisible(true);

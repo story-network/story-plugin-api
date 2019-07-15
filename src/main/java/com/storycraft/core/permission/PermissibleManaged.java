@@ -1,4 +1,4 @@
-package com.storycraft.server.permission;
+package com.storycraft.core.permission;
 
 import java.util.ArrayList;
 import java.util.HashMap;
