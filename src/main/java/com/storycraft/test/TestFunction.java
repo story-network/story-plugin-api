@@ -26,6 +26,7 @@ import net.minecraft.server.v1_14_R1.EntityPlayer;
 import net.minecraft.server.v1_14_R1.EntityTypes;
 import net.minecraft.server.v1_14_R1.EntityZombie;
 import net.minecraft.server.v1_14_R1.IRangedEntity;
+import net.minecraft.server.v1_14_R1.PathfinderGoalDoorOpen;
 import net.minecraft.server.v1_14_R1.PathfinderGoalEatTile;
 import net.minecraft.server.v1_14_R1.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_14_R1.PathfinderGoalMeleeAttack;
@@ -47,11 +48,11 @@ public class TestFunction implements Listener {
     public static void test(StoryPlugin plugin, org.bukkit.World world) {
         plugin.getServer().getPluginManager().registerEvents(new TestFunction(plugin), plugin);
 
-        /*try {
+        try {
             plugin.getServerManager().getRegistryManager().getEntityRegistry().add(256, new CustomPlayerInfo<TestZombiePlayer>("player_zombie", TestZombiePlayer::new, new ZombieProfileHandler()));
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     @EventHandler
@@ -73,15 +74,14 @@ public class TestFunction implements Listener {
             setCustomName(new ChatComponentText("owo"));
 
             this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 0.7D, false));
-            this.goalSelector.a(3, new PathfinderGoalRandomStroll(this, 0.5d, 1));
+            this.goalSelector.a(9, new PathfinderGoalRandomStroll(this, 0.5d, 1));
             this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
             this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
             this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
+            this.goalSelector.a(3, new PathfinderGoalDoorOpen(this, true));
 
-            this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+            this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityLiving.class, true));
             this.targetSelector.a(1, new PathfinderGoalEatTile(this));
-
-            this.setFlag(7, true);
         }
 
         @Override
