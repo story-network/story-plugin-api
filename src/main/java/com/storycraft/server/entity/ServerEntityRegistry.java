@@ -1,5 +1,6 @@
 package com.storycraft.server.entity;
 
+import com.google.common.collect.BiMap;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
@@ -19,6 +20,8 @@ import java.util.function.Function;
 public class ServerEntityRegistry implements IRegistry<CustomEntityInfo<? extends Entity>> {
 
     private Reflect.WrappedField<EntityTypes.b, EntityTypes> constructorField;
+
+    private Reflect.WrappedField<BiMap, RegistryMaterials> keyMapField;
 
     private Map<String, CustomEntityInfo> customEntityMap;
     private Map<Integer, CustomEntityInfo> customEntityIdMap;
@@ -43,6 +46,7 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo<? extend
     @Override
     public void preInitialize(StoryPlugin plugin) {
         this.constructorField = Reflect.getField(EntityTypes.class, "aZ");
+        this.keyMapField = Reflect.getField(RegistryMaterials.class, "c");
         constructorField.unlockFinal();
     }
 
@@ -53,14 +57,11 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo<? extend
 
     @Override
     public void unInitialize(StoryPlugin plugin) {
-        for (String name : customEntityMap.keySet()) {
-            CustomEntityInfo info = customEntityMap.get(name);
+        for (int id : customEntityIdMap.keySet()) {
+            CustomEntityInfo info = customEntityIdMap.get(id);
+            String name = info.getName().toString();
 
-            if (vanillaBackupMap.containsKey(name)) {
-                EntityTypes type = EntityTypes.a(name).get();
-                constructorField.set(type, vanillaBackupMap.get(name));
-                continue;
-            }
+            removeInternal(id, info.getName());
         }
 
         customEntityMap.clear();
@@ -73,24 +74,6 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo<? extend
     public void add(int id, CustomEntityInfo<? extends Entity> item) throws Exception {
         if (contains(item.getName().getKey()) || containsId(id))
             throw new Exception("Entity with " + item.getName() + " already exists");
-
-        //1.13.2
-        /*Schema sch = DataConverterRegistry.a().getSchema(DataFixUtils.makeKey(1631));
-        TaggedChoice.TaggedChoiceType<?> choice = sch.findChoiceType(DataConverterTypes.n);
-
-        Map<Object, Type<?>> types = (Map<Object, Type<?>>) choice.types();
-
-        String key = item.getName().b() + ":" + item.getName().getKey();
-        Type<?> value = types.get(EntityTypes.getName(item.getClientEntityTypes()));
-
-        if (types.containsKey(key)) {
-            types.remove(key);
-        }
-
-        types.put(key, value);
-
-        EntityTypes entityTypes = a.a(key);
-        net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(id, item.getName(), entityTypes);*/
 
         Map<String, Type<?>> types = getEntityFixerMap();
         types.put(item.getName().toString(), types.get(item.getClientEntityTypes()));
@@ -105,6 +88,32 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo<? extend
 
     protected Map<String, Type<?>> getEntityFixerMap() {
         return (Map<String, Type<?>>) DataConverterRegistry.a().getSchema(DataFixUtils.makeKey(SharedConstants.a().getWorldVersion())).findChoiceType(DataConverterTypes.ENTITY).types();
+    }
+
+    public void remove(int id) throws Exception {
+        if (!containsId(id))
+            throw new Exception("Custom Entity id " + id + " does not exist");
+
+        CustomEntityInfo info = customEntityIdMap.get(id);
+        MinecraftKey key = info.getName();
+        removeInternal(id, key);
+
+        int networkId = net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.a(net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE.fromId(id));
+
+        customEntityIdMap.remove(id);
+        customEntityMap.remove(key.toString());
+        customEntityNetworkIdMap.remove(networkId);
+    }
+
+    protected void removeInternal(int id, MinecraftKey key) {
+        String name = key.toString();
+
+        if (vanillaBackupMap.containsKey(name)) {
+            EntityTypes type = EntityTypes.a(name).get();
+            constructorField.set(type, vanillaBackupMap.get(name));
+        } else {
+            keyMapField.get(net.minecraft.server.v1_14_R1.IRegistry.ENTITY_TYPE).remove(key);
+        }
     }
 
     public <T extends Entity>void addDefaultOverride(EntityTypes<? extends Entity> defaultType, CustomEntityInfo<T> item) throws Exception {

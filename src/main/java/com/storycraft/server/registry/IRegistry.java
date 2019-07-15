@@ -6,6 +6,8 @@ public interface IRegistry<T> {
 
     void add(int id, T item) throws Exception;
 
+    void remove(int id) throws Exception;
+
     void initialize(StoryPlugin plugin);
     void preInitialize(StoryPlugin plugin);
     void unInitialize(StoryPlugin plugin);

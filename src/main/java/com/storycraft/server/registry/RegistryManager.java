@@ -25,12 +25,21 @@ public class RegistryManager extends ServerExtension {
         initRegistry(getPlugin());
     }
 
+    @Override
+    public void onDisable(boolean restart){
+        unInitRegistry(getPlugin());
+    }
+
     private void preInitRegistry(StoryPlugin plugin){
         getEntityRegistry().preInitialize(plugin);
     }
 
     private void initRegistry(StoryPlugin plugin){
         getEntityRegistry().initialize(plugin);
+    }
+
+    private void unInitRegistry(StoryPlugin plugin){
+        getEntityRegistry().unInitialize(plugin);
     }
 
     public ServerEntityRegistry getEntityRegistry() {
