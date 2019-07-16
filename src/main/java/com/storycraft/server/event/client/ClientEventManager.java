@@ -1,10 +1,16 @@
 package com.storycraft.server.event.client;
 
 import com.storycraft.server.ServerExtension;
+import com.storycraft.server.packet.AsyncPacketInEvent;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.reflect.Reflect;
+
+import net.minecraft.server.v1_14_R1.BlockPosition;
+import net.minecraft.server.v1_14_R1.PacketPlayInBlockDig;
 import net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk;
 import net.minecraft.server.v1_14_R1.PacketPlayOutUnloadChunk;
+
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,8 +39,22 @@ public class ClientEventManager extends ServerExtension implements Listener {
     }
 
     @EventHandler
-    public void invokePlayerLoadChunkEvent(AsyncPacketOutEvent e){
-        if (e.getPacket() instanceof PacketPlayOutMapChunk){
+    public void onPacketOut(AsyncPacketOutEvent e){
+        if (e.getPacket() instanceof PacketPlayOutUnloadChunk){
+            PacketPlayOutUnloadChunk packet = (PacketPlayOutUnloadChunk) e.getPacket();
+            Player p = e.getTarget();
+
+            World w = p.getWorld();
+
+            int locX = chunkUnloadPacketX.get(packet);
+            int locZ = chunkUnloadPacketZ.get(packet);
+
+            AsyncPlayerUnloadChunkEvent event = new AsyncPlayerUnloadChunkEvent(p, w, locX, locZ);
+            getPlugin().getServer().getPluginManager().callEvent(event);
+
+            if (event.isCancelled())
+                e.setCancelled(true);
+        } else if (e.getPacket() instanceof PacketPlayOutMapChunk){
             try {
             PacketPlayOutMapChunk packet = (PacketPlayOutMapChunk) e.getPacket();
             Player p = e.getTarget();
@@ -58,21 +78,41 @@ public class ClientEventManager extends ServerExtension implements Listener {
     }
 
     @EventHandler
-    public void invokePlayerUnloadChunkEvent(AsyncPacketOutEvent e){
-        if (e.getPacket() instanceof PacketPlayOutUnloadChunk){
-            PacketPlayOutUnloadChunk packet = (PacketPlayOutUnloadChunk) e.getPacket();
-            Player p = e.getTarget();
+    public void onPacketIn(AsyncPacketInEvent e) {
+        if (e.getPacket() instanceof PacketPlayInBlockDig) {
+            PacketPlayInBlockDig packet = (PacketPlayInBlockDig) e.getPacket();
 
-            World w = p.getWorld();
+            BlockPosition pos = packet.b();
 
-            int locX = chunkUnloadPacketX.get(packet);
-            int locZ = chunkUnloadPacketZ.get(packet);
+            switch (packet.d()) {
 
-            AsyncPlayerUnloadChunkEvent event = new AsyncPlayerUnloadChunkEvent(p, w, locX, locZ);
-            getPlugin().getServer().getPluginManager().callEvent(event);
+                case START_DESTROY_BLOCK:
+                    AsyncPlayerDigEvent startEvent = new AsyncPlayerDigStartEvent(e.getSender(), new Location(e.getSender().getWorld(), pos.getX(), pos.getY(), pos.getZ()));
+                    
+                    getPlugin().getServer().getPluginManager().callEvent(startEvent);
 
-            if (event.isCancelled())
-                e.setCancelled(true);
+                    e.setCancelled(startEvent.isCancelled());
+                    break;
+                
+                case ABORT_DESTROY_BLOCK:
+                    AsyncPlayerDigEvent cancelEvent = new AsyncPlayerDigCancelEvent(e.getSender(), new Location(e.getSender().getWorld(), pos.getX(), pos.getY(), pos.getZ()));
+                    
+                    getPlugin().getServer().getPluginManager().callEvent(cancelEvent);
+
+                    e.setCancelled(cancelEvent.isCancelled());
+                    break;
+
+                case STOP_DESTROY_BLOCK:
+                    AsyncPlayerDigEvent doneEvent = new AsyncPlayerDigDoneEvent(e.getSender(), new Location(e.getSender().getWorld(), pos.getX(), pos.getY(), pos.getZ()));
+                    
+                    getPlugin().getServer().getPluginManager().callEvent(doneEvent);
+
+                    e.setCancelled(doneEvent.isCancelled());
+                    break;
+
+                default:
+                    return;
+            }
         }
     }
 }

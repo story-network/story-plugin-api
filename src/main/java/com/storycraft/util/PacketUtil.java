@@ -24,6 +24,8 @@ public class PacketUtil {
     private static Reflect.WrappedField<ChunkCoordIntPair, PacketPlayOutMultiBlockChange> multiBlockUpdateChunkField;
     private static Reflect.WrappedField<MultiBlockChangeInfo[], PacketPlayOutMultiBlockChange> multiBlockUpdateInfoField;
 
+    private static Reflect.WrappedField<BlockPosition, PacketPlayOutBlockChange> blockUpdatePositionField;
+
     private static Reflect.WrappedField<int[], PacketPlayOutMount> passengerEidListField;
 
     private static Reflect.WrappedField<int[], PacketPlayOutEntityDestroy> destroyedEntityEidList;
@@ -171,8 +173,12 @@ public class PacketUtil {
     }
 
     public static PacketPlayOutBlockChange getBlockUpdatePacket(Location loc, BlockData data) {
+        if (blockUpdatePositionField == null) {
+            blockUpdatePositionField = Reflect.getField(PacketPlayOutBlockChange.class, "a");
+        }
 
-        PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(null, new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+        PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange();
+        blockUpdatePositionField.set(packet, new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
         packet.block = BlockIdUtil.getNMSBlockData(data);
 
         return packet;

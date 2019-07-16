@@ -21,7 +21,7 @@ import net.minecraft.server.v1_14_R1.EntityGuardian;
 import net.minecraft.server.v1_14_R1.EntitySquid;
 import net.minecraft.server.v1_14_R1.Packet;
 
-public class GuardianBeamEffect implements ITargetOnlyEffect, IHasDuration, IWorldEffect {
+public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
 
     private static Reflect.WrappedMethod<Void, EntityGuardian> guardianSetTargetMethod;
 
@@ -29,10 +29,7 @@ public class GuardianBeamEffect implements ITargetOnlyEffect, IHasDuration, IWor
         guardianSetTargetMethod = Reflect.getMethod(EntityGuardian.class, "a", int.class);
     }
 
-    private boolean playing;
     private boolean elderBeam;
-
-    private long startTime;
 
     private Location guardianLoc;
     private Location targetLoc;
@@ -42,8 +39,6 @@ public class GuardianBeamEffect implements ITargetOnlyEffect, IHasDuration, IWor
 
     private EntityGuardian guardian;
     private int virtualTargetId;
-
-    private Player[] players;
 
     public GuardianBeamEffect(Location guardianLoc, Location targetLoc) {
         this();
@@ -71,13 +66,7 @@ public class GuardianBeamEffect implements ITargetOnlyEffect, IHasDuration, IWor
     }
 
     protected GuardianBeamEffect(boolean elderBeam) {
-        this.playing = false;
         this.elderBeam = elderBeam;
-    }
-
-    @Override
-    public boolean isPlaying() {
-        return playing;
     }
 
     public void setElderBeam(boolean elderBeam) {
@@ -132,10 +121,9 @@ public class GuardianBeamEffect implements ITargetOnlyEffect, IHasDuration, IWor
             }
         }
 
-        players = null;
         guardian = null;
-        playing = false;
-        startTime = 0;
+
+        super.stop();
     }
 
     protected Location getSquidLocation() {
@@ -161,23 +149,25 @@ public class GuardianBeamEffect implements ITargetOnlyEffect, IHasDuration, IWor
     }
 
     @Override
-    public void play(Server server) {
-        List<Player> playerList = getWorld().getPlayers();
-
-        play(playerList.toArray(new Player[playerList.size()]));
-    }
-
-    @Override
     public long getDuration() {
         return elderBeam ? 2500 : 4000;
     }
 
     @Override
     public void play(Player... players) {
-        if (isPlaying() && !validate())
+        if (isPlaying()) {
+            stop();
+            play(players);
             return;
+        }
+
+        if (!validate()) {
+            return;
+        }
 
         playInternal(players);
+
+        super.play(players);
     }
 
     protected void playInternal(Player... playerList) {
@@ -221,29 +211,14 @@ public class GuardianBeamEffect implements ITargetOnlyEffect, IHasDuration, IWor
 
         Packet[] packets = packetList.toArray(new Packet[packetList.size()]);
 
-        this.players = playerList;
-
         for (Player p : playerList) {
             ConnectionUtil.sendPacket(p, packets);
         }
-        
-        this.startTime = System.currentTimeMillis();
-        this.playing = true;
     }
 
     @Override
     public World getWorld() {
         return getGuardianLocation().getWorld();
-    }
-
-    @Override
-    public Player[] getPlayers() {
-        return players;
-    }
-
-    @Override
-    public long getStartTime() {
-        return startTime;
     }
 
 }
