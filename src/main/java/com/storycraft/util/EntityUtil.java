@@ -9,14 +9,14 @@ import org.bukkit.entity.EntityType;
 
 public class EntityUtil {
 
-    public static Entity createNMSEntity(World w, EntityType type) {
+    public static <T extends Entity>T createNMSEntity(World w, EntityType type) {
         return createNMSEntity(new Location(w, 0, 0, 0), type);
     }
 
-    public static Entity createNMSEntity(Location loc, EntityType type) {
+    public static <T extends Entity>T createNMSEntity(Location loc, EntityType type) {
         CraftWorld cw = (CraftWorld) loc.getWorld();
 
-        return cw.createEntity(loc, type.getEntityClass());
+        return (T) cw.createEntity(loc, type.getEntityClass());
     }
 
 }

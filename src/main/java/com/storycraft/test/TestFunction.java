@@ -6,6 +6,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.storycraft.StoryPlugin;
 import com.storycraft.core.morph.SimpleBlockMorphInfo;
+import com.storycraft.effect.GuardianBeamEffect;
+import com.storycraft.effect.IHasDuration;
+import com.storycraft.effect.player.EffectTracker;
 import com.storycraft.server.entity.CustomPlayerInfo;
 import com.storycraft.server.entity.override.IPlayerOverrideProfileHandler;
 import com.storycraft.server.event.server.ServerUpdateEvent;
@@ -63,6 +66,16 @@ public class TestFunction implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
         //plugin.getDecorator().getMorphManager().setMorph(new SimpleBlockMorphInfo(e.getEntity(), Material.DIRT.createBlockData()));
+
+        /*IHasDuration effect = new GuardianBeamEffect(null, null, e.getDamager(), e.getEntity(), true);
+
+        effect.play(plugin.getServer());
+
+        new EffectTracker(plugin).setOnEndListener(() -> {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                e.getEntity().getWorld().createExplosion(e.getEntity().getLocation(), 10);
+            });
+        }).track(effect);*/
     }
 
     public static class TestZombiePlayer extends EntityMonster {

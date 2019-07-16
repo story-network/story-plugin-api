@@ -130,6 +130,10 @@ public class PacketUtil {
         return new PacketPlayOutEntityDestroy(e.getId());
     }
 
+    public static Packet getEntityDestroyPacket(int... eidList) {
+        return new PacketPlayOutEntityDestroy(eidList);
+    }
+
     public static PacketPlayOutMount getEntityMountPacket(Entity e) {
         return new PacketPlayOutMount(e);
     }
@@ -153,7 +157,7 @@ public class PacketUtil {
 
         return getEntityMountPacket(e, list);
     }
-    
+
     public static PacketPlayOutMount getEntityMountPacket(Entity e, int... passengerEidList) {
         if (passengerEidListField == null) {
             passengerEidListField = Reflect.getField(PacketPlayOutMount.class, "b");

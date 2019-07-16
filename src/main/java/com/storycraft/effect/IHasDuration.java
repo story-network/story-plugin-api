@@ -1,6 +1,6 @@
 package com.storycraft.effect;
 
-public interface IHasDuration {
+public interface IHasDuration extends IEffect {
 
     long getDuration();
 
