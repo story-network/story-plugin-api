@@ -89,13 +89,9 @@ public class TestFunction implements Listener {
     public static class TestZombiePlayer extends EntityMonster {
 
         private static Reflect.WrappedField<DataWatcherObject<Byte>, Entity> glideFlagObject;
-        private static Reflect.WrappedField<DataWatcher, Entity> datawatcherField;
 
         static {
             glideFlagObject = Reflect.getField(Entity.class, "W");
-            datawatcherField = Reflect.getField(Entity.class, "datawatcher");
-            
-            datawatcherField.unlockFinal();
         }
 
         public TestZombiePlayer(EntityTypes<? extends EntityMonster> entitytypes, World w) {
@@ -118,7 +114,7 @@ public class TestFunction implements Listener {
 
             datawatcher.addPatch(glideFlagObject.get(null), (byte) 0x80);
 
-            datawatcherField.set(this, datawatcher);
+            datawatcher.bindToEntity();
         }
 
         @Override

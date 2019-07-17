@@ -15,10 +15,14 @@ import net.minecraft.server.v1_14_R1.PacketDataSerializer;
 
 public class PatchedDataWatcher extends DataWatcher {
 
+    private static Reflect.WrappedField<DataWatcher, Entity> datawatcherField;
     private static Reflect.WrappedField<Entity, DataWatcher> entityField;
 
     static {
         entityField = Reflect.getField(DataWatcher.class, "c");
+        datawatcherField = Reflect.getField(Entity.class, "datawatcher");
+            
+        datawatcherField.unlockFinal();
     }
 
     private Map<DataWatcherObject, Item> patchMap;
@@ -34,6 +38,10 @@ public class PatchedDataWatcher extends DataWatcher {
 
     public DataWatcher getOriginal() {
         return original;
+    }
+
+    public void bindToEntity() {
+        datawatcherField.set(entityField.get(this), this);
     }
 
     public <T> void register(DataWatcherObject<T> datawatcherobject, T t0) {
