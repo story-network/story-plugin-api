@@ -17,9 +17,16 @@ public class PatchedDataWatcher extends DataWatcher {
 
     private static Reflect.WrappedField<DataWatcher, Entity> datawatcherField;
     private static Reflect.WrappedField<Entity, DataWatcher> entityField;
+    private static Reflect.WrappedField<Boolean, DataWatcher> dirtyFlag;
+
+    private static Reflect.WrappedMethod<Item<?>, DataWatcher> getOriginalItemMethod;
 
     static {
         entityField = Reflect.getField(DataWatcher.class, "c");
+        dirtyFlag = Reflect.getField(DataWatcher.class, "g");
+
+        getOriginalItemMethod = Reflect.getMethod(DataWatcher.class, "b", DataWatcherObject.class);
+
         datawatcherField = Reflect.getField(Entity.class, "datawatcher");
             
         datawatcherField.unlockFinal();
@@ -70,28 +77,29 @@ public class PatchedDataWatcher extends DataWatcher {
   
     public <T>void addPatch(DataWatcherObject<T> datawatcherobject, T value) {
         patchMap.remove(datawatcherobject);
-        
-        patchMap.put(datawatcherobject, new Item<T>(datawatcherobject, value));
 
-        try {
-            markDirty(datawatcherobject);
-        } catch (Exception e) {
-            
-        }
+        Item<T> item = new Item<T>(datawatcherobject, value);
+        
+        patchMap.put(datawatcherobject, item);
+
+        getOriginalItemMethod.invoke(getOriginal(), datawatcherobject).a((boolean) true);
+        dirtyFlag.set(getOriginal(), true);
     }
 
     public <T>void removePatch(DataWatcherObject<T> datawatcherobject) {
         patchMap.remove(datawatcherobject);
-        try {
-            markDirty(datawatcherobject);
-        } catch (Exception e) {
-            
-        }
+
+        getOriginalItemMethod.invoke(getOriginal(), datawatcherobject).a((boolean) true);
+        dirtyFlag.set(getOriginal(), true);
     }
     
     @Override
     public List<Item<?>> b() {
         List<Item<?>> list = getOriginal().b();
+
+        if (list == null) {
+            return list;
+        }
 
         for (int i = 0; i < list.size(); i++) {
             Item<?> item = list.get(i);

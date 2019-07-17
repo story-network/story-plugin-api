@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.storycraft.StoryPlugin;
+import com.storycraft.server.entity.metadata.PatchedDataWatcher;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.EntityUtil;
 import com.storycraft.util.NMSUtil;
@@ -17,8 +18,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import net.minecraft.server.v1_14_R1.DataWatcherObject;
 import net.minecraft.server.v1_14_R1.EntityAreaEffectCloud;
 import net.minecraft.server.v1_14_R1.EntityGuardian;
+import net.minecraft.server.v1_14_R1.EntityPose;
 import net.minecraft.server.v1_14_R1.EntitySquid;
 import net.minecraft.server.v1_14_R1.Packet;
 
@@ -114,10 +117,11 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
         if (!isPlaying())
             return;
 
-        for (Player p : getPlayers()) {
-            ConnectionUtil.sendPacket(p, PacketUtil.getEntityDestroyPacket(guardian));
-        }
         NMSUtil.getNMSEntity(getGuardianBinded()).passengers.remove(guardian);
+
+        for (Player p : getPlayers()) {
+            ConnectionUtil.sendPacket(p, PacketUtil.getEntityMountPacket(NMSUtil.getNMSEntity(getGuardianBinded())), PacketUtil.getEntityDestroyPacket(guardian));
+        }
 
         if (!hasTarget()) {
             for (Player p : getPlayers()) {
@@ -145,11 +149,17 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
     }
 
     protected EntityGuardian createGuardian(World w) {
+        EntityGuardian guardian;
         if (isElderBeam()) {
-            return EntityUtil.createNMSEntity(w, EntityType.ELDER_GUARDIAN);
+            guardian = EntityUtil.createNMSEntity(w, EntityType.ELDER_GUARDIAN);
+        } else {
+            guardian = EntityUtil.createNMSEntity(w, EntityType.GUARDIAN);
         }
 
-        return EntityUtil.createNMSEntity(w, EntityType.GUARDIAN);
+        guardian.setNoAI(true);
+        guardian.setSilent(true);
+
+        return guardian;
     }
 
     @Override

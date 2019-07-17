@@ -258,7 +258,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
             getServer().getPluginManager().registerEvents(this, this);
 
-            TestFunction.test(this, getServer().getWorld("world"));
+            new TestFunction(this);
         }
     }
 

@@ -29,6 +29,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.Blocks;
 import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.DamageSource;
 import net.minecraft.server.v1_14_R1.DataWatcher;
 import net.minecraft.server.v1_14_R1.DataWatcherObject;
 import net.minecraft.server.v1_14_R1.Entity;
@@ -36,12 +37,14 @@ import net.minecraft.server.v1_14_R1.EntityHuman;
 import net.minecraft.server.v1_14_R1.EntityLiving;
 import net.minecraft.server.v1_14_R1.EntityMonster;
 import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.EntityPose;
 import net.minecraft.server.v1_14_R1.EntityTypes;
 import net.minecraft.server.v1_14_R1.EntityZombie;
 import net.minecraft.server.v1_14_R1.IRangedEntity;
 import net.minecraft.server.v1_14_R1.Packet;
 import net.minecraft.server.v1_14_R1.PacketPlayOutBlockBreakAnimation;
 import net.minecraft.server.v1_14_R1.PacketPlayOutGameStateChange;
+import net.minecraft.server.v1_14_R1.PathfinderGoalArrowAttack;
 import net.minecraft.server.v1_14_R1.PathfinderGoalDoorOpen;
 import net.minecraft.server.v1_14_R1.PathfinderGoalEatTile;
 import net.minecraft.server.v1_14_R1.PathfinderGoalLookAtPlayer;
@@ -55,14 +58,22 @@ import net.minecraft.server.v1_14_R1.World;
 
 public class TestFunction implements Listener {
 
+    private static Reflect.WrappedField<DataWatcherObject<EntityPose>, Entity> glideFlagObject;
+
+    static {
+        glideFlagObject = Reflect.getField(Entity.class, "POSE");
+    }
+
     private StoryPlugin plugin;
 
     public TestFunction(StoryPlugin plugin){
         this.plugin = plugin;
+
+        this.test();
     }
 
-    public static void test(StoryPlugin plugin, org.bukkit.World world) {
-        plugin.getServer().getPluginManager().registerEvents(new TestFunction(plugin), plugin);
+    public void test() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         try {
             plugin.getServerManager().getRegistryManager().getEntityRegistry().add(256, new CustomPlayerInfo<TestZombiePlayer>("player_zombie", TestZombiePlayer::new, new ZombieProfileHandler()));
@@ -75,9 +86,9 @@ public class TestFunction implements Listener {
     public void onDamage(EntityDamageByEntityEvent e) {
         //plugin.getDecorator().getMorphManager().setMorph(new SimpleBlockMorphInfo(e.getEntity(), Material.DIRT.createBlockData()));
 
-        /*IHasDuration effect = new GuardianBeamEffect(null, null, e.getDamager(), e.getEntity(), true);
+        /*IHasDuration effect = new GuardianBeamEffect(plugin, null, null, e.getDamager(), e.getEntity(), true);
 
-        effect.play(plugin.getServer());
+        effect.play();
 
         new EffectTracker(plugin).setOnEndListener(() -> {
             plugin.getServer().getScheduler().runTask(plugin, () -> {
@@ -86,24 +97,18 @@ public class TestFunction implements Listener {
         }).track(effect);*/
     }
 
-    public static class TestZombiePlayer extends EntityMonster {
-
-        private static Reflect.WrappedField<DataWatcherObject<Byte>, Entity> glideFlagObject;
-
-        static {
-            glideFlagObject = Reflect.getField(Entity.class, "W");
-        }
+    public class TestZombiePlayer extends EntityMonster implements IRangedEntity {
 
         public TestZombiePlayer(EntityTypes<? extends EntityMonster> entitytypes, World w) {
             super((EntityTypes<? extends EntityMonster>) EntityTypes.a("server:player_zombie").get(), w);
 
             setCustomNameVisible(true);
-            setCustomName(new ChatComponentText("owo"));
+            setCustomName(new ChatComponentText(":)"));
 
-            this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 0.7D, false));
-            this.goalSelector.a(9, new PathfinderGoalRandomStroll(this, 0.5d, 1));
+            this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.1d, 5, 60, 24));
+            this.goalSelector.a(9, new PathfinderGoalRandomStroll(this, 1.0d, 1));
             this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
-            this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+            this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 1.0F));
             this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
             this.goalSelector.a(3, new PathfinderGoalDoorOpen(this, true));
 
@@ -112,7 +117,7 @@ public class TestFunction implements Listener {
 
             PatchedDataWatcher datawatcher = new PatchedDataWatcher(super.datawatcher);
 
-            datawatcher.addPatch(glideFlagObject.get(null), (byte) 0x80);
+            datawatcher.addPatch(glideFlagObject.get(null), EntityPose.SWIMMING);
 
             datawatcher.bindToEntity();
         }
@@ -120,6 +125,19 @@ public class TestFunction implements Listener {
         @Override
         public boolean isPersistent() {
             return true;
+        }
+
+        @Override
+        public void a(EntityLiving arg0, float arg1) {
+            IHasDuration effect = new GuardianBeamEffect(plugin, null, null, getBukkitEntity(), arg0.getBukkitEntity(), true);
+
+            effect.play();
+    
+            new EffectTracker(plugin).setOnEndListener(() -> {
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    arg0.damageEntity(DamageSource.mobAttack(this), 5f);
+                });
+            }).track(effect);
         }
 
     }
