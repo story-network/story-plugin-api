@@ -105,7 +105,7 @@ public class TestFunction implements Listener {
             setCustomNameVisible(true);
             setCustomName(new ChatComponentText(":)"));
 
-            this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.1d, 5, 60, 24));
+            this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.1d, 25, 60, 24));
             this.goalSelector.a(9, new PathfinderGoalRandomStroll(this, 1.0d, 1));
             this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
             this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 1.0F));
