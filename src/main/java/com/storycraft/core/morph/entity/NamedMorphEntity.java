@@ -1,21 +1,38 @@
 package com.storycraft.core.morph.entity;
 
-import com.storycraft.server.entity.metadata.CustomNameDataWatcher;
+import java.util.Optional;
+
+import com.storycraft.server.entity.metadata.PatchedDataWatcher;
+import com.storycraft.util.reflect.Reflect;
 
 import org.bukkit.entity.Player;
 
+import net.minecraft.server.v1_14_R1.ChatComponentText;
 import net.minecraft.server.v1_14_R1.DataWatcher;
+import net.minecraft.server.v1_14_R1.DataWatcherObject;
 import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent;
 
 public class NamedMorphEntity implements IMorphEntity {
 
+	private static Reflect.WrappedField<DataWatcherObject<Boolean>, Entity> customNameVisibleObject;
+	private static Reflect.WrappedField<DataWatcherObject<Optional<IChatBaseComponent>>, Entity> customNameObject;
+	
+	static {
+		customNameVisibleObject = Reflect.getField(Entity.class, "aA");
+		customNameObject = Reflect.getField(Entity.class, "az");
+	}
+
     private IMorphEntity entity;
 
-    private CustomNameDataWatcher watcher;
+    private PatchedDataWatcher watcher;
 
     public NamedMorphEntity(IMorphEntity entity, boolean customNameVisible, String customName) {
         this.entity = entity;
-        this.watcher = new CustomNameDataWatcher(entity.getFixedMetadata(), customNameVisible, customName);
+		this.watcher = new PatchedDataWatcher(entity.getFixedMetadata());
+		
+		watcher.addPatch(customNameVisibleObject.get(null), customNameVisible);
+		watcher.addPatch(customNameObject.get(null), Optional.ofNullable(new ChatComponentText(customName)));
     }
 
 	@Override

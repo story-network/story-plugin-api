@@ -14,7 +14,7 @@ public abstract class WorldEffect implements IWorldEffect, ITargetOnlyEffect {
     private long startTime;
 
     @Override
-    public void play(Server server) {
+    public void play() {
         if (isPlaying())
             return;
 

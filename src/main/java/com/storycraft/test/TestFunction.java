@@ -11,18 +11,26 @@ import com.storycraft.effect.IHasDuration;
 import com.storycraft.effect.WorldEffect;
 import com.storycraft.effect.player.EffectTracker;
 import com.storycraft.server.entity.CustomPlayerInfo;
+import com.storycraft.server.entity.metadata.PatchedDataWatcher;
 import com.storycraft.server.entity.override.IPlayerOverrideProfileHandler;
+import com.storycraft.server.event.client.AsyncPlayerDigCancelEvent;
+import com.storycraft.server.event.client.AsyncPlayerDigStartEvent;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
+import com.storycraft.util.reflect.Reflect;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.Blocks;
 import net.minecraft.server.v1_14_R1.ChatComponentText;
 import net.minecraft.server.v1_14_R1.DataWatcher;
+import net.minecraft.server.v1_14_R1.DataWatcherObject;
 import net.minecraft.server.v1_14_R1.Entity;
 import net.minecraft.server.v1_14_R1.EntityHuman;
 import net.minecraft.server.v1_14_R1.EntityLiving;
@@ -32,6 +40,7 @@ import net.minecraft.server.v1_14_R1.EntityTypes;
 import net.minecraft.server.v1_14_R1.EntityZombie;
 import net.minecraft.server.v1_14_R1.IRangedEntity;
 import net.minecraft.server.v1_14_R1.Packet;
+import net.minecraft.server.v1_14_R1.PacketPlayOutBlockBreakAnimation;
 import net.minecraft.server.v1_14_R1.PacketPlayOutGameStateChange;
 import net.minecraft.server.v1_14_R1.PathfinderGoalDoorOpen;
 import net.minecraft.server.v1_14_R1.PathfinderGoalEatTile;
@@ -56,15 +65,10 @@ public class TestFunction implements Listener {
         plugin.getServer().getPluginManager().registerEvents(new TestFunction(plugin), plugin);
 
         try {
-            //plugin.getServerManager().getRegistryManager().getEntityRegistry().add(256, new CustomPlayerInfo<TestZombiePlayer>("player_zombie", TestZombiePlayer::new, new ZombieProfileHandler()));
+            plugin.getServerManager().getRegistryManager().getEntityRegistry().add(256, new CustomPlayerInfo<TestZombiePlayer>("player_zombie", TestZombiePlayer::new, new ZombieProfileHandler()));
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @EventHandler
-    public void onUpdate(ServerUpdateEvent e) {
-
     }
 
     @EventHandler
@@ -84,6 +88,16 @@ public class TestFunction implements Listener {
 
     public static class TestZombiePlayer extends EntityMonster {
 
+        private static Reflect.WrappedField<DataWatcherObject<Byte>, Entity> glideFlagObject;
+        private static Reflect.WrappedField<DataWatcher, Entity> datawatcherField;
+
+        static {
+            glideFlagObject = Reflect.getField(Entity.class, "W");
+            datawatcherField = Reflect.getField(Entity.class, "datawatcher");
+            
+            datawatcherField.unlockFinal();
+        }
+
         public TestZombiePlayer(EntityTypes<? extends EntityMonster> entitytypes, World w) {
             super((EntityTypes<? extends EntityMonster>) EntityTypes.a("server:player_zombie").get(), w);
 
@@ -99,6 +113,12 @@ public class TestFunction implements Listener {
 
             this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityLiving.class, true));
             this.targetSelector.a(1, new PathfinderGoalEatTile(this));
+
+            PatchedDataWatcher datawatcher = new PatchedDataWatcher(super.datawatcher);
+
+            datawatcher.addPatch(glideFlagObject.get(null), (byte) 0x80);
+
+            datawatcherField.set(this, datawatcher);
         }
 
         @Override

@@ -3,6 +3,7 @@ package com.storycraft.effect;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.storycraft.StoryPlugin;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.EntityUtil;
 import com.storycraft.util.NMSUtil;
@@ -29,6 +30,8 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
         guardianSetTargetMethod = Reflect.getMethod(EntityGuardian.class, "a", int.class);
     }
 
+    private StoryPlugin plugin;
+
     private boolean elderBeam;
 
     private Location guardianLoc;
@@ -40,19 +43,19 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
     private EntityGuardian guardian;
     private int virtualTargetId;
 
-    public GuardianBeamEffect(Location guardianLoc, Location targetLoc) {
-        this();
+    public GuardianBeamEffect(StoryPlugin plugin, Location guardianLoc, Location targetLoc) {
+        this(plugin);
 
         this.guardianLoc = guardianLoc;
         this.targetLoc = targetLoc;
     }
 
-    public GuardianBeamEffect(Location guardianLoc, Location targetLoc, boolean elderBeam) {
-        this(guardianLoc, targetLoc, null, null, elderBeam);
+    public GuardianBeamEffect(StoryPlugin plugin, Location guardianLoc, Location targetLoc, boolean elderBeam) {
+        this(plugin, guardianLoc, targetLoc, null, null, elderBeam);
     }
 
-    public GuardianBeamEffect(Location guardianLoc, Location targetLoc, Entity guardianBinded, Entity target, boolean elderBeam) {
-        this(elderBeam);
+    public GuardianBeamEffect(StoryPlugin plugin, Location guardianLoc, Location targetLoc, Entity guardianBinded, Entity target, boolean elderBeam) {
+        this(plugin, elderBeam);
 
         this.guardianLoc = guardianLoc;
         this.targetLoc = targetLoc;
@@ -61,11 +64,12 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
         this.target = target;
     }
 
-    protected GuardianBeamEffect() {
-        this(false);
+    protected GuardianBeamEffect(StoryPlugin plugin) {
+        this(plugin, false);
     }
 
-    protected GuardianBeamEffect(boolean elderBeam) {
+    protected GuardianBeamEffect(StoryPlugin plugin, boolean elderBeam) {
+        this.plugin = plugin;
         this.elderBeam = elderBeam;
     }
 
