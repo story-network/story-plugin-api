@@ -135,7 +135,8 @@ public class TestFunction implements Listener {
     
             new EffectTracker(plugin).setOnEndListener(() -> {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
-                    arg0.damageEntity(DamageSource.mobAttack(this), 5f);
+                    if (isAlive())
+                        arg0.damageEntity(DamageSource.mobAttack(this), 5f);
                 });
             }).track(effect);
         }
