@@ -28,9 +28,11 @@ import net.minecraft.server.v1_14_R1.Packet;
 public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
 
     private static Reflect.WrappedMethod<Void, EntityGuardian> guardianSetTargetMethod;
+    private static Reflect.WrappedField<DataWatcherObject<EntityPose>, net.minecraft.server.v1_14_R1.Entity> poseFlagObject;
 
     static {
         guardianSetTargetMethod = Reflect.getMethod(EntityGuardian.class, "a", int.class);
+        poseFlagObject = Reflect.getField(net.minecraft.server.v1_14_R1.Entity.class, "POSE");
     }
 
     private StoryPlugin plugin;
@@ -158,6 +160,13 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
 
         guardian.setNoAI(true);
         guardian.setSilent(true);
+
+        PatchedDataWatcher datawatcher = new PatchedDataWatcher(guardian.getDataWatcher());
+
+        //TODO: WARNING | Are there any other good idea without using pose hack?
+        datawatcher.addPatch(poseFlagObject.get(null).a(), EntityPose.SLEEPING);
+
+        datawatcher.bindToEntity();
 
         return guardian;
     }

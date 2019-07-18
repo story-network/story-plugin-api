@@ -17,14 +17,17 @@ import com.storycraft.server.event.client.AsyncPlayerDigCancelEvent;
 import com.storycraft.server.event.client.AsyncPlayerDigStartEvent;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
+import com.storycraft.util.NMSUtil;
 import com.storycraft.util.reflect.Reflect;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 
 import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.Blocks;
@@ -59,9 +62,11 @@ import net.minecraft.server.v1_14_R1.World;
 public class TestFunction implements Listener {
 
     private static Reflect.WrappedField<DataWatcherObject<EntityPose>, Entity> glideFlagObject;
+    private static Reflect.WrappedField<DataWatcherObject<Byte>, Entity> elytraFlagObject;
 
     static {
         glideFlagObject = Reflect.getField(Entity.class, "POSE");
+        elytraFlagObject = Reflect.getField(Entity.class, "W");
     }
 
     private StoryPlugin plugin;
@@ -95,6 +100,18 @@ public class TestFunction implements Listener {
                 e.getEntity().getWorld().createExplosion(e.getEntity().getLocation(), 10);
             });
         }).track(effect);*/
+    }
+
+    @EventHandler
+    public void onSpawn(EntitySpawnEvent e) {
+        if (e.isCancelled() || !(e.getEntity() instanceof LivingEntity))
+            return;
+
+        PatchedDataWatcher datawatcher = new PatchedDataWatcher(NMSUtil.getNMSEntity(e.getEntity()).getDataWatcher());
+
+        //datawatcher.addPatch(glideFlagObject.get(null).a(), EntityPose.SLEEPING);
+
+        datawatcher.bindToEntity();
     }
 
     public class TestZombiePlayer extends EntityMonster implements IRangedEntity {
