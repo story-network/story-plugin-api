@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventSet<A> {
-    public abstract class EventRunnable<A> {
-        public abstract void on(A args);
+
+    @FunctionalInterface
+    public interface EventRunnable<A> {
+        void on(A args);
     }
 
     private List<EventRunnable<A>> listenerList;
@@ -14,8 +16,10 @@ public class EventSet<A> {
         this.listenerList = new ArrayList<>();
     }
 
-    public boolean add(EventRunnable<A> eventRunnable){
-        return listenerList.add(eventRunnable);
+    public EventRunnable<A> add(EventRunnable<A> eventRunnable){
+        listenerList.add(eventRunnable);
+
+        return eventRunnable;
     }
 
     public boolean remove(EventRunnable<A> eventRunnable){

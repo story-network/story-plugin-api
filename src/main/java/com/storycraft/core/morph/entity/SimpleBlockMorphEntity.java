@@ -29,7 +29,7 @@ public class SimpleBlockMorphEntity extends HoldedMorphEntity {
 
         this.metadata = new PatchedDataWatcher(new ComparingDataWatcher(((CraftEntity)entity).getHandle(), this.getNMSEntity()));
 
-        ((PatchedDataWatcher) metadata).addPatch(noGravityObject.get(null), true);
+        ((PatchedDataWatcher) metadata).addPatch(noGravityObject.get(null).a(), true);
     }
 
     @Override

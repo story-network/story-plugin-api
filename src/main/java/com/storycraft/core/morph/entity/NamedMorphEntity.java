@@ -31,8 +31,8 @@ public class NamedMorphEntity implements IMorphEntity {
         this.entity = entity;
 		this.watcher = new PatchedDataWatcher(entity.getFixedMetadata());
 		
-		watcher.addPatch(customNameVisibleObject.get(null), customNameVisible);
-		watcher.addPatch(customNameObject.get(null), Optional.ofNullable(new ChatComponentText(customName)));
+		watcher.addPatch(customNameVisibleObject.get(null).a(), customNameVisible);
+		watcher.addPatch(customNameObject.get(null).a(), Optional.ofNullable(new ChatComponentText(customName)));
     }
 
 	@Override

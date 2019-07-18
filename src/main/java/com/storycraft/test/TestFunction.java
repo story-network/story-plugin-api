@@ -117,7 +117,7 @@ public class TestFunction implements Listener {
 
             PatchedDataWatcher datawatcher = new PatchedDataWatcher(super.datawatcher);
 
-            datawatcher.addPatch(glideFlagObject.get(null), EntityPose.SWIMMING);
+            datawatcher.addPatch(glideFlagObject.get(null).a(), EntityPose.SWIMMING);
 
             datawatcher.bindToEntity();
         }
