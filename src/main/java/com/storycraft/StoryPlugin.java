@@ -28,6 +28,7 @@ import com.storycraft.core.explosion.Explosion;
 import com.storycraft.core.faq.FAQCommand;
 import com.storycraft.core.fly.FlyCommand;
 import com.storycraft.core.dropping.DropCounter;
+import com.storycraft.core.dropping.HologramXPDrop;
 import com.storycraft.core.motd.ServerMotd;
 import com.storycraft.core.permission.PermissionManager;
 import com.storycraft.core.plugin.IngamePluginManager;
@@ -175,6 +176,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new FAQCommand());
         loader.addMiniPlugin(new ToastCommand());
         loader.addMiniPlugin(new HeadDisguise());
+        loader.addMiniPlugin(new HologramXPDrop());
         loader.addMiniPlugin(new UUIDRevealCommand());
         loader.addMiniPlugin(new AutoSaveManager());
         loader.addMiniPlugin(new WorldTeleporter());
