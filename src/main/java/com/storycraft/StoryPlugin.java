@@ -19,6 +19,7 @@ import com.storycraft.core.disguise.HeadDisguise;
 import com.storycraft.core.player.PlayerManager;
 import com.storycraft.core.player.debug.UserDebug;
 import com.storycraft.core.player.home.HomeManager;
+import com.storycraft.core.playerlist.CustomPlayerList;
 import com.storycraft.core.jukebox.JukeboxPlay;
 import com.storycraft.core.map.ImageMap;
 import com.storycraft.core.entity.EntityBlood;
@@ -180,6 +181,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         loader.addMiniPlugin(new IngamePluginManager());
         loader.addMiniPlugin(new TeleportAskCommand());
         loader.addMiniPlugin(new PlayerCustomSkin());
+        loader.addMiniPlugin(new CustomPlayerList());
         loader.addMiniPlugin(new ImageMap());
         
 
