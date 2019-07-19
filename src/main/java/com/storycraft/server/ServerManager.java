@@ -5,6 +5,7 @@ import com.storycraft.server.clientside.ClientSideManager;
 import com.storycraft.server.event.client.ClientEventManager;
 import com.storycraft.server.forge.ForgeServerManager;
 import com.storycraft.server.packet.ServerNetworkManager;
+import com.storycraft.server.playerlist.ServerPlayerList;
 import com.storycraft.server.plugin.CorePluginUpdater;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.server.registry.RegistryManager;
@@ -29,6 +30,8 @@ public class ServerManager {
     private ServerEventManager serverEventManager;
     private ClientEventManager clientEventManager;
 
+    private ServerPlayerList playerList;
+
     private CorePluginUpdater corePluginUpdater;
 
     private List<ServerExtension> extensionList;
@@ -50,6 +53,7 @@ public class ServerManager {
         addServerExtension(serverEventManager = new ServerEventManager());
         addServerExtension(clientEventManager = new ClientEventManager());
         addServerExtension(corePluginUpdater = new CorePluginUpdater());
+        addServerExtension(playerList = new ServerPlayerList());
     }
 
     protected List<ServerExtension> getExtensionList() {
@@ -85,6 +89,10 @@ public class ServerManager {
 
     public ForgeServerManager getForgeServerManager() {
         return forgeServerManager;
+    }
+    
+    public ServerPlayerList getPlayerList() {
+        return playerList;
     }
 
     public ServerPluginManager getServerPluginManager() {

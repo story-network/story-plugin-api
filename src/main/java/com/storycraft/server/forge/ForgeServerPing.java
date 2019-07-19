@@ -75,7 +75,7 @@ public class ForgeServerPing extends ServerPing {
             return modId;
         }
 
-        public String getModVer() {
+        public String getModVersion() {
             return modVer;
         }
     }
