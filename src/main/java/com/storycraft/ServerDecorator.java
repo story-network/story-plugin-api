@@ -1,10 +1,10 @@
 package com.storycraft;
 
-import com.storycraft.core.advancement.AdvancementManager;
+import com.storycraft.server.advancement.AdvancementManager;
 import com.storycraft.core.dropping.HologramXPDrop;
 import com.storycraft.core.hologram.HologramManager;
 import com.storycraft.server.map.CustomMapManager;
-import com.storycraft.core.morph.MorphManager;
+import com.storycraft.server.morph.MorphManager;
 import com.storycraft.core.playerlist.ServerPlayerList;
 
 public class ServerDecorator {

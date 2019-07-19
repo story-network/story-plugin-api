@@ -1,4 +1,4 @@
-package com.storycraft.core.morph.entity;
+package com.storycraft.server.morph.entity;
 
 import com.storycraft.server.entity.IEntityHandler;
 

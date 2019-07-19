@@ -1,10 +1,10 @@
 package com.storycraft.core.disguise;
 
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.morph.MorphManager;
-import com.storycraft.core.morph.NamedMorphInfoWrapper;
-import com.storycraft.core.morph.SimpleBlockMorphInfo;
-import com.storycraft.core.morph.SimpleMorphInfo;
+import com.storycraft.server.morph.MorphManager;
+import com.storycraft.server.morph.NamedMorphInfoWrapper;
+import com.storycraft.server.morph.SimpleBlockMorphInfo;
+import com.storycraft.server.morph.SimpleMorphInfo;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 

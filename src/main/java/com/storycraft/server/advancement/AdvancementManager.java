@@ -1,4 +1,4 @@
-package com.storycraft.core.advancement;
+package com.storycraft.server.advancement;
 
 import java.util.ArrayList;
 import java.util.Collection;

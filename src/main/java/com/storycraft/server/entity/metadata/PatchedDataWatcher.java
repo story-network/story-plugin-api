@@ -39,14 +39,11 @@ public class PatchedDataWatcher extends DataWatcher {
 
     private DataWatcher original;
 
-    private boolean dirty;
-
     public PatchedDataWatcher(DataWatcher original) {
         super(entityField.get(original));
 
         this.original = original;
         this.patchMap = new ConcurrentHashMap<>();
-        this.dirty = false;
     }
 
     public DataWatcher getOriginal() {
@@ -94,23 +91,25 @@ public class PatchedDataWatcher extends DataWatcher {
         patchMap.remove(id);
 
         patchMap.put(id, value);
-        
-        Item<?> originalItem = originalListField.get(getOriginal()).get(id);
 
-        if (originalItem != null)
-            originalItem.a(true);
-
-        dirtyFlag.set(getOriginal(), true);
+        markPatchDirty(id);
     }
 
     public <T>void removePatch(Integer id) {
-        patchMap.remove(id);
+        markPatchDirty(id);
 
+        patchMap.remove(id);
+    }
+
+    public void markPatchDirty(int id) {
+        if (!patchMap.containsKey(id))
+            return;
+        
         Item<?> originalItem = originalListField.get(getOriginal()).get(id);
 
         if (originalItem != null)
             originalItem.a(true);
-        
+
         dirtyFlag.set(getOriginal(), true);
     }
     
@@ -118,25 +117,17 @@ public class PatchedDataWatcher extends DataWatcher {
     public List<Item<?>> b() {
         List<Item<?>> list = getOriginal().b();
 
-        boolean checkOriginal = true;
         if (list == null) {
-            if (dirty) {
-                list = new ArrayList<>();
-                checkOriginal = false;
-            }
-
             return list;
         }
 
-        if (checkOriginal) {
-            for (int i = 0; i < list.size(); i++) {
-                Item<?> originalItem = list.get(i);
-                DataWatcherObject originalObj = originalItem.a();
-    
-                if (patchMap.containsKey(originalObj.a())) {
-                    Item<?> patchedItem = new Item<>(originalObj, patchMap.get(originalObj.a()).get());
-                    list.set(i, patchedItem);
-                }
+        for (int i = 0; i < list.size(); i++) {
+            Item<?> originalItem = list.get(i);
+            DataWatcherObject originalObj = originalItem.a();
+
+            if (patchMap.containsKey(originalObj.a())) {
+                Item<?> patchedItem = new Item<>(originalObj, patchMap.get(originalObj.a()).get());
+                list.set(i, patchedItem);
             }
         }
 

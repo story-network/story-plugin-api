@@ -11,7 +11,7 @@ import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.advancement.AdvancementType;
+import com.storycraft.server.advancement.AdvancementType;
 import com.storycraft.core.hologram.Hologram;
 import com.storycraft.core.hologram.ShortHologram;
 import com.storycraft.core.spawn.PlayerSpawnManager;

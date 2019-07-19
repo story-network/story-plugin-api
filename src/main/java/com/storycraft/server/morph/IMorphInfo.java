@@ -1,6 +1,6 @@
-package com.storycraft.core.morph;
+package com.storycraft.server.morph;
 
-import com.storycraft.core.morph.entity.IMorphEntity;
+import com.storycraft.server.morph.entity.IMorphEntity;
 
 import org.bukkit.entity.Entity;
 

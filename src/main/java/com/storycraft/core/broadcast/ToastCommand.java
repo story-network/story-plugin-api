@@ -3,7 +3,7 @@ package com.storycraft.core.broadcast;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.advancement.AdvancementType;
+import com.storycraft.server.advancement.AdvancementType;
 import com.storycraft.util.MessageUtil;
 
 import org.bukkit.Material;

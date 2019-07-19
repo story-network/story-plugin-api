@@ -1,23 +1,18 @@
-package com.storycraft.core.morph.entity;
+package com.storycraft.server.morph.entity;
 
-import com.storycraft.server.entity.metadata.ComparingDataWatcher;
-
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import net.minecraft.server.v1_14_R1.DataWatcher;
 import net.minecraft.server.v1_14_R1.Entity;
 
-public class SimpleMorphEntity implements IMorphEntity {
+public class MorphEntity implements IMorphEntity {
 
     private Entity entity;
     private DataWatcher metadata;
 
-    public SimpleMorphEntity(org.bukkit.entity.Entity entity, EntityType type) {
-        this.entity = ((CraftWorld)entity.getWorld()).createEntity(entity.getLocation(), type.getEntityClass());
-        this.metadata = new ComparingDataWatcher(((CraftEntity)entity).getHandle(), this.entity);
+    public MorphEntity(Entity entity, DataWatcher metadata) {
+        this.entity = entity;
+        this.metadata = metadata;
     }
 
     @Override
@@ -27,7 +22,7 @@ public class SimpleMorphEntity implements IMorphEntity {
 
     @Override
 	public DataWatcher getFixedMetadata() {
-		return metadata;
+        return metadata;
     }
 
     @Override

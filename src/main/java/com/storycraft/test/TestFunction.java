@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.storycraft.StoryPlugin;
-import com.storycraft.core.morph.SimpleBlockMorphInfo;
+import com.storycraft.server.morph.SimpleBlockMorphInfo;
 import com.storycraft.effect.GuardianBeamEffect;
 import com.storycraft.effect.IHasDuration;
 import com.storycraft.effect.WorldEffect;
@@ -21,12 +21,16 @@ import com.storycraft.util.NMSUtil;
 import com.storycraft.util.reflect.Reflect;
 
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntitySpawnEvent;
 
 import net.minecraft.server.v1_14_R1.BlockPosition;
@@ -80,11 +84,11 @@ public class TestFunction implements Listener {
     public void test() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
-        try {
+        /*try {
             plugin.getServerManager().getRegistryManager().getEntityRegistry().add(256, new CustomPlayerInfo<TestZombiePlayer>("player_zombie", TestZombiePlayer::new, new ZombieProfileHandler()));
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @EventHandler
@@ -103,15 +107,26 @@ public class TestFunction implements Listener {
     }
 
     @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        /*Location loc = e.getPlayer().getLocation();
+
+        for (int i = 0; i < 360; i += 18) {
+            double rad = (double) (i / 180d) * Math.PI;
+            Vector vec = loc.clone().subtract(loc.clone().add(Math.sin(rad) * 3, 0, Math.cos(rad) * 3)).toVector().normalize();
+            loc.getWorld().spawnParticle(Particle.FLAME, loc.clone().add(Math.sin(rad) * 3, 0, Math.cos(rad) * 3), 0, vec.getX(), vec.getY(), vec.getZ());
+        }*/
+    }
+
+    @EventHandler
     public void onSpawn(EntitySpawnEvent e) {
         if (e.isCancelled() || !(e.getEntity() instanceof LivingEntity))
             return;
 
-        PatchedDataWatcher datawatcher = new PatchedDataWatcher(NMSUtil.getNMSEntity(e.getEntity()).getDataWatcher());
+        /*PatchedDataWatcher datawatcher = new PatchedDataWatcher(NMSUtil.getNMSEntity(e.getEntity()).getDataWatcher());
 
         //datawatcher.addPatch(glideFlagObject.get(null).a(), EntityPose.SLEEPING);
 
-        datawatcher.bindToEntity();
+        datawatcher.bindToEntity();*/
     }
 
     public class TestZombiePlayer extends EntityMonster implements IRangedEntity {
@@ -122,7 +137,7 @@ public class TestFunction implements Listener {
             setCustomNameVisible(true);
             setCustomName(new ChatComponentText(":)"));
 
-            this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.1d, 40, 60, 24));
+            this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.0d, 40, 60, 24));
             this.goalSelector.a(9, new PathfinderGoalRandomStroll(this, 1.0d, 1));
             this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
             this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 1.0F));

@@ -1,4 +1,4 @@
-package com.storycraft.core.advancement;
+package com.storycraft.server.advancement;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

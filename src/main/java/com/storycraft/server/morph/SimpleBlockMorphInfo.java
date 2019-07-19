@@ -1,6 +1,6 @@
-package com.storycraft.core.morph;
+package com.storycraft.server.morph;
 
-import com.storycraft.core.morph.entity.SimpleBlockMorphEntity;
+import com.storycraft.server.morph.entity.SimpleBlockMorphEntity;
 
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;

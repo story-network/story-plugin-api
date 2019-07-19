@@ -4,8 +4,8 @@ import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.advancement.AdvancementDisplay;
-import com.storycraft.core.advancement.AdvancementType;
+import com.storycraft.server.advancement.AdvancementDisplay;
+import com.storycraft.server.advancement.AdvancementType;
 import com.storycraft.core.rank.ServerRank;
 import com.storycraft.util.MessageUtil;
 
