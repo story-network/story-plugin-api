@@ -1,4 +1,4 @@
-package com.storycraft.core.hologram;
+package com.storycraft.server.hologram;
 
 import com.storycraft.StoryPlugin;
 import com.storycraft.MiniPlugin;

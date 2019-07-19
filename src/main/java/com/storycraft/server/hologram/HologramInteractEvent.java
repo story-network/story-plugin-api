@@ -1,4 +1,4 @@
-package com.storycraft.core.hologram;
+package com.storycraft.server.hologram;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

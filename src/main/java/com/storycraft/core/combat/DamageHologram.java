@@ -1,9 +1,9 @@
 package com.storycraft.core.combat;
 
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.hologram.Hologram;
-import com.storycraft.core.hologram.HologramManager;
-import com.storycraft.core.hologram.ShortHologram;
+import com.storycraft.server.hologram.Hologram;
+import com.storycraft.server.hologram.HologramManager;
+import com.storycraft.server.hologram.ShortHologram;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;

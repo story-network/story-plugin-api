@@ -1,9 +1,9 @@
 package com.storycraft.core.dropping;
 
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.hologram.Hologram;
-import com.storycraft.core.hologram.HologramManager;
-import com.storycraft.core.hologram.SimpleHologram;
+import com.storycraft.server.hologram.Hologram;
+import com.storycraft.server.hologram.HologramManager;
+import com.storycraft.server.hologram.SimpleHologram;
 import com.storycraft.util.ConnectionUtil;
 import net.minecraft.server.v1_14_R1.Entity;
 import net.minecraft.server.v1_14_R1.EntityExperienceOrb;

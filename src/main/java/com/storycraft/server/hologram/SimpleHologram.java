@@ -1,4 +1,4 @@
-package com.storycraft.core.hologram;
+package com.storycraft.server.hologram;
 
 import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.Location;
