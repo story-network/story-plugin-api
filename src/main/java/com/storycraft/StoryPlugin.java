@@ -5,6 +5,9 @@ import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
+import com.storycraft.helper.IngameConfigManager;
+import com.storycraft.helper.IngameModuleManager;
+import com.storycraft.helper.IngamePluginManager;
 import com.storycraft.MiniPluginLoader;
 import com.storycraft.ServerDecorator;
 import com.storycraft.server.ServerManager;
@@ -62,6 +65,8 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     private boolean initalized = false;
 
+    private DynamicModule module;
+
     private TempStorage tempStorage;
 
     public StoryPlugin() {
@@ -90,8 +95,18 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
         this.serverManager = new ServerManager(this);
         this.decorator = new ServerDecorator(this);
+
+        this.module = new DynamicModule();
+        getMiniPluginLoader().addMiniPlugin(module);
+        getMiniPluginLoader().addMiniPlugin(new IngamePluginManager());
+        getMiniPluginLoader().addMiniPlugin(new IngameConfigManager());
+        getMiniPluginLoader().addMiniPlugin(new IngameModuleManager());
         
         registerCommand();
+    }
+
+    public DynamicModule getModuleManager() {
+        return module;
     }
 
     private void registerCommand() {
