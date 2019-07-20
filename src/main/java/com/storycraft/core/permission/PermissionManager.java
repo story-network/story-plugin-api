@@ -201,7 +201,7 @@ public class PermissionManager extends ServerExtension implements Listener {
     }
 
     public RankManager getRankManager(){
-        return getPlugin().getRankManager();
+        return getPlugin().getCoreManager().getRankManager();
     }
 
     public boolean isInjected(Player p) {

@@ -86,7 +86,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
     protected void addSpawnHologram(Player p) {
         removeSpawnHologram(p);
 
-        Location spawnLoc = getPlugin().getPlayerManager().getPlayerSpawnManager().getSpawnLocation(p.getUniqueId());
+        Location spawnLoc = getPlugin().getCoreManager().getPlayerManager().getPlayerSpawnManager().getSpawnLocation(p.getUniqueId());
 
         Hologram spawnHologram = new ShortHologram(spawnLoc.add(0, 1.5, 0),
                 ChatColor.GREEN + p.getName() + " 의 스폰 위치", ChatColor.GOLD + "(0, 0) 까지 거리: " + ChatColor.WHITE + ""
@@ -116,7 +116,7 @@ public class Season2MiniPlugin extends MiniPlugin implements Listener {
     }
 
     protected Location setRandomSpawn(UUID id, int minRange, int maxRange) {
-        PlayerSpawnManager spawnManager = getPlugin().getPlayerManager().getPlayerSpawnManager();
+        PlayerSpawnManager spawnManager = getPlugin().getCoreManager().getPlayerManager().getPlayerSpawnManager();
 
         World w = getPlugin().getServer().getWorld("world");
         Location randomSpawn = new Location(w,

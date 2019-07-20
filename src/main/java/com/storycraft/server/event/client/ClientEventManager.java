@@ -6,7 +6,9 @@ import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.reflect.Reflect;
 
 import net.minecraft.server.v1_14_R1.BlockPosition;
+import net.minecraft.server.v1_14_R1.Packet;
 import net.minecraft.server.v1_14_R1.PacketPlayInBlockDig;
+import net.minecraft.server.v1_14_R1.PacketPlayInCustomPayload;
 import net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk;
 import net.minecraft.server.v1_14_R1.PacketPlayOutUnloadChunk;
 
@@ -40,8 +42,10 @@ public class ClientEventManager extends ServerExtension implements Listener {
 
     @EventHandler
     public void onPacketOut(AsyncPacketOutEvent e){
-        if (e.getPacket() instanceof PacketPlayOutUnloadChunk){
-            PacketPlayOutUnloadChunk packet = (PacketPlayOutUnloadChunk) e.getPacket();
+        Packet packetOut = e.getPacket();
+
+        if (packetOut instanceof PacketPlayOutUnloadChunk){
+            PacketPlayOutUnloadChunk packet = (PacketPlayOutUnloadChunk) packetOut;
             Player p = e.getTarget();
 
             World w = p.getWorld();
@@ -54,23 +58,23 @@ public class ClientEventManager extends ServerExtension implements Listener {
 
             if (event.isCancelled())
                 e.setCancelled(true);
-        } else if (e.getPacket() instanceof PacketPlayOutMapChunk){
+        } else if (packetOut instanceof PacketPlayOutMapChunk){
             try {
-            PacketPlayOutMapChunk packet = (PacketPlayOutMapChunk) e.getPacket();
-            Player p = e.getTarget();
-
-            World w = p.getWorld();
-
-            int locX = chunkLoadPacketX.get(packet);
-            int locZ = chunkLoadPacketZ.get(packet);
-
-            boolean isFullChunk = isFullChunkField.get(packet);
-
-            AsyncPlayerLoadChunkEvent event = new AsyncPlayerLoadChunkEvent(p, w, locX, locZ, isFullChunk);
-            getPlugin().getServer().getPluginManager().callEvent(event);
-
-            if (event.isCancelled())
-                e.setCancelled(true);
+                PacketPlayOutMapChunk packet = (PacketPlayOutMapChunk) packetOut;
+                Player p = e.getTarget();
+    
+                World w = p.getWorld();
+    
+                int locX = chunkLoadPacketX.get(packet);
+                int locZ = chunkLoadPacketZ.get(packet);
+    
+                boolean isFullChunk = isFullChunkField.get(packet);
+    
+                AsyncPlayerLoadChunkEvent event = new AsyncPlayerLoadChunkEvent(p, w, locX, locZ, isFullChunk);
+                getPlugin().getServer().getPluginManager().callEvent(event);
+    
+                if (event.isCancelled())
+                    e.setCancelled(true);
             } catch(Exception ex) {
                 ex.printStackTrace();
             }
@@ -79,13 +83,14 @@ public class ClientEventManager extends ServerExtension implements Listener {
 
     @EventHandler
     public void onPacketIn(AsyncPacketInEvent e) {
-        if (e.getPacket() instanceof PacketPlayInBlockDig) {
-            PacketPlayInBlockDig packet = (PacketPlayInBlockDig) e.getPacket();
+        Packet packetIn = e.getPacket();
+
+        if (packetIn instanceof PacketPlayInBlockDig) {
+            PacketPlayInBlockDig packet = (PacketPlayInBlockDig) packetIn;
 
             BlockPosition pos = packet.b();
 
             switch (packet.d()) {
-
                 case START_DESTROY_BLOCK:
                     AsyncPlayerDigEvent startEvent = new AsyncPlayerDigStartEvent(e.getSender(), new Location(e.getSender().getWorld(), pos.getX(), pos.getY(), pos.getZ()));
                     
@@ -112,6 +117,14 @@ public class ClientEventManager extends ServerExtension implements Listener {
 
                 default:
                     return;
+            }
+        } else if (packetIn instanceof PacketPlayInCustomPayload) {
+            PacketPlayInCustomPayload packet = (PacketPlayInCustomPayload) packetIn;
+
+            if (PacketPlayInCustomPayload.a.equals(packet.tag)) {
+                String brand = packet.data.readUTF(32767);
+
+                getPlugin().getServer().getPluginManager().callEvent(new AsyncPlayerBrandSentEvent(e.getSender(), brand));
             }
         }
     }

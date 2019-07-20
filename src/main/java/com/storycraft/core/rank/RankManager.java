@@ -150,10 +150,10 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
                 return;
             }
     
-            ServerRank from = getPlugin().getRankManager().getRank(p);
+            ServerRank from = getPlugin().getCoreManager().getRankManager().getRank(p);
             ServerRank rank = ServerRank.valueOf(rankName);
     
-            getPlugin().getRankManager().setRank(p, rank);
+            getPlugin().getCoreManager().getRankManager().setRank(p, rank);
             sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "RankManager", p.getName() + " 의 랭크를 " + rank.name() + " 로 설정했습니다"));
             getPlugin().getServer().getPluginManager().callEvent(new RankUpdateEvent(p, from, rank));
         }
@@ -172,7 +172,7 @@ public class RankManager extends MiniPlugin implements ICommand, Listener {
                 return;
             }
 
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "RankManager", p.getName() + " 의 랭크는 " + ChatColor.WHITE + getPlugin().getRankManager().getRank(p).toString() + ChatColor.GRAY + " 입니다"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "RankManager", p.getName() + " 의 랭크는 " + ChatColor.WHITE + getPlugin().getCoreManager().getRankManager().getRank(p).toString() + ChatColor.GRAY + " 입니다"));
         }
         else if ("list".equals(args[0])) {
             StringJoiner sj = new StringJoiner(", ");

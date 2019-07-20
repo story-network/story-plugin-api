@@ -19,7 +19,7 @@ public class ChatManager extends MiniPlugin implements Listener {
         if (e.isCancelled())
             return;
 
-        ServerRank rank = getPlugin().getRankManager().getRank(e.getPlayer());
+        ServerRank rank = getPlugin().getCoreManager().getRankManager().getRank(e.getPlayer());
 
         e.setFormat("" + ChatColor.BLUE + e.getPlayer().getLevel() + " " + rank.getNameColor() + "%1$s" + " " + ChatColor.WHITE + "%2$s");
     }

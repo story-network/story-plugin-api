@@ -1,6 +1,7 @@
 package com.storycraft;
 
 import com.mojang.authlib.yggdrasil.response.User;
+import com.storycraft.core.CoreManager;
 import com.storycraft.core.broadcast.BroadcastManager;
 import com.storycraft.core.broadcast.ToastCommand;
 import com.storycraft.command.CommandManager;
@@ -93,25 +94,13 @@ public class StoryPlugin extends JavaPlugin implements Listener {
     private ConfigManager localConfigManager;
     private ServerManager serverManager;
 
-    private PlayerManager playerManager;
-    private EntityManager entityManager;
-
-    private PunishManager punishManager;
-
-    private RankManager rankManager;
-
     private ServerDecorator decorator;
 
-    private ModManager modManager;
-
-    private DiscordChatHook discordChat;
+    private CoreManager coreManager;
 
     private boolean initalized = false;
 
     private TempStorage tempStorage;
-
-    private Reflect.WrappedField<MinecraftKey, PacketPlayOutCustomPayload> payloadChannel;
-    private Reflect.WrappedField<PacketDataSerializer, PacketPlayOutCustomPayload> dataSerializer;
 
     public StoryPlugin() {
         this.tempStorage = new TempStorage();
@@ -125,14 +114,12 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         
         this.originalFile = originalFile;
         this.originalDataFolder = originalDataFolder;
-
-        this.payloadChannel = Reflect.getField(PacketPlayOutCustomPayload.class, "n");
-        this.dataSerializer = Reflect.getField(PacketPlayOutCustomPayload.class, "o");
         
         this.pluginDataStorage = new PluginDataStorage(this);
         this.miniPluginLoader = new MiniPluginLoader(this);
         this.localConfigManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
+        this.coreManager = new CoreManager(this);
 
         try {
             getConfigManager().addConfigFile("server.json", serverConfig = new JsonConfigPrettyFile()).getSync();
@@ -140,60 +127,12 @@ public class StoryPlugin extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
 
-        preInitMiniPlugin();
-
         this.serverManager = new ServerManager(this);
         this.decorator = new ServerDecorator(this);
 
-        initMiniPlugin();
-        registerCommand();
-    }
-
-    private void preInitMiniPlugin() {
-        MiniPluginLoader loader = getMiniPluginLoader();
-        loader.addMiniPlugin(rankManager = new RankManager());
-        loader.addMiniPlugin(playerManager = new PlayerManager());
-        loader.addMiniPlugin(entityManager = new EntityManager());
-        loader.addMiniPlugin(punishManager = new PunishManager());
-    }
-
-    private void initMiniPlugin() {
-        MiniPluginLoader loader = getMiniPluginLoader();
-        loader.addMiniPlugin(new PermissionManager());
-        loader.addMiniPlugin(new Explosion());
-        loader.addMiniPlugin(new ServerSpawnManager());
-        loader.addMiniPlugin(new IngameConfigManager());
-        loader.addMiniPlugin(new ChatManager());
-        loader.addMiniPlugin(new EntityBlood());
-        loader.addMiniPlugin(new DropCounter());
-        loader.addMiniPlugin(new RandomTP());
-        loader.addMiniPlugin(discordChat = new DiscordChatHook());
-        loader.addMiniPlugin(new DamageHologram());
-        loader.addMiniPlugin(new JukeboxPlay());
-        loader.addMiniPlugin(new BroadcastManager());
-        loader.addMiniPlugin(new ColoredChat());
-        loader.addMiniPlugin(new FlyCommand());
-        loader.addMiniPlugin(new FAQCommand());
-        loader.addMiniPlugin(new ToastCommand());
-        loader.addMiniPlugin(new HeadDisguise());
-        loader.addMiniPlugin(new HologramXPDrop());
-        loader.addMiniPlugin(new UUIDRevealCommand());
-        loader.addMiniPlugin(new AutoSaveManager());
-        loader.addMiniPlugin(new WorldTeleporter());
-        loader.addMiniPlugin(new IngamePluginManager());
-        loader.addMiniPlugin(new TeleportAskCommand());
-        loader.addMiniPlugin(new PlayerCustomSkin());
-        loader.addMiniPlugin(new CustomPlayerList());
-        loader.addMiniPlugin(new ImageMap());
+        getMiniPluginLoader().addMiniPlugin(coreManager);
         
-
-        postInitMiniPlugin();
-    }
-
-    private void postInitMiniPlugin() {
-        MiniPluginLoader loader = getMiniPluginLoader();
-
-        loader.addMiniPlugin(modManager = new ModManager(this));
+        registerCommand();
     }
 
     private void registerCommand() {
@@ -266,14 +205,6 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    public ModManager getModManager() {
-        return modManager;
-    }
-
-    public DiscordChatHook getDiscordChat() {
-        return discordChat;
-    }
-
     public org.bukkit.World getDefaultWorld() {
         return getServer().getWorld("world");
     }
@@ -294,33 +225,12 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         pluginManager.enablePlugin(pluginManager.loadPlugin(getOriginalFile()));
     }
 
-    @EventHandler
-    public void onServerBrandSend(AsyncPacketOutEvent e) {
-        if (e.getPacket() instanceof PacketPlayOutCustomPayload) {
-            PacketPlayOutCustomPayload packet = (PacketPlayOutCustomPayload) e.getPacket();
-
-            MinecraftKey key = payloadChannel.get(packet);
-
-            if (PacketPlayOutCustomPayload.a.equals(key)) {
-                PacketDataSerializer serializer = new PacketDataSerializer(Unpooled.buffer());
-
-                serializer.a(getServerName() + ChatColor.RESET);
-
-                dataSerializer.set(packet, serializer);
-            }
-        }
-    }
-
     public boolean isInitalized() {
         return initalized;
     }
 
     public ConsoleCommandSender getConsoleSender() {
         return getServer().getConsoleSender();
-    }
-
-    public RankManager getRankManager() {
-        return rankManager;
     }
 
     public CommandManager getCommandManager() {
@@ -339,16 +249,8 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         return localConfigManager;
     }
 
-    public PunishManager getPunishManager() {
-        return punishManager;
-    }
-
-    public PlayerManager getPlayerManager() {
-        return playerManager;
-    }
-
-    public EntityManager getEntityManager() {
-        return entityManager;
+    public CoreManager getCoreManager() {
+        return coreManager;
     }
 
     public ServerManager getServerManager() {

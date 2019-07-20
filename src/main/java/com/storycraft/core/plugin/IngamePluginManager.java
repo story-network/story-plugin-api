@@ -172,7 +172,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
 					getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "PluginManager", "코어 플러그인 업데이트중..."));
                     getServerPluginManager().unloadPlugin(plugin);
                     getServerPluginManager().enablePlugin(getServerPluginManager().loadPlugin(getPlugin().getOriginalFile()));
-                    getPlugin().getDiscordChat().sendConsoleMessageAsync("코어 플러그인 업데이트중...").run();
+                    getPlugin().getCoreManager().getDiscordChat().sendConsoleMessageAsync("코어 플러그인 업데이트중...").run();
                     getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "코어 플러그인이(가) 업데이트 되었습니다"));
                     return;
                 }

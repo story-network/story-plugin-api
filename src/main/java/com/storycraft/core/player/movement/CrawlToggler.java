@@ -37,7 +37,7 @@ public class CrawlToggler extends MiniPlugin implements Listener {
 
     @EventHandler
     public void onFly(PlayerToggleFlightEvent e) {
-        getPlugin().getEntityManager().getCrawlMovement().setCrawling(e.getPlayer(), false);
+        getPlugin().getCoreManager().getEntityManager().getCrawlMovement().setCrawling(e.getPlayer(), false);
     }
 
     @EventHandler
@@ -45,7 +45,7 @@ public class CrawlToggler extends MiniPlugin implements Listener {
         if (e.isSneaking()) {
             if (sneakTimeMap.containsKey(e.getPlayer().getUniqueId())) {
                 if (System.currentTimeMillis() - sneakTimeMap.remove(e.getPlayer().getUniqueId()) <= DOUBLE_SNEAK_MAX_DELAY && e.getPlayer().isOnGround()) {
-                    getPlugin().getEntityManager().getCrawlMovement().setCrawling(e.getPlayer(), true);
+                    getPlugin().getCoreManager().getEntityManager().getCrawlMovement().setCrawling(e.getPlayer(), true);
 
                     return;
                 }

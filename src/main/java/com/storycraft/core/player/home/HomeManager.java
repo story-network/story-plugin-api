@@ -129,7 +129,7 @@ public class HomeManager extends MiniPlugin implements Listener {
         public void onCommand(CommandSender sender, String[] args) {
             Player p = (Player) sender;
 
-            if (getPlugin().getRankManager().hasPermission(p, ServerRank.MOD) && args.length > 0){
+            if (getPlugin().getCoreManager().getRankManager().hasPermission(p, ServerRank.MOD) && args.length > 0){
                 String targetPlayer = args[0];
                 OfflinePlayer pl = getPlugin().getServer().getOfflinePlayer(targetPlayer);
                 if (pl == null) {
@@ -155,7 +155,7 @@ public class HomeManager extends MiniPlugin implements Listener {
                     return;
                 }
 
-                if (isCoolTimeDone(p) || getPlugin().getRankManager().hasPermission(p, ServerRank.MOD)) {
+                if (isCoolTimeDone(p) || getPlugin().getCoreManager().getRankManager().hasPermission(p, ServerRank.MOD)) {
                     p.teleport(location);
                     timeMap.put(p.getUniqueId(), System.currentTimeMillis());
                     p.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "HomeManager", "집으로 이동되었습니다"));
