@@ -24,6 +24,8 @@ public class ServerPlayerList extends ServerExtension implements Listener {
 
     public ServerPlayerList(){
         this.needUpdate = false;
+        this.headerText = new String[0];
+        this.footerText = new String[0];
     }
 
     @Override
