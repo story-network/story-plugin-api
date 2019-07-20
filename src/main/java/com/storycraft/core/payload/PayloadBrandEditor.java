@@ -23,8 +23,11 @@ public class PayloadBrandEditor extends MiniPlugin implements Listener {
     public void onLoad(StoryPlugin plugin) {
         this.payloadChannel = Reflect.getField(PacketPlayOutCustomPayload.class, "n");
         this.dataSerializer = Reflect.getField(PacketPlayOutCustomPayload.class, "o");
+    }
 
-        getPlugin().getServer().getPluginManager().registerEvents(this, plugin);
+    @Override
+    public void onEnable() {
+        getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
     @EventHandler

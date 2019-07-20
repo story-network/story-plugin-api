@@ -129,10 +129,10 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
         this.serverManager = new ServerManager(this);
         this.decorator = new ServerDecorator(this);
-
-        getMiniPluginLoader().addMiniPlugin(coreManager);
         
         registerCommand();
+
+        getMiniPluginLoader().addMiniPlugin(coreManager);
     }
 
     private void registerCommand() {
