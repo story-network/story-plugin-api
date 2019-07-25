@@ -107,6 +107,60 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
 
                 break;
 
+            case "update":
+                if (args.length != 2) {
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "사용법 /plugin update <플러그인 파일 웹 주소>"));
+                    return;
+                }
+
+                File corePluginFile = getPlugin().getOriginalFile();
+                File tmpBackup = getPlugin().getFile();
+
+                AsyncTask<Void> coreUpdateTask = new AsyncTask<>(new AsyncTask.AsyncCallable<Void>() {
+                    @Override
+                    public Void get() throws Throwable {
+                        URL url = new URL(args[1]);
+
+                        Files.deleteIfExists(corePluginFile.toPath());
+                        Files.createFile(corePluginFile.toPath());
+
+                        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+                        FileOutputStream fos = new FileOutputStream(corePluginFile);
+
+                        long count = 0;
+                        while ((count = fos.getChannel().transferFrom(rbc, count, Long.MAX_VALUE)) != 0);
+
+                        return null;
+                    }
+                });
+
+                coreUpdateTask.then((Void result, Throwable throwable) -> {
+                    try {
+                        if (throwable != null)
+                            throw throwable;
+                            
+                        getServerPluginManager().unloadPlugin(getPlugin());
+
+                        Plugin plugin = getServerPluginManager().loadPlugin(corePluginFile);
+                        getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "코어 플러그인 이 업데이트 되었습니다"));
+                    } catch (Throwable t) {
+                        sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager",
+                            "플러그인 로드가 실패 했습니다 " + t.getLocalizedMessage()));
+                        try {
+                            Files.deleteIfExists(corePluginFile.toPath());
+                            Files.copy(tmpBackup.toPath(), corePluginFile.toPath());
+        
+                            getServerPluginManager().loadPlugin(corePluginFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                coreUpdateTask.run();
+
+                break;
+
             case "enable": {
                 if (args.length != 2) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "사용법 /plugin enable <플러그인 이름>"));
