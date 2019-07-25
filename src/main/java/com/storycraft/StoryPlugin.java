@@ -233,6 +233,11 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         return originalFile;
     }
 
+    @Override
+    public File getFile() {
+        return super.getFile();
+    }
+
     public File getOriginalDataFolder() {
         return originalDataFolder;
     }

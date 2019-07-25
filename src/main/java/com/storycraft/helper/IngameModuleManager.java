@@ -34,11 +34,11 @@ public class IngameModuleManager extends MiniPlugin implements ICommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "ModuleManager", "사용법 /module <enable/load/disable/remove/reload>"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "ModuleManager", "사용법 /module <enable/load/disable/remove/reload/list>"));
             return;
         }
 
-        
+
     }
 
     @Override
