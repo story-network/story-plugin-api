@@ -25,7 +25,7 @@ public class PatchedDataWatcher extends DataWatcher {
     private static Reflect.WrappedMethod<Item<?>, DataWatcher> getOriginalItemMethod;
 
     static {
-        entityField = Reflect.getField(DataWatcher.class, "c");
+        entityField = Reflect.getField(DataWatcher.class, "entity");
         dirtyFlag = Reflect.getField(DataWatcher.class, "g");
 
         originalListField = Reflect.getField(DataWatcher.class, "d");

@@ -99,7 +99,7 @@ public class CustomEntityConverter implements Listener {
         this.namedEntityPitchField = Reflect.getField(PacketPlayOutNamedEntitySpawn.class, "g");
         this.namedMetadataField = Reflect.getField(PacketPlayOutNamedEntitySpawn.class, "h");
 
-        this.dataWatcherEntityField = Reflect.getField(DataWatcher.class, "c");
+        this.dataWatcherEntityField = Reflect.getField(DataWatcher.class, "entity");
 
         this.infoDataListField = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
 
