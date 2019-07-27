@@ -102,15 +102,21 @@ public class MainPlugin extends JavaPlugin implements Listener {
         getMiniPluginLoader().addMiniPlugin(new IngameConfigManager());
         getMiniPluginLoader().addMiniPlugin(new IngameModuleManager());
         
-        registerCommand();
+        registerMiniPlugin(getMiniPluginLoader());
+
+        registerCommand(getCommandManager());
     }
 
     public DynamicModule getModuleManager() {
         return module;
     }
 
-    private void registerCommand() {
-        CommandManager manager = getCommandManager();
+    protected void registerMiniPlugin(MiniPluginLoader loader) {
+
+    }
+
+    protected void registerCommand(CommandManager manager) {
+
     }
 
     @Override
