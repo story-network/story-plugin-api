@@ -1,6 +1,6 @@
 package com.storycraft.server;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.clientside.ClientSideManager;
 import com.storycraft.server.event.client.ClientEventManager;
 import com.storycraft.server.forge.ForgeServerManager;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class ServerManager {
 
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
     private ServerPluginManager serverPluginManager;
     private ClientSideManager clientSideManager;
@@ -36,7 +36,7 @@ public class ServerManager {
 
     private List<ServerExtension> extensionList;
 
-    public ServerManager(StoryPlugin plugin) {
+    public ServerManager(MainPlugin plugin) {
         this.plugin = plugin;
         this.extensionList = new ArrayList<>();
 
@@ -60,7 +60,7 @@ public class ServerManager {
         return extensionList;
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 

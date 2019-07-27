@@ -2,7 +2,7 @@ package com.storycraft.server.playerlist;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.MiniPlugin;
 import com.storycraft.config.event.ConfigUpdateEvent;
@@ -29,7 +29,7 @@ public class ServerPlayerList extends ServerExtension implements Listener {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
        
     }
 

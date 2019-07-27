@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.morph.SimpleBlockMorphInfo;
 import com.storycraft.effect.GuardianBeamEffect;
 import com.storycraft.effect.IHasDuration;
@@ -73,9 +73,9 @@ public class TestFunction implements Listener {
         elytraFlagObject = Reflect.getField(Entity.class, "W");
     }
 
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
-    public TestFunction(StoryPlugin plugin){
+    public TestFunction(MainPlugin plugin){
         this.plugin = plugin;
 
         this.test();

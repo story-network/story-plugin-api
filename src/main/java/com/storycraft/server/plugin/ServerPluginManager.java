@@ -1,6 +1,6 @@
 package com.storycraft.server.plugin;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.util.reflect.Reflect;
 import org.bukkit.command.Command;
@@ -44,7 +44,7 @@ public class ServerPluginManager extends ServerExtension {
         }
     }
 
-    public ServerPluginManager(StoryPlugin plugin) {
+    public ServerPluginManager(MainPlugin plugin) {
         this();
 
         this.setEnabled(true);

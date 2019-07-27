@@ -3,7 +3,7 @@ package com.storycraft.server.registry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.entity.ServerEntityRegistry;
 
@@ -16,7 +16,7 @@ public class RegistryManager extends ServerExtension {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin){
+    public void onLoad(MainPlugin plugin){
         preInitRegistry(plugin);
     }
 
@@ -30,15 +30,15 @@ public class RegistryManager extends ServerExtension {
         unInitRegistry(getPlugin());
     }
 
-    private void preInitRegistry(StoryPlugin plugin){
+    private void preInitRegistry(MainPlugin plugin){
         getEntityRegistry().preInitialize(plugin);
     }
 
-    private void initRegistry(StoryPlugin plugin){
+    private void initRegistry(MainPlugin plugin){
         getEntityRegistry().initialize(plugin);
     }
 
-    private void unInitRegistry(StoryPlugin plugin){
+    private void unInitRegistry(MainPlugin plugin){
         getEntityRegistry().unInitialize(plugin);
     }
 

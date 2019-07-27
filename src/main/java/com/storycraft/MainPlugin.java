@@ -46,7 +46,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class StoryPlugin extends JavaPlugin implements Listener {
+public class MainPlugin extends JavaPlugin implements Listener {
 
     private static String TEMP_FILE_NAME = "Server.jar";
 
@@ -69,7 +69,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     private TempStorage tempStorage;
 
-    public StoryPlugin() {
+    public MainPlugin() {
         this.tempStorage = new TempStorage();
         this.initalized = false;
     }
@@ -143,7 +143,7 @@ public class StoryPlugin extends JavaPlugin implements Listener {
             };
 
             try {
-                File pluginRef = new File(URLDecoder.decode(StoryPlugin.class.getProtectionDomain().getCodeSource().getLocation().getFile(), "UTF-8"));
+                File pluginRef = new File(URLDecoder.decode(MainPlugin.class.getProtectionDomain().getCodeSource().getLocation().getFile(), "UTF-8"));
 
                 ServerPluginManager tempPluginManager = new ServerPluginManager(this);
 

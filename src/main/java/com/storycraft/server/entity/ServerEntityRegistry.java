@@ -5,7 +5,7 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.types.templates.TaggedChoice;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.registry.IRegistry;
 import com.storycraft.server.registry.RegistryManager;
 import com.storycraft.util.reflect.Reflect;
@@ -44,19 +44,19 @@ public class ServerEntityRegistry implements IRegistry<CustomEntityInfo<? extend
     }
 
     @Override
-    public void preInitialize(StoryPlugin plugin) {
+    public void preInitialize(MainPlugin plugin) {
         this.constructorField = Reflect.getField(EntityTypes.class, "aZ");
         this.keyMapField = Reflect.getField(RegistryMaterials.class, "c");
         constructorField.unlockFinal();
     }
 
     @Override
-    public void initialize(StoryPlugin plugin) {
+    public void initialize(MainPlugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(converter, plugin);
     }
 
     @Override
-    public void unInitialize(StoryPlugin plugin) {
+    public void unInitialize(MainPlugin plugin) {
         for (int id : customEntityIdMap.keySet()) {
             CustomEntityInfo info = customEntityIdMap.get(id);
             String name = info.getName().toString();

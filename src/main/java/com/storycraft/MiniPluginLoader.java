@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class MiniPluginLoader {
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
     private List<MiniPlugin> miniPluginList;
     private boolean enabled;
 
-    public MiniPluginLoader(StoryPlugin plugin) {
+    public MiniPluginLoader(MainPlugin plugin) {
         this.plugin = plugin;
         this.miniPluginList = new ArrayList<>();
         this.enabled = false;
@@ -74,7 +74,7 @@ public class MiniPluginLoader {
         getMiniPluginList().remove(miniPlugin);
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 

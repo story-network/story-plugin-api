@@ -38,7 +38,7 @@ public class DynamicModule extends MiniPlugin {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
         this.moduleDir = new File(plugin.getOriginalDataFolder(), "modules");
     }
 

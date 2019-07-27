@@ -7,12 +7,12 @@ import com.storycraft.util.MessageUtil.MessageType;
 import org.bukkit.command.CommandSender;
 
 import com.storycraft.MiniPlugin;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 
 public class IngameModuleManager extends MiniPlugin implements ICommand {
     
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
         plugin.getCommandManager().addCommand(this);
     }
 

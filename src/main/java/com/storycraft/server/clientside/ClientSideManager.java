@@ -1,6 +1,6 @@
 package com.storycraft.server.clientside;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.MiniPluginLoader;
 import com.storycraft.server.ServerExtension;
 
@@ -15,7 +15,7 @@ public class ClientSideManager extends ServerExtension {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin){
+    public void onLoad(MainPlugin plugin){
         MiniPluginLoader loader = plugin.getMiniPluginLoader();
         loader.addMiniPlugin(getClientEntityManager());
         loader.addMiniPlugin(getClientBlockManager());

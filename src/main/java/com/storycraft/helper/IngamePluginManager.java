@@ -1,7 +1,7 @@
 package com.storycraft.helper;
 
 import com.mojang.brigadier.ParseResults;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.MiniPlugin;
 import com.storycraft.server.plugin.ServerPluginManager;
@@ -33,7 +33,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
     private Reflect.WrappedMethod<File, JavaPlugin> getFileMethod;
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
         this.getFileMethod = Reflect.getMethod(JavaPlugin.class, "getFile");
         plugin.getCommandManager().addCommand(this);
     }

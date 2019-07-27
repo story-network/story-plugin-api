@@ -3,7 +3,7 @@ package com.storycraft.effect;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.entity.metadata.PatchedDataWatcher;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.EntityUtil;
@@ -35,7 +35,7 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
         poseFlagObject = Reflect.getField(net.minecraft.server.v1_14_R1.Entity.class, "POSE");
     }
 
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
     private boolean elderBeam;
 
@@ -48,18 +48,18 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
     private EntityGuardian guardian;
     private int virtualTargetId;
 
-    public GuardianBeamEffect(StoryPlugin plugin, Location guardianLoc, Location targetLoc) {
+    public GuardianBeamEffect(MainPlugin plugin, Location guardianLoc, Location targetLoc) {
         this(plugin);
 
         this.guardianLoc = guardianLoc;
         this.targetLoc = targetLoc;
     }
 
-    public GuardianBeamEffect(StoryPlugin plugin, Location guardianLoc, Location targetLoc, boolean elderBeam) {
+    public GuardianBeamEffect(MainPlugin plugin, Location guardianLoc, Location targetLoc, boolean elderBeam) {
         this(plugin, guardianLoc, targetLoc, null, null, elderBeam);
     }
 
-    public GuardianBeamEffect(StoryPlugin plugin, Location guardianLoc, Location targetLoc, Entity guardianBinded, Entity target, boolean elderBeam) {
+    public GuardianBeamEffect(MainPlugin plugin, Location guardianLoc, Location targetLoc, Entity guardianBinded, Entity target, boolean elderBeam) {
         this(plugin, elderBeam);
 
         this.guardianLoc = guardianLoc;
@@ -69,11 +69,11 @@ public class GuardianBeamEffect extends WorldEffect implements IHasDuration {
         this.target = target;
     }
 
-    protected GuardianBeamEffect(StoryPlugin plugin) {
+    protected GuardianBeamEffect(MainPlugin plugin) {
         this(plugin, false);
     }
 
-    protected GuardianBeamEffect(StoryPlugin plugin, boolean elderBeam) {
+    protected GuardianBeamEffect(MainPlugin plugin, boolean elderBeam) {
         this.plugin = plugin;
         this.elderBeam = elderBeam;
     }

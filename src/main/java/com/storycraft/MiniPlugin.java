@@ -7,10 +7,10 @@ import java.util.concurrent.Future;
 
 public abstract class MiniPlugin {
     
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
     private boolean enabled = false;
 
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
 
     }
 
@@ -22,11 +22,11 @@ public abstract class MiniPlugin {
 
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 
-    protected void setPlugin(StoryPlugin plugin) {
+    protected void setPlugin(MainPlugin plugin) {
         this.plugin = plugin;
     }
 

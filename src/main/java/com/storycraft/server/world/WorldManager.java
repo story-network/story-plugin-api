@@ -2,7 +2,7 @@ package com.storycraft.server.world;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.server.ServerExtension;
@@ -38,7 +38,7 @@ public class WorldManager extends ServerExtension implements Listener {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin){
+    public void onLoad(MainPlugin plugin){
         this.isLoaded = true;
 
         plugin.getMiniPluginLoader().addMiniPlugin(addonManager);

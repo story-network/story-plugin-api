@@ -1,18 +1,18 @@
 package com.storycraft.storage;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 
 import java.io.*;
 
 public class PluginDataStorage extends Storage<byte[]> {
 
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
-    public PluginDataStorage(StoryPlugin plugin){
+    public PluginDataStorage(MainPlugin plugin){
         this.plugin = plugin;
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 

@@ -7,7 +7,7 @@ import com.storycraft.server.morph.MorphManager;
 
 public class ServerDecorator {
 
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
     private HologramManager hologramManager;
     private AdvancementManager advancementManager;
@@ -16,7 +16,7 @@ public class ServerDecorator {
 
     private MorphManager morphManager;
 
-    public ServerDecorator(StoryPlugin plugin){
+    public ServerDecorator(MainPlugin plugin){
         this.plugin = plugin;
 
         initialize();
@@ -31,7 +31,7 @@ public class ServerDecorator {
         loader.addMiniPlugin(customMapManager = new CustomMapManager());
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 

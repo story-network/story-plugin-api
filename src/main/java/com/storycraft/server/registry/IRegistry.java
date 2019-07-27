@@ -1,6 +1,6 @@
 package com.storycraft.server.registry;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 
 public interface IRegistry<T> {
 
@@ -8,9 +8,9 @@ public interface IRegistry<T> {
 
     void remove(int id) throws Exception;
 
-    void initialize(StoryPlugin plugin);
-    void preInitialize(StoryPlugin plugin);
-    void unInitialize(StoryPlugin plugin);
+    void initialize(MainPlugin plugin);
+    void preInitialize(MainPlugin plugin);
+    void unInitialize(MainPlugin plugin);
 
     boolean contains(String name);
     boolean containsId(int id);

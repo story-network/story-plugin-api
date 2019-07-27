@@ -1,6 +1,6 @@
 package com.storycraft.server.anticheat;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.reflect.Reflect;
@@ -19,7 +19,7 @@ public class AntiXray extends ServerExtension implements Listener {
     private WrappedField<Integer, PacketPlayOutMapChunk> sectionMaskField;
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
         chunkDataField = Reflect.getField(PacketPlayOutMapChunk.class, "e");
         sectionMaskField = Reflect.getField(PacketPlayOutMapChunk.class, "c");
     }

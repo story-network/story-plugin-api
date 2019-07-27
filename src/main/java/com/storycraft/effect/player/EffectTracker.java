@@ -1,6 +1,6 @@
 package com.storycraft.effect.player;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.effect.IHasDuration;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 
@@ -9,18 +9,18 @@ import org.bukkit.event.Listener;
 
 public class EffectTracker implements Listener {
 
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
     private IHasDuration target;
 
     private Runnable onEnd;
 
-    public EffectTracker(StoryPlugin plugin) {
+    public EffectTracker(MainPlugin plugin) {
         this.plugin = plugin;
         this.target = null;
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 

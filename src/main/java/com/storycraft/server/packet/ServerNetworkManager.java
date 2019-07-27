@@ -1,6 +1,6 @@
 package com.storycraft.server.packet;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.ServerManager;
 import com.storycraft.util.MessageUtil;
@@ -103,7 +103,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
         
     }
 

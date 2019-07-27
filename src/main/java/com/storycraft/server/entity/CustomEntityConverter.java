@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import com.mojang.authlib.GameProfile;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.packet.AsyncPacketInEvent;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
@@ -183,7 +183,7 @@ public class CustomEntityConverter implements Listener {
 
         ConnectionUtil.sendPacket(p, fakeInfo, playerSpawn);
 
-        StoryPlugin plugin = getServerEntityRegistry().getRegistryManager().getPlugin();
+        MainPlugin plugin = getServerEntityRegistry().getRegistryManager().getPlugin();
 
         getServerEntityRegistry().getRegistryManager().runSync(() -> {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {

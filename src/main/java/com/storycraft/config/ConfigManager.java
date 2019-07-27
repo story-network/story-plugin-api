@@ -1,6 +1,6 @@
 package com.storycraft.config;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.Parallel;
@@ -16,9 +16,9 @@ public class ConfigManager {
     private Map<String, IConfigFile> configFileMap;
 
     private ConfigHandler configHandler;
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
 
-    public ConfigManager(StoryPlugin plugin) {
+    public ConfigManager(MainPlugin plugin) {
         this.plugin = plugin;
 
         this.configFileMap = new HashMap<>();
@@ -92,7 +92,7 @@ public class ConfigManager {
         return configFileMap;
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 

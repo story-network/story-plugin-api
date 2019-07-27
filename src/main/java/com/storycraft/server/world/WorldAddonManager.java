@@ -8,7 +8,7 @@ import java.util.Map;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
@@ -41,7 +41,7 @@ public class WorldAddonManager extends MiniPlugin implements Listener {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin){
+    public void onLoad(MainPlugin plugin){
         try {
             plugin.getConfigManager().addConfigFile("world_addons.json", worldAddonConfig = new JsonConfigPrettyFile()).getSync();
         } catch (Throwable e) {

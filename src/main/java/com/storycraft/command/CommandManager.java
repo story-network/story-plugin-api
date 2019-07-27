@@ -1,7 +1,7 @@
 package com.storycraft.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,14 +12,14 @@ public class CommandManager {
 
     public static String UNKNOWN_COMMAND = "알 수 없는 커맨드 입니다";
 
-    private StoryPlugin plugin;
+    private MainPlugin plugin;
     private CommandListener listener;
 
     private CommandDispatcher<CommandSender> engine;
 
     private Map<String[], ICommand> commandMap = new HashMap<>();
 
-    public CommandManager(StoryPlugin plugin){
+    public CommandManager(MainPlugin plugin){
         this.plugin = plugin;
         this.listener = new CommandListener(this);
         this.engine = new CommandDispatcher<>();
@@ -42,7 +42,7 @@ public class CommandManager {
         getCommandMap().put(command.getAliases(), command);
     }
 
-    public StoryPlugin getPlugin() {
+    public MainPlugin getPlugin() {
         return plugin;
     }
 

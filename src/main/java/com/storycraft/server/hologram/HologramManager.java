@@ -1,6 +1,6 @@
 package com.storycraft.server.hologram;
 
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.MiniPlugin;
 import com.storycraft.server.clientside.ClientEntityManager;
 import com.storycraft.server.packet.AsyncPacketInEvent;
@@ -35,7 +35,7 @@ public class HologramManager extends MiniPlugin implements Listener {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin){
+    public void onLoad(MainPlugin plugin){
 
     }
 

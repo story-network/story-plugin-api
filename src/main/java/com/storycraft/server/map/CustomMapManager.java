@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.google.common.collect.Lists;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.MiniPlugin;
 import com.storycraft.server.map.render.OffsetArea;
 import com.storycraft.server.event.server.ServerUpdateEvent;
@@ -60,7 +60,7 @@ public class CustomMapManager extends MiniPlugin implements Listener {
     }
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
         
     }
     

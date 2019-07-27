@@ -7,7 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
-import com.storycraft.StoryPlugin;
+import com.storycraft.MainPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.config.IConfigEntry;
 import com.storycraft.config.IConfigFile;
@@ -22,7 +22,7 @@ import org.bukkit.command.CommandSender;
 public class IngameConfigManager extends MiniPlugin implements ICommand {
 
     @Override
-    public void onLoad(StoryPlugin plugin) {
+    public void onLoad(MainPlugin plugin) {
         plugin.getCommandManager().addCommand(this);
     }
 

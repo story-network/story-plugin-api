@@ -15,7 +15,7 @@ compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 
 //This is unnecessary
-mainClassName = 'com.storycraft.StoryPlugin'
+mainClassName = 'com.storycraft.MainPlugin'
 
 repositories {
     mavenCentral();
@@ -24,8 +24,8 @@ repositories {
 jar {
     manifest {
         attributes (
-            'Agent-Class': 'com.storycraft.StoryPlugin',
-            'Premain-Class': 'com.storycraft.StoryPlugin',
+            'Agent-Class': 'com.storycraft.MainPlugin',
+            'Premain-Class': 'com.storycraft.MainPlugin',
             'Can-Redefine-Classes': 'true',
             'Can-Retransform-Classes': 'true'
         )
