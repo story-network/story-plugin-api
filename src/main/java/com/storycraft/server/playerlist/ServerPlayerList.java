@@ -30,7 +30,7 @@ public class ServerPlayerList extends ServerExtension implements Listener {
 
     @Override
     public void onLoad(StoryPlugin plugin) {
-
+       
     }
 
     @Override

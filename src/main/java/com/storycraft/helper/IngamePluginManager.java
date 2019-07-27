@@ -1,10 +1,9 @@
-package com.storycraft.core.plugin;
+package com.storycraft.helper;
 
 import com.mojang.brigadier.ParseResults;
 import com.storycraft.StoryPlugin;
 import com.storycraft.command.ICommand;
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.rank.ServerRank;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
@@ -18,12 +17,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 public class IngamePluginManager extends MiniPlugin implements ICommand {
@@ -62,9 +64,11 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "사용법 /plugin <enable/load/disable/remove/reload>"));
+            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "사용법 /plugin <enable/load/update//disable/remove/reload>"));
             return;
         }
+
+        ServerPluginManager serverPluginManager = getServerPluginManager();
 
         switch (args[0]) {
             case "load":
@@ -76,7 +80,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                 File pluginFolder = getPlugin().getOriginalDataFolder().getParentFile();
                 File pluginFile = new File(pluginFolder, UUID.randomUUID() + ".jar");
 
-                AsyncTask task = new AsyncTask<>(new AsyncTask.AsyncCallable<Void>() {
+                AsyncTask<Void> task = new AsyncTask<>(new AsyncTask.AsyncCallable<Void>() {
                     @Override
                     public Void get() throws Throwable {
                         URL url = new URL(args[1]);
@@ -91,13 +95,13 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                     }
                 });
 
-                task.then((Object result, Throwable throwable) -> {
+                task.then((Void result, Throwable throwable) -> {
                     try {
                         if (throwable != null)
                             throw throwable;
 
-                        Plugin plugin = getServerPluginManager().loadPlugin(pluginFile);
-                        getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + plugin.getName() + " 이(가) 로드 되었습니다"));
+                        Plugin plugin = serverPluginManager.loadPlugin(pluginFile);
+                        sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + plugin.getName() + " 이(가) 로드 되었습니다"));
                     } catch (Throwable t) {
                         sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 로드가 실패 했습니다 " + t.getLocalizedMessage()));
                     }
@@ -114,6 +118,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                 }
 
                 File corePluginFile = getPlugin().getOriginalFile();
+                File tempDownloadFile = getPlugin().getTempStorage().getPath().resolve("tempPlugin").toFile();
                 File tmpBackup = getPlugin().getFile();
 
                 AsyncTask<Void> coreUpdateTask = new AsyncTask<>(new AsyncTask.AsyncCallable<Void>() {
@@ -121,14 +126,19 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                     public Void get() throws Throwable {
                         URL url = new URL(args[1]);
 
-                        Files.deleteIfExists(corePluginFile.toPath());
-                        Files.createFile(corePluginFile.toPath());
+                        Path downloadPath = tempDownloadFile.toPath();
 
-                        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-                        FileOutputStream fos = new FileOutputStream(corePluginFile);
+                        Files.deleteIfExists(downloadPath);
+                        Files.createFile(downloadPath);
 
-                        long count = 0;
-                        while ((count = fos.getChannel().transferFrom(rbc, count, Long.MAX_VALUE)) != 0);
+                        try (ReadableByteChannel rbc = Channels.newChannel(url.openStream())) {
+                            try (FileOutputStream fos = new FileOutputStream(downloadPath.toFile())) {
+
+                                long count = 0;
+                                while ((count = fos.getChannel().transferFrom(rbc, count, Long.MAX_VALUE)) != 0);
+    
+                            }
+                        }
 
                         return null;
                     }
@@ -138,21 +148,47 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                     try {
                         if (throwable != null)
                             throw throwable;
-                            
-                        getServerPluginManager().unloadPlugin(getPlugin());
 
-                        Plugin plugin = getServerPluginManager().loadPlugin(corePluginFile);
-                        getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "코어 플러그인 이 업데이트 되었습니다"));
+                        String originalName = getPlugin().getName();
+
+                        serverPluginManager.unloadPlugin(getPlugin());
+
+                        Files.deleteIfExists(corePluginFile.toPath());
+                        Files.move(tempDownloadFile.toPath(), corePluginFile.toPath());
+
+                        Plugin plugin = serverPluginManager.loadPlugin(corePluginFile);
+
+                        if (plugin == null) {
+                            throw new Exception("Plugin load phase failed");
+                        }
+
+                        if (!plugin.getName().equals(originalName)) {
+                            throw new Exception("Illegal plugin file");
+                        }
+
+                        boolean enabled = serverPluginManager.enablePlugin(plugin);
+
+                        if (!enabled) {
+                            throw new Exception("Plugin enable phase failed");
+                        }
+
+                        sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "코어 플러그인이 업데이트 되었습니다"));
                     } catch (Throwable t) {
                         sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager",
                             "플러그인 로드가 실패 했습니다 " + t.getLocalizedMessage()));
                         try {
-                            Files.deleteIfExists(corePluginFile.toPath());
-                            Files.copy(tmpBackup.toPath(), corePluginFile.toPath());
-        
-                            getServerPluginManager().loadPlugin(corePluginFile);
+                            if (!serverPluginManager.isEnabled(getPlugin())) {
+                                Files.deleteIfExists(corePluginFile.toPath());
+                                Files.copy(tmpBackup.toPath(), corePluginFile.toPath());
+
+                                Plugin original = serverPluginManager.loadPlugin(corePluginFile);
+                                serverPluginManager.enablePlugin(original);
+                            }
+
                         } catch (IOException e) {
                             e.printStackTrace();
+                            sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager",
+                            "플러그인 재로드가 실패 했습니다 :(" + t.getLocalizedMessage()));
                         }
                     }
                 });
@@ -168,7 +204,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                 }
 
                 String name = args[1];
-                Plugin plugin = getServerPluginManager().getPlugin(name);
+                Plugin plugin = serverPluginManager.getPlugin(name);
 
                 if (plugin == null) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 을 찾을 수 없습니다"));
@@ -178,8 +214,8 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                     return;
                 }
 
-                if (getServerPluginManager().enablePlugin(plugin))
-                    getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 활성화 되었습니다"));
+                if (serverPluginManager.enablePlugin(plugin))
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 활성화 되었습니다"));
                 else
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 활성화가 실패 했습니다"));
                 break;
@@ -192,7 +228,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                 }
 
                 String name = args[1];
-                Plugin plugin = getServerPluginManager().getPlugin(name);
+                Plugin plugin = serverPluginManager.getPlugin(name);
 
                 if (plugin == null) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 을 찾을 수 없습니다"));
@@ -202,8 +238,8 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                     return;
                 }
 
-                if (getServerPluginManager().disablePlugin(plugin))
-                    getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 비활성화 되었습니다"));
+                if (serverPluginManager.disablePlugin(plugin))
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 비활성화 되었습니다"));
                 else
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 비활성화가 실패 했습니다"));
                 break;
@@ -216,23 +252,22 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                 }
 
                 String name = args[1];
-                Plugin plugin = getServerPluginManager().getPlugin(name);
+                Plugin plugin = serverPluginManager.getPlugin(name);
 
                 if (plugin == null) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 을 찾을 수 없습니다"));
                     return;
                 }
                 else if (plugin == getPlugin()) {
-					getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "PluginManager", "코어 플러그인 업데이트중..."));
-                    getServerPluginManager().unloadPlugin(plugin);
-                    getServerPluginManager().enablePlugin(getServerPluginManager().loadPlugin(getPlugin().getOriginalFile()));
-                    getPlugin().getCoreManager().getDiscordChat().sendConsoleMessageAsync("코어 플러그인 업데이트중...").run();
-                    getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "코어 플러그인이(가) 업데이트 되었습니다"));
+					sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.ALERT, "PluginManager", "코어 플러그인 업데이트중..."));
+                    serverPluginManager.unloadPlugin(plugin);
+                    serverPluginManager.enablePlugin(serverPluginManager.loadPlugin(getPlugin().getOriginalFile()));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "코어 플러그인이(가) 업데이트 되었습니다"));
                     return;
                 }
 
-                if (getServerPluginManager().disablePlugin(plugin) && getServerPluginManager().enablePlugin(plugin))
-                    getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 리로드 되었습니다"));
+                if (serverPluginManager.disablePlugin(plugin) && serverPluginManager.enablePlugin(plugin))
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 리로드 되었습니다"));
                 else
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 리로드가 실패 했습니다"));
                 break;
@@ -245,7 +280,7 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                 }
 
                 String name = args[1];
-                Plugin plugin = getServerPluginManager().getPlugin(name);
+                Plugin plugin = serverPluginManager.getPlugin(name);
 
                 if (plugin == null) {
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 을 찾을 수 없습니다"));
@@ -255,9 +290,9 @@ public class IngamePluginManager extends MiniPlugin implements ICommand {
                     return;
                 }
 
-                if (getServerPluginManager().unloadPlugin(plugin)) {
+                if (serverPluginManager.unloadPlugin(plugin)) {
                     getFileMethod.invoke((JavaPlugin) plugin).delete();
-                    getPlugin().getServer().broadcastMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 제거 되었습니다"));
+                    sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.SUCCESS, "PluginManager", "플러그인 " + name + " 이(가) 제거 되었습니다"));
                 }
                 else
                     sender.sendMessage(MessageUtil.getPluginMessage(MessageUtil.MessageType.FAIL, "PluginManager", "플러그인 " + name + " 제거가 실패 했습니다"));

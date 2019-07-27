@@ -1,4 +1,4 @@
-package com.storycraft.core.config;
+package com.storycraft.helper;
 
 import java.io.StringReader;
 import java.util.Map.Entry;
@@ -14,7 +14,6 @@ import com.storycraft.config.IConfigFile;
 import com.storycraft.config.event.ConfigUpdateEvent;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.MiniPlugin;
-import com.storycraft.core.rank.ServerRank;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 

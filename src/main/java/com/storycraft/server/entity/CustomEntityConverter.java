@@ -99,7 +99,7 @@ public class CustomEntityConverter implements Listener {
         this.namedEntityPitchField = Reflect.getField(PacketPlayOutNamedEntitySpawn.class, "g");
         this.namedMetadataField = Reflect.getField(PacketPlayOutNamedEntitySpawn.class, "h");
 
-        this.dataWatcherEntityField = Reflect.getField(DataWatcher.class, "c");
+        this.dataWatcherEntityField = Reflect.getField(DataWatcher.class, "entity");
 
         this.infoDataListField = Reflect.getField(PacketPlayOutPlayerInfo.class, "b");
 
@@ -145,7 +145,7 @@ public class CustomEntityConverter implements Listener {
             Map<Statistic<?>, Integer> map = statisticMap.get(packet);
 
             for (Statistic<?> stat : new ArrayList<>(map.keySet())) {
-                if (StatisticList.ENTITY_KILLED.equals(stat.a()) || StatisticList.ENTITY_KILLED_BY.equals(stat.a())) {
+                if (StatisticList.ENTITY_KILLED.equals(stat.getWrapper()) || StatisticList.ENTITY_KILLED_BY.equals(stat.getWrapper())) {
                     EntityTypes type = (EntityTypes) stat.b();
                     if (getServerEntityRegistry().contains(IRegistry.ENTITY_TYPE.getKey(type).getKey())) {
                         map.remove(stat);

@@ -4,4 +4,4 @@ version: 1.0.0
 main: com.storycraft.StoryPlugin
 author: storycraft
 load: STARTUP
-api-version: 1.13
+api-version: 1.14

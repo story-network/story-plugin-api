@@ -1,48 +1,15 @@
 package com.storycraft;
 
 import com.mojang.authlib.yggdrasil.response.User;
-import com.storycraft.core.CoreManager;
-import com.storycraft.core.broadcast.BroadcastManager;
-import com.storycraft.core.broadcast.ToastCommand;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
+import com.storycraft.helper.IngameConfigManager;
+import com.storycraft.helper.IngameModuleManager;
+import com.storycraft.helper.IngamePluginManager;
 import com.storycraft.MiniPluginLoader;
 import com.storycraft.ServerDecorator;
-import com.storycraft.core.chat.ChatManager;
-import com.storycraft.core.chat.ColoredChat;
-import com.storycraft.core.combat.DamageHologram;
-import com.storycraft.core.command.SayCommand;
-import com.storycraft.core.config.IngameConfigManager;
-import com.storycraft.core.discord.DiscordChatHook;
-import com.storycraft.core.disguise.HeadDisguise;
-import com.storycraft.core.player.PlayerManager;
-import com.storycraft.core.player.debug.UserDebug;
-import com.storycraft.core.player.home.HomeManager;
-import com.storycraft.core.playerlist.CustomPlayerList;
-import com.storycraft.core.jukebox.JukeboxPlay;
-import com.storycraft.core.map.ImageMap;
-import com.storycraft.core.entity.EntityBlood;
-import com.storycraft.core.entity.EntityManager;
-import com.storycraft.core.explosion.Explosion;
-import com.storycraft.core.faq.FAQCommand;
-import com.storycraft.core.fly.FlyCommand;
-import com.storycraft.core.dropping.DropCounter;
-import com.storycraft.core.dropping.HologramXPDrop;
-import com.storycraft.core.motd.ServerMotd;
-import com.storycraft.core.permission.PermissionManager;
-import com.storycraft.core.plugin.IngamePluginManager;
-import com.storycraft.core.punish.PunishManager;
-import com.storycraft.core.randomtp.RandomTP;
-import com.storycraft.core.rank.RankManager;
-import com.storycraft.core.saving.AutoSaveManager;
-import com.storycraft.core.skin.PlayerCustomSkin;
-import com.storycraft.core.spawn.ServerSpawnManager;
-import com.storycraft.core.teleport.TeleportAskCommand;
-import com.storycraft.core.uuid.UUIDRevealCommand;
-import com.storycraft.core.world.WorldTeleporter;
-import com.storycraft.mod.ModManager;
 import com.storycraft.server.ServerManager;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.server.plugin.ServerPluginManager;
@@ -96,9 +63,9 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     private ServerDecorator decorator;
 
-    private CoreManager coreManager;
-
     private boolean initalized = false;
+
+    private DynamicModule module;
 
     private TempStorage tempStorage;
 
@@ -119,7 +86,6 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         this.miniPluginLoader = new MiniPluginLoader(this);
         this.localConfigManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
-        this.coreManager = new CoreManager(this);
 
         try {
             getConfigManager().addConfigFile("server.json", serverConfig = new JsonConfigPrettyFile()).getSync();
@@ -129,16 +95,22 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
         this.serverManager = new ServerManager(this);
         this.decorator = new ServerDecorator(this);
+
+        this.module = new DynamicModule();
+        getMiniPluginLoader().addMiniPlugin(module);
+        getMiniPluginLoader().addMiniPlugin(new IngamePluginManager());
+        getMiniPluginLoader().addMiniPlugin(new IngameConfigManager());
+        getMiniPluginLoader().addMiniPlugin(new IngameModuleManager());
         
         registerCommand();
+    }
 
-        getMiniPluginLoader().addMiniPlugin(coreManager);
+    public DynamicModule getModuleManager() {
+        return module;
     }
 
     private void registerCommand() {
         CommandManager manager = getCommandManager();
-
-        manager.addCommand(new SayCommand());
     }
 
     @Override
@@ -249,10 +221,6 @@ public class StoryPlugin extends JavaPlugin implements Listener {
         return localConfigManager;
     }
 
-    public CoreManager getCoreManager() {
-        return coreManager;
-    }
-
     public ServerManager getServerManager() {
         return serverManager;
     }
@@ -263,6 +231,11 @@ public class StoryPlugin extends JavaPlugin implements Listener {
 
     public File getOriginalFile(){
         return originalFile;
+    }
+
+    @Override
+    public File getFile() {
+        return super.getFile();
     }
 
     public File getOriginalDataFolder() {
