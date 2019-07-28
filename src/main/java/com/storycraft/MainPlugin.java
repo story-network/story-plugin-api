@@ -109,10 +109,13 @@ public abstract class MainPlugin extends JavaPlugin implements Listener {
                 try {
                     logger.warning("임시 파일 복사 및 로드가 실패 했습니다. " + throwable.getLocalizedMessage());
                     logger.warning("플러그인 복사를 스킵합니다.");
-                    Plugin plugin = getServer().getPluginManager().loadPlugin(originalPluginFile);
-                    Reflect.getMethod(MainPlugin.class, "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
 
-                    if (Reflect.getField(MainPlugin.class, "initalized").get(plugin).equals(false)) {
+                    Plugin plugin = getServer().getPluginManager().loadPlugin(originalPluginFile);
+                    Class<?> updatedMainPluginClass = plugin.getClass().getClassLoader().loadClass(MainPlugin.class.getName());
+
+                    Reflect.getMethod(updatedMainPluginClass, "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
+
+                    if (Reflect.getField(updatedMainPluginClass, "initalized").get(plugin).equals(false)) {
                         logger.warning("플러그인 로드가 실패 했습니다.");
                         return null;
                     }
@@ -137,9 +140,11 @@ public abstract class MainPlugin extends JavaPlugin implements Listener {
 
                 try {
                     Plugin plugin = getServer().getPluginManager().loadPlugin(getTempStorage().getPath().resolve(TEMP_FILE_NAME).toFile());
-                    Reflect.getMethod(MainPlugin.class, "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
+                    Class<?> updatedMainPluginClass = plugin.getClass().getClassLoader().loadClass(MainPlugin.class.getName());
 
-                    if (Reflect.getField(MainPlugin.class, "initalized").get(plugin).equals(false)) {
+                    Reflect.getMethod(updatedMainPluginClass, "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
+
+                    if (Reflect.getField(updatedMainPluginClass, "initalized").get(plugin).equals(false)) {
                         throw new Exception("플러그인이 pre init 되지 않았습니다");
                     }
 
