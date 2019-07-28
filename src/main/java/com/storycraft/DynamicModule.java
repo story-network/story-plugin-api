@@ -12,7 +12,7 @@ import java.util.Map;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
-public class DynamicModule extends MiniPlugin {
+public class DynamicModule extends MainMiniPlugin {
 
     protected class DynamicURLClassLoader extends URLClassLoader {
 

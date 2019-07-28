@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class MiniPluginLoader {
-    private MainPlugin plugin;
+public class MiniPluginLoader<T extends MainPlugin> {
+    private T plugin;
 
-    private List<MiniPlugin> miniPluginList;
+    private List<MiniPlugin<T>> miniPluginList;
     private boolean enabled;
 
-    public MiniPluginLoader(MainPlugin plugin) {
+    public MiniPluginLoader(T plugin) {
         this.plugin = plugin;
         this.miniPluginList = new ArrayList<>();
         this.enabled = false;
@@ -22,9 +22,9 @@ public class MiniPluginLoader {
     public void onEnable() {
         setEnabled(true);
 
-        new ArrayList<>(getMiniPluginList()).forEach(new Consumer<MiniPlugin>() {
+        new ArrayList<>(getMiniPluginList()).forEach(new Consumer<MiniPlugin<T>>() {
             @Override
-            public void accept(MiniPlugin miniPlugin) {
+            public void accept(MiniPlugin<T> miniPlugin) {
                 if (!miniPlugin.isEnabled()) {
                     miniPlugin.onEnable();
                     miniPlugin.setEnabled(true);
@@ -36,9 +36,9 @@ public class MiniPluginLoader {
     public void onDisable(boolean reload) {
         setEnabled(false);
 
-        new ArrayList<>(getMiniPluginList()).forEach(new Consumer<MiniPlugin>() {
+        new ArrayList<>(getMiniPluginList()).forEach(new Consumer<MiniPlugin<T>>() {
             @Override
-            public void accept(MiniPlugin miniPlugin) {
+            public void accept(MiniPlugin<T> miniPlugin) {
                 if (miniPlugin.isEnabled()) {
                     miniPlugin.onDisable(reload);
                     miniPlugin.setEnabled(false);
@@ -47,7 +47,7 @@ public class MiniPluginLoader {
         });
     }
 
-    public void addMiniPlugin(MiniPlugin miniPlugin) {
+    public void addMiniPlugin(MiniPlugin<T> miniPlugin) {
         try {
             getMiniPluginList().add(miniPlugin);
 
@@ -66,15 +66,15 @@ public class MiniPluginLoader {
         }
     }
 
-    public boolean hasMiniPlugin(MiniPlugin miniPlugin) {
+    public boolean hasMiniPlugin(MiniPlugin<T> miniPlugin) {
         return getMiniPluginList().contains(miniPlugin);
     }
 
-    public void removeMiniPlugin(MiniPlugin miniPlugin) {
+    public void removeMiniPlugin(MiniPlugin<T> miniPlugin) {
         getMiniPluginList().remove(miniPlugin);
     }
 
-    public MainPlugin getPlugin() {
+    public T getPlugin() {
         return plugin;
     }
 
@@ -86,7 +86,7 @@ public class MiniPluginLoader {
         this.enabled = enabled;
     }
 
-    public List<MiniPlugin> getMiniPluginList() {
+    public List<MiniPlugin<T>> getMiniPluginList() {
         return miniPluginList;
     }
 }

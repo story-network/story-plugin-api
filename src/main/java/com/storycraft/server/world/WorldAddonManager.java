@@ -12,7 +12,7 @@ import com.storycraft.MainPlugin;
 import com.storycraft.config.json.JsonConfigEntry;
 import com.storycraft.config.json.JsonConfigFile;
 import com.storycraft.config.json.JsonConfigPrettyFile;
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.config.event.ConfigUpdateEvent;
 import com.storycraft.server.world.addon.*;
 
@@ -22,7 +22,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 
-public class WorldAddonManager extends MiniPlugin implements Listener {
+public class WorldAddonManager extends MainMiniPlugin implements Listener {
     
     private WorldManager manager;
 

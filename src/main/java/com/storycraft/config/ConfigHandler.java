@@ -1,8 +1,8 @@
 package com.storycraft.config;
 
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 
-public class ConfigHandler extends MiniPlugin {
+public class ConfigHandler extends MainMiniPlugin {
 
     private ConfigManager manager;
 

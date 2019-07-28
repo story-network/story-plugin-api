@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 
 import com.google.common.collect.Lists;
 import com.storycraft.MainPlugin;
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.server.map.render.OffsetArea;
 import com.storycraft.server.event.server.ServerUpdateEvent;
 import com.storycraft.util.ConnectionUtil;
@@ -37,7 +37,7 @@ import org.bukkit.map.MapCursor;
 import net.minecraft.server.v1_14_R1.MapIcon;
 import net.minecraft.server.v1_14_R1.PacketPlayOutMap;
 
-public class CustomMapManager extends MiniPlugin implements Listener {
+public class CustomMapManager extends MainMiniPlugin implements Listener {
 
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
 

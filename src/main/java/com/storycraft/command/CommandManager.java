@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.storycraft.MainPlugin;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 

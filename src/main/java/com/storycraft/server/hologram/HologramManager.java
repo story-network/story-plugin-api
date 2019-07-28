@@ -1,7 +1,7 @@
 package com.storycraft.server.hologram;
 
 import com.storycraft.MainPlugin;
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.server.clientside.ClientEntityManager;
 import com.storycraft.server.packet.AsyncPacketInEvent;
 import com.storycraft.util.reflect.Reflect;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HologramManager extends MiniPlugin implements Listener {
+public class HologramManager extends MainMiniPlugin implements Listener {
 
     private static final double HOLOGRAM_OFFSET = 0.75;
 

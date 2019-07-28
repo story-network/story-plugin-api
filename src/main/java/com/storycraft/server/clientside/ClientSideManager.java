@@ -16,7 +16,7 @@ public class ClientSideManager extends ServerExtension {
 
     @Override
     public void onLoad(MainPlugin plugin){
-        MiniPluginLoader loader = plugin.getMiniPluginLoader();
+        MiniPluginLoader<MainPlugin> loader = plugin.getMiniPluginLoader();
         loader.addMiniPlugin(getClientEntityManager());
         loader.addMiniPlugin(getClientBlockManager());
     }

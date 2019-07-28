@@ -1,62 +1,40 @@
 package com.storycraft;
 
-import com.mojang.authlib.yggdrasil.response.User;
 import com.storycraft.command.CommandManager;
 import com.storycraft.config.ConfigManager;
-import com.storycraft.config.json.JsonConfigFile;
-import com.storycraft.config.json.JsonConfigPrettyFile;
 import com.storycraft.helper.IngameConfigManager;
 import com.storycraft.helper.IngameModuleManager;
 import com.storycraft.helper.IngamePluginManager;
 import com.storycraft.MiniPluginLoader;
 import com.storycraft.ServerDecorator;
 import com.storycraft.server.ServerManager;
-import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.storage.PluginDataStorage;
 import com.storycraft.storage.TempStorage;
 import com.storycraft.test.TestFunction;
 import com.storycraft.util.reflect.Reflect;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.netty.buffer.Unpooled;
-import net.minecraft.server.v1_14_R1.MinecraftKey;
-import net.minecraft.server.v1_14_R1.MinecraftServer;
-import net.minecraft.server.v1_14_R1.PacketDataSerializer;
-import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_14_R1.World;
-import net.minecraft.server.v1_14_R1.WorldServer;
-
 import java.io.*;
-import java.lang.instrument.Instrumentation;
-import java.lang.reflect.Proxy;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MainPlugin extends JavaPlugin implements Listener {
+public abstract class MainPlugin extends JavaPlugin implements Listener {
 
     private static String TEMP_FILE_NAME = "Server.jar";
 
     private File originalFile;
     private File originalDataFolder;
 
-    private JsonConfigFile serverConfig;
-
     private PluginDataStorage pluginDataStorage;
-    private MiniPluginLoader miniPluginLoader;
     private CommandManager commandManager;
     private ConfigManager localConfigManager;
     private ServerManager serverManager;
@@ -83,15 +61,9 @@ public class MainPlugin extends JavaPlugin implements Listener {
         this.originalDataFolder = originalDataFolder;
         
         this.pluginDataStorage = new PluginDataStorage(this);
-        this.miniPluginLoader = new MiniPluginLoader(this);
+        createMiniPluginLoader();
         this.localConfigManager = new ConfigManager(this);
         this.commandManager = new CommandManager(this);
-
-        try {
-            getConfigManager().addConfigFile("server.json", serverConfig = new JsonConfigPrettyFile()).getSync();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
 
         this.serverManager = new ServerManager(this);
         this.decorator = new ServerDecorator(this);
@@ -101,23 +73,28 @@ public class MainPlugin extends JavaPlugin implements Listener {
         getMiniPluginLoader().addMiniPlugin(new IngamePluginManager());
         getMiniPluginLoader().addMiniPlugin(new IngameConfigManager());
         getMiniPluginLoader().addMiniPlugin(new IngameModuleManager());
-        
-        registerMiniPlugin(getMiniPluginLoader());
 
-        registerCommand(getCommandManager());
+        onPostLoad();
+        
+        registerMiniPlugin();
+
+        registerCommand();
     }
+
+    protected abstract void createMiniPluginLoader();
+    public abstract <T extends MainPlugin>MiniPluginLoader<T> getMiniPluginLoader();
 
     public DynamicModule getModuleManager() {
         return module;
     }
 
-    protected void registerMiniPlugin(MiniPluginLoader loader) {
+    protected abstract void onPostLoad();
 
-    }
+    protected abstract void onPostEnable();
 
-    protected void registerCommand(CommandManager manager) {
+    protected abstract void registerMiniPlugin();
 
-    }
+    protected abstract void registerCommand();
 
     @Override
     public void onEnable() {
@@ -133,9 +110,9 @@ public class MainPlugin extends JavaPlugin implements Listener {
                     logger.warning("임시 파일 복사 및 로드가 실패 했습니다. " + throwable.getLocalizedMessage());
                     logger.warning("플러그인 복사를 스킵합니다.");
                     Plugin plugin = getServer().getPluginManager().loadPlugin(originalPluginFile);
-                    Reflect.getMethod(plugin.getClass(), "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
+                    Reflect.getMethod(MainPlugin.class, "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
 
-                    if (Reflect.getField(plugin, "initalized").get(plugin).equals(false)) {
+                    if (Reflect.getField(MainPlugin.class, "initalized").get(plugin).equals(false)) {
                         logger.warning("플러그인 로드가 실패 했습니다.");
                         return null;
                     }
@@ -160,9 +137,9 @@ public class MainPlugin extends JavaPlugin implements Listener {
 
                 try {
                     Plugin plugin = getServer().getPluginManager().loadPlugin(getTempStorage().getPath().resolve(TEMP_FILE_NAME).toFile());
-                    Reflect.getMethod(plugin.getClass(), "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
+                    Reflect.getMethod(MainPlugin.class, "postInit", File.class, File.class).invoke(plugin, originalPluginFile, originalDataFolder);
 
-                    if (Reflect.getField(plugin, "initalized").get(plugin).equals(false)) {
+                    if (Reflect.getField(MainPlugin.class, "initalized").get(plugin).equals(false)) {
                         throw new Exception("플러그인이 pre init 되지 않았습니다");
                     }
 
@@ -177,7 +154,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
         else{
             getMiniPluginLoader().onEnable();
 
-            getServer().getPluginManager().registerEvents(this, this);
+            onPostEnable();
 
             new TestFunction(this);
         }
@@ -215,10 +192,6 @@ public class MainPlugin extends JavaPlugin implements Listener {
         return commandManager;
     }
 
-    public MiniPluginLoader getMiniPluginLoader() {
-        return miniPluginLoader;
-    }
-
     public PluginDataStorage getDataStorage() {
         return pluginDataStorage;
     }
@@ -250,41 +223,5 @@ public class MainPlugin extends JavaPlugin implements Listener {
 
     public ServerDecorator getDecorator() {
         return decorator;
-    }
-
-    public JsonConfigFile getServerConfig() {
-        return serverConfig;
-    }
-
-    public String getServerName(){
-        try {
-            return serverConfig.get("server-name").getAsString();
-        } catch (Exception e) {
-            String defaultName = ChatColor.GREEN + "@";
-
-            serverConfig.set("server-name", defaultName);
-
-            return defaultName;
-        }
-    }
-
-    public String getServerHomepage(){
-        try {
-            return serverConfig.get("server-web").getAsString();
-        } catch (Exception e) {
-            String defaultURL = "https://";
-
-            serverConfig.set("server-web", defaultURL);
-
-            return defaultURL;
-        }
-    }
-
-    public static void main(String[] args){
-        System.out.println("이 프로그램은 단독 실행 될수 없습니다");
-    }
-
-    public static void premain(String args, Instrumentation inst) throws Exception {
-        System.out.println("Story Server Preloaded");
     }
 }

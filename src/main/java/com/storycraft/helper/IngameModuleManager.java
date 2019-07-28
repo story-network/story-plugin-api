@@ -6,10 +6,10 @@ import com.storycraft.util.MessageUtil.MessageType;
 
 import org.bukkit.command.CommandSender;
 
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.MainPlugin;
 
-public class IngameModuleManager extends MiniPlugin implements ICommand {
+public class IngameModuleManager extends MainMiniPlugin implements ICommand {
     
     @Override
     public void onLoad(MainPlugin plugin) {

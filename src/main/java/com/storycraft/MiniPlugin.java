@@ -1,16 +1,14 @@
 package com.storycraft;
 
-import org.bukkit.scheduler.BukkitTask;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-public abstract class MiniPlugin {
+public abstract class MiniPlugin<T extends MainPlugin> {
     
-    private MainPlugin plugin;
+    private T plugin;
     private boolean enabled = false;
 
-    public void onLoad(MainPlugin plugin) {
+    public void onLoad(T plugin) {
 
     }
 
@@ -22,11 +20,11 @@ public abstract class MiniPlugin {
 
     }
 
-    public MainPlugin getPlugin() {
+    public T getPlugin() {
         return plugin;
     }
 
-    protected void setPlugin(MainPlugin plugin) {
+    protected void setPlugin(T plugin) {
         this.plugin = plugin;
     }
 
@@ -42,7 +40,7 @@ public abstract class MiniPlugin {
         return getPlugin().getServer().isPrimaryThread();
     }
 
-    public <T>Future<T> runSync(Callable<T> callable){
+    public <S>Future<S> runSync(Callable<S> callable){
         return getPlugin().getServer().getScheduler().callSyncMethod(getPlugin(), callable);
     }
 }

@@ -13,13 +13,13 @@ import com.storycraft.config.IConfigEntry;
 import com.storycraft.config.IConfigFile;
 import com.storycraft.config.event.ConfigUpdateEvent;
 import com.storycraft.config.json.JsonConfigFile;
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.util.MessageUtil;
 import com.storycraft.util.MessageUtil.MessageType;
 
 import org.bukkit.command.CommandSender;
 
-public class IngameConfigManager extends MiniPlugin implements ICommand {
+public class IngameConfigManager extends MainMiniPlugin implements ICommand {
 
     @Override
     public void onLoad(MainPlugin plugin) {

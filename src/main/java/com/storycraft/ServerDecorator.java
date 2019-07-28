@@ -23,7 +23,7 @@ public class ServerDecorator {
     }
 
     protected void initialize(){
-        MiniPluginLoader loader = plugin.getMiniPluginLoader();
+        MiniPluginLoader<MainPlugin> loader = plugin.getMiniPluginLoader();
 
         loader.addMiniPlugin(hologramManager = new HologramManager());
         loader.addMiniPlugin(advancementManager = new AdvancementManager());

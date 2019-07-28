@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.util.ConnectionUtil;
 
 import org.bukkit.craftbukkit.v1_14_R1.*;
@@ -28,7 +28,7 @@ import net.minecraft.server.v1_14_R1.CriterionProgress;
 import net.minecraft.server.v1_14_R1.MinecraftKey;
 import net.minecraft.server.v1_14_R1.PacketPlayOutAdvancements;
 
-public class AdvancementManager extends MiniPlugin {
+public class AdvancementManager extends MainMiniPlugin {
 
     public void broadcastToast(String text, AdvancementType frameType, org.bukkit.inventory.ItemStack icon) {
         sendToastToPlayer(getPlugin().getServer().getOnlinePlayers(), text, frameType, icon);

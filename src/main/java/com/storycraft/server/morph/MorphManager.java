@@ -1,6 +1,6 @@
 package com.storycraft.server.morph;
 
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.server.morph.entity.IMorphEntity;
 import com.storycraft.server.entity.EntityPacketListener;
 import com.storycraft.server.entity.EntityPacketListenerAbstract;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MorphManager extends MiniPlugin {
+public class MorphManager extends MainMiniPlugin {
 
     private List<MorphEntityListener> morphList;
 

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.storycraft.MainPlugin;
 import com.storycraft.config.json.JsonConfigFile;
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.config.event.ConfigUpdateEvent;
 import com.storycraft.server.ServerExtension;
 import com.storycraft.server.event.server.ServerUpdateEvent;

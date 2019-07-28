@@ -1,7 +1,7 @@
 package com.storycraft.server;
 
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 
-public class ServerExtension extends MiniPlugin {
+public class ServerExtension extends MainMiniPlugin {
 
 }

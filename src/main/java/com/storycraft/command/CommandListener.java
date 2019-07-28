@@ -1,6 +1,6 @@
 package com.storycraft.command;
 
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.util.MessageUtil;
 
 import org.bukkit.command.BlockCommandSender;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CommandListener extends MiniPlugin implements Listener {
+public class CommandListener extends MainMiniPlugin implements Listener {
 
     private CommandManager manager;
 

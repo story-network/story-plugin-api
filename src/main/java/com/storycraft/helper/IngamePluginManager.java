@@ -3,7 +3,7 @@ package com.storycraft.helper;
 import com.mojang.brigadier.ParseResults;
 import com.storycraft.MainPlugin;
 import com.storycraft.command.ICommand;
-import com.storycraft.MiniPlugin;
+import com.storycraft.MainMiniPlugin;
 import com.storycraft.server.plugin.ServerPluginManager;
 import com.storycraft.util.AsyncTask;
 import com.storycraft.util.MessageUtil;
@@ -28,7 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-public class IngamePluginManager extends MiniPlugin implements ICommand {
+public class IngamePluginManager extends MainMiniPlugin implements ICommand {
 
     private Reflect.WrappedMethod<File, JavaPlugin> getFileMethod;
 
