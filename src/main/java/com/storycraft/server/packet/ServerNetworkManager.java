@@ -187,7 +187,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
             injectPlayer(e.getPlayer());
         }
         else {
-            getPlugin().getLogger().warning(e.getPlayer().getName() + " 의 패킷 핸들러 삽입이 실패 했습니다.");
+            getPlugin().getLogger().warning(e.getPlayer().getName() + " 의 패킷 핸들러 삽입이 실패 했습니다. ");
             e.disallow(Result.KICK_OTHER, "Server Handler is not loaded yet");
         }
     }
@@ -244,7 +244,7 @@ public class ServerNetworkManager extends ServerExtension implements Listener {
 
             getPlugin().getConsoleSender().sendMessage(MessageUtil.getPluginMessage(MessageType.SUCCESS, "NetworkManager", "Player Network Hook injected to " + channel.remoteAddress()));
         } catch (Exception e) {
-            getPlugin().getLogger().warning("플레이어 " + p.getName() + " 채널에 핸들러를 삽입할 수 없습니다.");
+            getPlugin().getLogger().warning("플레이어 " + p.getName() + " 채널에 핸들러를 삽입할 수 없습니다. " + e);
         }
 
         return true;

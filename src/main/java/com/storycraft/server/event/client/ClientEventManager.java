@@ -9,6 +9,7 @@ import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.Packet;
 import net.minecraft.server.v1_14_R1.PacketPlayInBlockDig;
 import net.minecraft.server.v1_14_R1.PacketPlayInCustomPayload;
+import net.minecraft.server.v1_14_R1.PacketPlayInItemName;
 import net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk;
 import net.minecraft.server.v1_14_R1.PacketPlayOutUnloadChunk;
 
@@ -125,6 +126,16 @@ public class ClientEventManager extends ServerExtension implements Listener {
                 String brand = packet.data.readUTF(32767);
 
                 getPlugin().getServer().getPluginManager().callEvent(new AsyncPlayerBrandSentEvent(e.getSender(), brand));
+            }
+        } else if (packetIn instanceof PacketPlayInItemName) {
+            PacketPlayInItemName packet = (PacketPlayInItemName) packetIn;
+
+            AsyncAnvilNameEvent event = new AsyncAnvilNameEvent(e.getSender(), packet.b());
+
+            getPlugin().getServer().getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) {
+                e.setCancelled(true);
             }
         }
     }
