@@ -22,13 +22,11 @@ public class PatchedDataWatcher extends DataWatcher {
     private static Reflect.WrappedField<Boolean, DataWatcher> dirtyFlag;
     private static Reflect.WrappedField<Map<Integer, Item<?>>, DataWatcher> originalListField;
 
-    private static Reflect.WrappedMethod<Item<?>, DataWatcher> getOriginalItemMethod;
-
     static {
         entityField = Reflect.getField(DataWatcher.class, "entity");
         dirtyFlag = Reflect.getField(DataWatcher.class, "g");
 
-        originalListField = Reflect.getField(DataWatcher.class, "d");
+        originalListField = Reflect.getField(DataWatcher.class, "entries");
 
         datawatcherField = Reflect.getField(Entity.class, "datawatcher");
             

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>plugin-api</name>
+	<name>StoryPluginApi</name>
 	<comment>StoryNetwork main plugin</comment>
 	<projects>
 	</projects>
