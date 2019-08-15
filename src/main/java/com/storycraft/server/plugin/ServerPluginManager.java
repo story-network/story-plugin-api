@@ -72,7 +72,7 @@ public class ServerPluginManager extends ServerExtension {
     public boolean enablePlugin(Plugin plugin){
         if (isEnabled(plugin))
             return false;
-
+            
         getPluginManager().enablePlugin(plugin);
         return true;
     }
