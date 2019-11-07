@@ -5,14 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import com.mojang.authlib.GameProfile;
 import com.storycraft.MainPlugin;
-import com.storycraft.server.packet.AsyncPacketInEvent;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.reflect.Reflect;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.server.v1_14_R1.ChatComponentText;
 import net.minecraft.server.v1_14_R1.DataWatcher;
 import net.minecraft.server.v1_14_R1.Entity;
@@ -20,24 +23,14 @@ import net.minecraft.server.v1_14_R1.EntityTypes;
 import net.minecraft.server.v1_14_R1.EnumGamemode;
 import net.minecraft.server.v1_14_R1.IChatBaseComponent;
 import net.minecraft.server.v1_14_R1.IRegistry;
-import net.minecraft.server.v1_14_R1.PacketPlayInClientCommand;
-import net.minecraft.server.v1_14_R1.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_14_R1.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import net.minecraft.server.v1_14_R1.PacketPlayOutSpawnEntity;
 import net.minecraft.server.v1_14_R1.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_14_R1.PacketPlayOutStatistic;
 import net.minecraft.server.v1_14_R1.Statistic;
 import net.minecraft.server.v1_14_R1.StatisticList;
-import net.minecraft.server.v1_14_R1.World;
-import net.minecraft.server.v1_14_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 public class CustomEntityConverter implements Listener {
 

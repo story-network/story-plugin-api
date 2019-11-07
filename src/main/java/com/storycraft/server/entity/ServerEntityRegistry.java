@@ -1,21 +1,24 @@
 package com.storycraft.server.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.common.collect.BiMap;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
-import com.mojang.datafixers.types.templates.TaggedChoice;
 import com.storycraft.MainPlugin;
 import com.storycraft.server.registry.IRegistry;
 import com.storycraft.server.registry.RegistryManager;
 import com.storycraft.util.reflect.Reflect;
-import com.storycraft.util.reflect.Reflect.WrappedField;
 
-import net.minecraft.server.v1_14_R1.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+import net.minecraft.server.v1_14_R1.DataConverterRegistry;
+import net.minecraft.server.v1_14_R1.DataConverterTypes;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.EntityTypes;
+import net.minecraft.server.v1_14_R1.MinecraftKey;
+import net.minecraft.server.v1_14_R1.RegistryMaterials;
+import net.minecraft.server.v1_14_R1.SharedConstants;
+import net.minecraft.server.v1_14_R1.World;
 
 public class ServerEntityRegistry implements IRegistry<CustomEntityInfo<? extends Entity>> {
 

@@ -1,33 +1,27 @@
 package com.storycraft.server.morph;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.storycraft.MainMiniPlugin;
-import com.storycraft.server.morph.entity.IMorphEntity;
-import com.storycraft.server.entity.EntityPacketListener;
 import com.storycraft.server.entity.EntityPacketListenerAbstract;
 import com.storycraft.server.entity.IEntityHandler;
-import com.storycraft.server.packet.AsyncPacketEvent;
+import com.storycraft.server.morph.entity.IMorphEntity;
 import com.storycraft.server.packet.AsyncPacketOutEvent;
 import com.storycraft.util.ConnectionUtil;
 import com.storycraft.util.PacketUtil;
 import com.storycraft.util.reflect.Reflect;
 import com.storycraft.util.reflect.Reflect.WrappedField;
 
-import net.minecraft.server.v1_14_R1.DataWatcher.Item;
-
-import net.minecraft.server.v1_14_R1.*;
-
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import net.minecraft.server.v1_14_R1.DataWatcher.Item;
+import net.minecraft.server.v1_14_R1.Packet;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityMetadata;
 
 public class MorphManager extends MainMiniPlugin {
 

@@ -1,5 +1,9 @@
 package com.storycraft.command;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.storycraft.MainMiniPlugin;
 import com.storycraft.util.MessageUtil;
 
@@ -12,10 +16,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class CommandListener extends MainMiniPlugin implements Listener {
 

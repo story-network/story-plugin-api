@@ -2,36 +2,24 @@ package com.storycraft.server.map;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import com.google.common.collect.Lists;
-import com.storycraft.MainPlugin;
 import com.storycraft.MainMiniPlugin;
-import com.storycraft.server.map.render.OffsetArea;
+import com.storycraft.MainPlugin;
 import com.storycraft.server.event.server.ServerUpdateEvent;
+import com.storycraft.server.map.render.OffsetArea;
 import com.storycraft.util.ConnectionUtil;
-import com.storycraft.util.reflect.Reflect;
-import com.storycraft.util.reflect.Reflect.WrappedField;
 
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.map.CraftMapCanvas;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCursor;
 
 import net.minecraft.server.v1_14_R1.MapIcon;
