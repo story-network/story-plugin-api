@@ -2,6 +2,7 @@ package com.storycraft.server.map;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,47 +12,34 @@ import java.util.concurrent.Executors;
 import com.storycraft.MainMiniPlugin;
 import com.storycraft.MainPlugin;
 import com.storycraft.server.event.server.ServerUpdateEvent;
+import com.storycraft.server.map.render.IMapRenderer;
 import com.storycraft.server.map.render.OffsetArea;
 import com.storycraft.util.ConnectionUtil;
 
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapCursor;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 
 import net.minecraft.server.v1_14_R1.MapIcon;
-import net.minecraft.server.v1_14_R1.PacketPlayOutMap;
 
 public class CustomMapManager extends MainMiniPlugin implements Listener {
 
-    private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
-
-    private static final ExecutorService renderPool;
-
-    static {
-        renderPool = Executors.newFixedThreadPool(NUM_CORES * 2);
-    }
-
-    protected static ExecutorService getRenderpool() {
-        return renderPool;
-    }
-
-    private Map<Integer, CustomMapData> idMap;
-    private Map<Integer, CustomMapTracker> trackerMap;
+    private Map<Integer, ManagedCustomMap> idMap;
 
     public CustomMapManager() {
         idMap = new ConcurrentHashMap<>();
-        trackerMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void onLoad(MainPlugin plugin) {
-        
+
     }
-    
+
     @Override
     public void onEnable() {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
@@ -73,10 +61,23 @@ public class CustomMapManager extends MainMiniPlugin implements Listener {
         if (containsId(id))
             return false;
 
-        CustomMapTracker tracker = new CustomMapTracker(id, this::onTrackerAdded, this::onTrackerRemoved);
+        MapView bukkitView = getPlugin().getServer().getMap(id);
 
-        idMap.put(id, data);
-        trackerMap.put(id, tracker);
+        while (getLatestMapId() < id) {
+            bukkitView = getPlugin().getServer().createMap(getDefaultWorld());
+        }
+
+        ManagedCustomMap managed = new ManagedCustomMap(data, bukkitView, new BukkitMapRenderer(data), new ArrayList<>(bukkitView.getRenderers()));
+
+        idMap.put(id, managed);
+
+        if (!bukkitView.getRenderers().isEmpty()) {
+            for (MapRenderer renderer : managed.getDefaultRendererList()) {
+                bukkitView.removeRenderer(renderer);
+            }
+        }
+
+        bukkitView.addRenderer(managed.getBukkitRenderer());
 
         return true;
     }
@@ -85,45 +86,22 @@ public class CustomMapManager extends MainMiniPlugin implements Listener {
         if (!containsId(id))
             return null;
 
-        return idMap.get(id);
+        return idMap.get(id).getMapData();
     }
 
-    public void removeCustomMap(int id) {
-        idMap.remove(id);
-        trackerMap.remove(id);
-    }
+    public boolean removeCustomMap(int id) {
+        if (!containsId(id))
+            return false;
 
-    protected CompletableFuture<Void> updateInternal(CustomMapData data) {
-        return CompletableFuture.runAsync(() -> {
-            renderProcessTask(data, data.getRenderer().getDirtyArea());
-        }, getRenderpool());
-    }
+        ManagedCustomMap managed = idMap.remove(id);
 
-    protected void renderProcessTask(CustomMapData data, Collection<OffsetArea> dirtyArea) {
-        for (OffsetArea area : dirtyArea) {
-            data.renderToBuffer(area);
+        managed.getBukkitView().removeRenderer(managed.getBukkitRenderer());
+
+        for (MapRenderer renderer : managed.getDefaultRendererList()) {
+            managed.getBukkitView().addRenderer(renderer);
         }
-    }
 
-    protected void sendEntireMapPacket(Player p, int id, CustomMapData data) {
-        Collection<MapIcon> iconCollection = getIconCollection(data);
-
-        PacketPlayOutMap mapPacket = new PacketPlayOutMap(id, data.getScale().getByteSize(), data.getShouldTrack(), data.isLocked(), iconCollection
-                , data.getBuffer(), 0, 0, 128, 128);
-
-        ConnectionUtil.sendPacket(p, mapPacket);
-    }
-
-    protected void sendDirtyMapPacket(Player p, int id, CustomMapData data) {
-        Collection<MapIcon> iconCollection = getIconCollection(data);
-
-        for (OffsetArea area : data.getRenderer().getDirtyArea()){
-
-            PacketPlayOutMap mapPacket = new PacketPlayOutMap(id, data.getScale().getByteSize(), data.getShouldTrack(), data.isLocked(), iconCollection
-                , data.getBuffer(), area.getY(), area.getX(), area.getSizeX(), area.getSizeY());
-
-            ConnectionUtil.sendPacket(p, mapPacket);
-        }
+        return true;
     }
 
     protected Collection<MapIcon> getIconCollection(CustomMapData data) {
@@ -137,46 +115,70 @@ public class CustomMapManager extends MainMiniPlugin implements Listener {
         return iconCollection;
     }
 
-    @EventHandler
-    public void onUpdate(ServerUpdateEvent e) {
-        Collection<Player> playerList = (Collection<Player>) getPlugin().getServer().getOnlinePlayers();
+    protected class ManagedCustomMap {
+
+        private BukkitMapRenderer bukkitRenderer;
+        private MapView bukkitView;
+        private CustomMapData mapData;
+        private List<MapRenderer> defaultRendererList;
         
-        for (int id : idMap.keySet()) {
-            CustomMapData data = idMap.get(id);
-            CustomMapTracker tracker = trackerMap.get(id);
+        public ManagedCustomMap(CustomMapData mapData, MapView bukkitView, BukkitMapRenderer bukkitRenderer, List<MapRenderer> defaultRendererList) {
+            this.mapData = mapData;
+            this.bukkitView = bukkitView;
+            this.bukkitRenderer = bukkitRenderer;
+            this.defaultRendererList = defaultRendererList;
+        }
 
-            tracker.update(playerList);
+        public BukkitMapRenderer getBukkitRenderer() {
+            return bukkitRenderer;
+        }
 
-            if (data.getRenderer().needRender()) {
-                updateInternal(data).thenRun(() -> {
-                    for (Player p : tracker.getPlayerList()) {
-                        sendDirtyMapPacket(p, id, data);
+        public MapView getBukkitView() {
+            return bukkitView;
+        }
+
+        public CustomMapData getMapData() {
+            return mapData;
+        }
+
+        public List<MapRenderer> getDefaultRendererList() {
+            return defaultRendererList;
+        }
+    }
+
+    public class BukkitMapRenderer extends MapRenderer {
+
+        private CustomMapData mapData;
+
+        public BukkitMapRenderer(CustomMapData mapData) {
+            this.mapData = mapData;
+        }
+
+        public CustomMapData getMapData() {
+            return mapData;
+        }
+
+        @Override
+        public void render(MapView view, MapCanvas canvas, Player player) {
+            IMapRenderer renderer = this.mapData.getRenderer();
+            
+            if (renderer.needRender()) {
+                for (OffsetArea area : renderer.getDirtyArea()) {
+                    byte[] data = renderer.render(area);
+
+                    int x = 0, y = 0;
+                    for (int offsetX = 0; offsetX < area.getSizeX(); offsetX++) {
+                        for (int offsetY = 0; offsetY < area.getSizeY(); offsetY++) {
+                            x = area.getX() + offsetX;
+                            y = area.getY() + offsetY;
+
+                            canvas.setPixel(x, y, data[offsetY * area.getSizeY() + offsetX]);
+                        }
                     }
-    
-                    data.getRenderer().clearDirtyArea();
-                });
+                }
             }
         }
-    }
 
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        for (int id : idMap.keySet()) {
-            CustomMapTracker tracker = trackerMap.get(id);
-
-            tracker.removeTracked(e.getPlayer());
-        }
-    }
-
-    protected Void onTrackerAdded(CustomMapTracker tracker, Player p) {
-        sendEntireMapPacket(p, tracker.getMapId(), getCustomMap(tracker.getMapId()));
-
-        return null;
-    }
-
-    protected Void onTrackerRemoved(CustomMapTracker tracker, Player p) {
-
-        return null;
     }
 
 }

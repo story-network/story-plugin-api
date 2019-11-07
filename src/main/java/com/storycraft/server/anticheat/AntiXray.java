@@ -36,7 +36,7 @@ public class AntiXray extends ServerExtension implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapChunk(AsyncPacketOutEvent e) {
-        if (!(e.getPacket() instanceof PacketPlayOutMapChunk) || e.isCancelled() || e.getTarget() == null || e.getTarget().hasPermission(getBypassPermission()))
+        if (!(e.getPacket() instanceof PacketPlayOutMapChunk) || e.isCancelled() || e.getTarget() == null || !e.getTarget().hasPermission(getBypassPermission()))
             return;
 
         PacketPlayOutMapChunk chunkPacket = (PacketPlayOutMapChunk) e.getPacket();
