@@ -45,6 +45,13 @@ public class CustomMapManager extends MainMiniPlugin implements Listener {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
     }
 
+    @Override
+    public void onDisable(boolean restart) {
+        for (int id : idMap.keySet()) {
+            removeCustomMap(id);
+        }
+    }
+
     public boolean containsId(int id) {
         return idMap.containsKey(id);
     }
