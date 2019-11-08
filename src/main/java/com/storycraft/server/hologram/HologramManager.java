@@ -9,7 +9,6 @@ import com.storycraft.util.reflect.Reflect.WrappedField;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
 import net.minecraft.server.v1_14_R1.ChatComponentText;
 import net.minecraft.server.v1_14_R1.Entity;
@@ -17,8 +16,10 @@ import net.minecraft.server.v1_14_R1.PacketPlayInUseEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HologramManager extends MainMiniPlugin implements Listener {
 
@@ -29,7 +30,7 @@ public class HologramManager extends MainMiniPlugin implements Listener {
     private WrappedField<Integer, PacketPlayInUseEntity> idField;
 
     public HologramManager(){
-        this.hologramListMap = new HashMap<>();
+        this.hologramListMap = new ConcurrentHashMap<>();
 
         this.idField = Reflect.getField(PacketPlayInUseEntity.class, "a");
     }
@@ -64,8 +65,12 @@ public class HologramManager extends MainMiniPlugin implements Listener {
 
             int id = idField.get(packet);
 
-            for (Hologram hologram : new ArrayList<>(hologramListMap.keySet())) {
-                for (Entity entity : new ArrayList<>(hologramListMap.get(hologram))) {
+            for (Hologram hologram : hologramListMap.keySet()) {
+                Iterator<Entity> entityIter = hologramListMap.get(hologram).iterator();
+
+                while (entityIter.hasNext()) {
+                    Entity entity = entityIter.next();
+                    
                     if (entity.getId() == id) {
                         getPlugin().getServer().getPluginManager().callEvent(new HologramInteractEvent(e.getSender(), hologram));
                     }

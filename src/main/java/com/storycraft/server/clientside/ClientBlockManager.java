@@ -15,9 +15,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientBlockManager extends ServerExtension implements Listener {
 
@@ -26,14 +26,14 @@ public class ClientBlockManager extends ServerExtension implements Listener {
     private WrappedField<BlockPosition, PacketPlayOutBlockChange> positionField;
 
     public ClientBlockManager(){
-        this.blockMap = new HashMap<>();
+        this.blockMap = new ConcurrentHashMap<>();
 
         this.positionField = Reflect.getField(PacketPlayOutBlockChange.class, "a");
     }
 
     @Override
     public void onDisable(boolean reload){
-        for (Location loc : new ArrayList<>(blockMap.keySet())) {
+        for (Location loc : blockMap.keySet()) {
             removeClientBlockInternal(loc);
         }
 
@@ -103,7 +103,7 @@ public class ClientBlockManager extends ServerExtension implements Listener {
     protected Map<Location, BlockData> getBlockListInChunk(org.bukkit.World world, int chunkX, int chunkZ){
         Map<Location, BlockData> map = new HashMap<>();
 
-        for (Location loc : new ArrayList<>(blockMap.keySet())) {
+        for (Location loc : blockMap.keySet()) {
             int locChunkX = loc.getBlockX() << 4;
             int locChunkZ = loc.getBlockZ() << 4;
             if (loc.getWorld() != null && loc.getWorld().equals(world) && locChunkX == chunkX && locChunkZ == chunkZ) {

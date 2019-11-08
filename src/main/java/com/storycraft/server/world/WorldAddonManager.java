@@ -2,6 +2,7 @@ package com.storycraft.server.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -221,7 +222,10 @@ public class WorldAddonManager extends MainMiniPlugin implements Listener {
         if (!contains(addon))
             return false;
 
-        for (IWorldAddon.AddonHandler handler : getAddonHandlerList(w)) {
+        Iterator<IWorldAddon.AddonHandler> handlerIter = getAddonHandlerList(w).iterator();
+
+        while (handlerIter.hasNext()) {
+            IWorldAddon.AddonHandler handler = handlerIter.next();
             if (handler.getAddon().equals(addon))
                 return true;
         }
@@ -240,24 +244,27 @@ public class WorldAddonManager extends MainMiniPlugin implements Listener {
         if (!hasAddonToWorld(w, addon))
             return;
 
-        List<IWorldAddon.AddonHandler> handlerList = getAddonHandlerList(w);
+        Iterator<IWorldAddon.AddonHandler> handlerIter = getAddonHandlerList(w).iterator();
 
-        for (IWorldAddon.AddonHandler handler : new ArrayList<>(handlerList)) {
+        while (handlerIter.hasNext()) {
+            IWorldAddon.AddonHandler handler = handlerIter.next();
             if (handler.getAddon().equals(addon)) {
                 HandlerList.unregisterAll(handler);
-                handlerList.remove(handler);
+                handlerIter.remove();
             }
         }
     }
 
     public void removeAllAddonToWorld(World w) {
-        List<IWorldAddon.AddonHandler> handlerList = getAddonHandlerList(w);
+        Iterator<IWorldAddon.AddonHandler> handlerIter = getAddonHandlerList(w).iterator();
 
-        for (IWorldAddon.AddonHandler handler : new ArrayList<>(handlerList)) {
+        while (handlerIter.hasNext()) {
+            IWorldAddon.AddonHandler handler = handlerIter.next();
+
             HandlerList.unregisterAll(handler);
-        }
 
-        handlerList.clear();
+            handlerIter.remove();
+        }
     }
 
     @EventHandler

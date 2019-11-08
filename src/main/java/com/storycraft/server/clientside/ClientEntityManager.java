@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -244,12 +245,10 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         }
 
         protected void onPlayerChunkLoad(int chunkX, int chunkZ) {
-            List<Entity> list = new ArrayList<>(getGlobalWorldList(getPlayerWorld()));
-            //list.removeAll(Collections.singleton(null));
-
-            list.addAll(getGlobalWorldList(getPlayerWorld()));
-    
-            for (Entity entity : list) {
+            
+            Iterator<Entity> entityIter = getGlobalWorldList(getPlayerWorld()).iterator();
+            while (entityIter.hasNext()) {
+                Entity entity = entityIter.next();
                 if (entity == null) {
                     continue;
                 }
@@ -264,12 +263,10 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         }
 
         protected void onPlayerRespawn(Location respawnLoc) {
-            List<Entity> list = new ArrayList<>(getGlobalWorldList(getPlayerWorld()));
-            //list.removeAll(Collections.singleton(null));
 
-            list.addAll(getGlobalWorldList(getPlayerWorld()));
-    
-            for (Entity entity : list) {
+            Iterator<Entity> entityIter = getGlobalWorldList(getPlayerWorld()).iterator();
+            while (entityIter.hasNext()) {
+                Entity entity = entityIter.next();
                 if (entity == null) {
                     continue;
                 }
@@ -283,12 +280,11 @@ public class ClientEntityManager extends ServerExtension implements Listener {
         }
 
         protected void onPlayerChunkUnload(int chunkX, int chunkZ) {
-            List<Entity> list = new ArrayList<>(getGlobalWorldList(getPlayerWorld()));
-            //list.removeAll(Collections.singleton(null));
+            
+            Iterator<Entity> entityIter = getGlobalWorldList(getPlayerWorld()).iterator();
+            while (entityIter.hasNext()) {
+                Entity entity = entityIter.next();
 
-            list.addAll(getGlobalWorldList(getPlayerWorld()));
-    
-            for (Entity entity : list) {
                 if (entity == null) {
                     continue;
                 }

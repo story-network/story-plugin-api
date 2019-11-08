@@ -1,6 +1,7 @@
 package com.storycraft.server.entity.metadata;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,12 +52,14 @@ public class ComparingDataWatcher extends DataWatcher {
 
         Map<Integer, Item<?>> targetMap = itemMapField.get(targetMetadata);
 
-        for (Item<?> item : new ArrayList<>(list)) {
+        Iterator<Item<?>> itemIter = list.iterator();
+        while (itemIter.hasNext()) {
+            Item<?> item = itemIter.next();
             next:
             for (int id : targetMap.keySet()) {
                 if (item.a().a() == id) {
                     if (!item.b().getClass().isInstance(targetMap.get(id).b()))
-                        list.remove(item);
+                    itemIter.remove();
 
                     break next;
                 }
@@ -79,12 +82,14 @@ public class ComparingDataWatcher extends DataWatcher {
 
         Map<Integer, Item<?>> targetMap = itemMapField.get(targetMetadata);
 
-        for (Item<?> item : new ArrayList<>(list)) {
+        Iterator<Item<?>> itemIter = list.iterator();
+        while (itemIter.hasNext()) {
+            Item<?> item = itemIter.next();
             next:
             for (int id : targetMap.keySet()) {
                 if (item.a().a() == id) {
                     if (!item.b().getClass().isInstance(targetMap.get(id).b()))
-                        list.remove(item);
+                        itemIter.remove();
 
                     break next;
                 }
