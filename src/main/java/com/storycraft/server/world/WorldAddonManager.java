@@ -52,11 +52,17 @@ public class WorldAddonManager extends MainMiniPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        for (List<IWorldAddon.AddonHandler> handlerList : worldAddonHandlerMap.values()) {
-            for (IWorldAddon.AddonHandler handler : handlerList) {
-                getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
+        getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), new Runnable() {
+            public void run() {
+                reloadAddon();
+        
+                for (List<IWorldAddon.AddonHandler> handlerList : worldAddonHandlerMap.values()) {
+                    for (IWorldAddon.AddonHandler handler : handlerList) {
+                        getPlugin().getServer().getPluginManager().registerEvents(handler, getPlugin());
+                    }
+                }
             }
-        }
+        }, 1);
     }
 
     protected void initDefaultAddon() {
@@ -267,13 +273,17 @@ public class WorldAddonManager extends MainMiniPlugin implements Listener {
         }
     }
 
+    public void reloadAddon() {
+        for (IUniverse universe : getWorldManager().universeList.values()) {
+            removeAllAddonToWorld(universe.getBukkitWorld());
+            addAllAddonInConfig(universe.getBukkitWorld());
+        }
+    }
+
     @EventHandler
     public void onConfigReload(ConfigUpdateEvent e) {
         if (worldAddonConfig.equals(e.getConfig())) {
-            for (IUniverse universe : getWorldManager().universeList.values()) {
-                removeAllAddonToWorld(universe.getBukkitWorld());
-                addAllAddonInConfig(universe.getBukkitWorld());
-            }
+            reloadAddon();
         }
     }
 

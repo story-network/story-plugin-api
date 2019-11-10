@@ -52,7 +52,7 @@ public class WorldManager extends ServerExtension implements Listener {
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
         getPlugin().getServer().getPluginManager().registerEvents(addonManager, getPlugin());
 
-        getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable(){
+        getPlugin().getServer().getScheduler().runTaskLater(getPlugin(), new Runnable() {
             public void run(){
                 for (World w : getPlugin().getServer().getWorlds()) {
                     if (contains(w.getName())) {
@@ -62,7 +62,7 @@ public class WorldManager extends ServerExtension implements Listener {
                     loadDefaultWorld(new DefaultUniverse(w));
                 }
             }
-        });
+        }, 0);
     }
 
     @Override
