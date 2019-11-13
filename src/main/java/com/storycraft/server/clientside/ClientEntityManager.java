@@ -191,6 +191,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
 
         protected PlayerEntityTracker(Player player) {
             this.player = player;
+            this.entityMap = new ConcurrentHashMap<>();
         }
 
         public Player getPlayer() {
@@ -220,7 +221,7 @@ public class ClientEntityManager extends ServerExtension implements Listener {
             entityMap.get(e.getWorld().getWorld().getName()).add(e);
 
             sendSpawnPacket(getPlayer(), e);
-            sendUpdatePacket(getPlayer(), e);
+            sendUpdatePacket(getPlayer(), e, true);
         }
     
         public void removeClientEntity(Entity e){

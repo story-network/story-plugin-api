@@ -15,7 +15,6 @@ import net.minecraft.server.v1_14_R1.Entity;
 import net.minecraft.server.v1_14_R1.PacketPlayInUseEntity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -138,8 +137,9 @@ public class HologramManager extends MainMiniPlugin implements Listener {
         if (!contains(hologram))
             return;
 
-        List<Entity> hologramList = hologramListMap.get(hologram);
-        for (Entity e : hologramList) {
+        Iterator<Entity> hologramIter = hologramListMap.get(hologram).iterator();
+        while (hologramIter.hasNext()) {
+            Entity e = hologramIter.next();
             getClientEntityManager().removeClientEntity(e);
         }
 
