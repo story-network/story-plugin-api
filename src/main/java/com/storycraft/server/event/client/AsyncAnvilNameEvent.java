@@ -20,7 +20,7 @@ public class AsyncAnvilNameEvent extends Event implements Cancellable {
         this.player = player;
     
         this.name = name;
-        this.cancelled = true;
+        this.cancelled = false;
     }
 
     public Player getPlayer(){
