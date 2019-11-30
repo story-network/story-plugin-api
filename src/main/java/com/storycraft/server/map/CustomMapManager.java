@@ -171,7 +171,8 @@ public class CustomMapManager extends MainMiniPlugin implements Listener {
             
             if (renderer.needRender()) {
                 for (OffsetArea area : renderer.getDirtyArea()) {
-                    byte[] data = renderer.render(area);
+                    this.mapData.renderToBuffer(area);
+                    byte[] mapData = this.mapData.getBuffer();
 
                     int x = 0, y = 0;
                     for (int offsetX = 0; offsetX < area.getSizeX(); offsetX++) {
@@ -179,10 +180,12 @@ public class CustomMapManager extends MainMiniPlugin implements Listener {
                             x = area.getX() + offsetX;
                             y = area.getY() + offsetY;
 
-                            canvas.setPixel(x, y, data[offsetY * area.getSizeY() + offsetX]);
+                            canvas.setPixel(x, y, mapData[y * area.getSizeX() + x]);
                         }
                     }
                 }
+
+                renderer.clearDirtyArea();
             }
         }
 
